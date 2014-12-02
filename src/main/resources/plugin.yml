@@ -1,0 +1,73 @@
+name: ${project.name}
+main: com.endercrest.colorcube.ColorCube
+version: ${project.version}
+website: ${project.url}
+description: ColorCube is a minigame.
+authors: [tcvs]
+depend: [WorldEdit]
+commands:
+    colorcube:
+        description: All commands for ColorCube
+        aliases: [cc, colorcube, colourcube]
+permissions:
+    cc.admin.*:
+        description: Grants you the /cc admin commands
+        default: op
+        children:
+            cc.admin.reload: true
+            cc.admin.setgloballobbyspawn: true
+            cc.admin.forcestart: true
+    cc.admin.reload:
+        description: Grants /cc reload
+        default: op
+    cc.admin.setgloballobbyspawn:
+        description: Grants /cc setgloballobbyspawn
+        default: op
+    cc.admin.forcestart:
+        description: Grants /cc forcestart
+        default: op
+    cc.arena.*:
+        description: Grants you the all admin arena commands
+        default: false
+        children:
+            cc.arena.create: true
+            cc.arena.delete: true
+            cc.arena.disable: true
+            cc.arena.setspawn: true
+    cc.lobby.*:
+        description: Grants you the all admin lobby commands
+        default: false
+        children:
+            cc.lobby.create: true
+            cc.lobby.setlobbyspawn: true
+    cc.arena.create:
+        description: Grants you the arena create command
+        default: op
+    cc.arena.delete:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.disable:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.enable:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.setspawn:
+        description: Grants you the arena setspawn command
+        default: op
+    cc.arena.join:
+            description: Grants you the arena delete command
+            default: op
+    cc.lobby.create:
+        description: Grants you the lobby create command
+        default: op
+    cc.lobby.setlobbyspawn:
+        description: Grants you the setlobbyspawn create command
+        default: op
+    cc.*:
+        description: Gives all permissions
+        default: false
+        children:
+            cc.admin.*: true
+            cc.arena.*: true
+            cc.lobby.*: true
