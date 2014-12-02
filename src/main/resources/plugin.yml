@@ -34,6 +34,7 @@ permissions:
             cc.arena.delete: true
             cc.arena.disable: true
             cc.arena.setspawn: true
+            cc.arena.resetspawns: true
     cc.lobby.*:
         description: Grants you the all admin lobby commands
         default: false
@@ -56,8 +57,11 @@ permissions:
         description: Grants you the arena setspawn command
         default: op
     cc.arena.join:
-            description: Grants you the arena delete command
-            default: op
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.resetspawns:
+        description: Gives you the arena reset spawn command
+        default: op
     cc.lobby.create:
         description: Grants you the lobby create command
         default: op

@@ -39,6 +39,7 @@ public class CommandHandler implements CommandExecutor {
         commands.put("setlobbyspawn", new SetLobbySpawn());
         commands.put("setgloballobbyspawn", new SetGlobalLobbySpawn());
         commands.put("forcestart", new ForceStart());
+        commands.put("resetspawns", new ResetSpawns());
 
         commands.put("debug", new Debug());
     }

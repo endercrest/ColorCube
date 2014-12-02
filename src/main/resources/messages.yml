@@ -53,6 +53,7 @@ messages:
         setgloballobbyspawn: 'Set global lobby spawn'
         forcestart: 'Force start a game'
         setspawn: 'Set the spawn in a arena'
+        resetspawns: 'Reset all the spawns in the arena.'
     color:
         red: 'red'
         green: 'green'
