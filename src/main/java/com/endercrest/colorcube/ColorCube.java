@@ -1,6 +1,7 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.events.*;
+import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;

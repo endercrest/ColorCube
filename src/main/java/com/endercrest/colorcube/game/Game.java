@@ -1,5 +1,11 @@
-package com.endercrest.colorcube;
+package com.endercrest.colorcube.game;
 
+import com.endercrest.colorcube.ColorCube;
+import com.endercrest.colorcube.GameManager;
+import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.game.Arena;
+import com.endercrest.colorcube.game.Lobby;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -7,10 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Game {
 
@@ -321,7 +324,6 @@ public class Game {
                         }
                         if (count < 6) {
                             msgArena("game.countdown","t-"+count);
-
                         }
                         count--;
                     } else {
@@ -545,8 +547,6 @@ public class Game {
                 --counter;
                 timerScore.setScore(counter);
             }else{
-                //Bukkit.getScheduler().cancelTask(timerTaskID);
-                //timerRunning = false;
                 endGame();
             }
 

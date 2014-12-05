@@ -1,7 +1,7 @@
 package com.endercrest.colorcube.events;
 
 import com.endercrest.colorcube.ColorCube;
-import com.endercrest.colorcube.Game;
+import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.logging.LoggingManager;
 import org.bukkit.Bukkit;

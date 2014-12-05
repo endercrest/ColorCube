@@ -1,5 +1,7 @@
-package com.endercrest.colorcube;
+package com.endercrest.colorcube.game;
 
+import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.SettingsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
