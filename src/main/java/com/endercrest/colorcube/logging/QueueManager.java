@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.logging;
 
 import com.endercrest.colorcube.*;
+import com.endercrest.colorcube.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

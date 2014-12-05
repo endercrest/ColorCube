@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.commands;
 
 import com.endercrest.colorcube.*;
+import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

@@ -1,10 +1,9 @@
 package com.endercrest.colorcube.commands;
 
-import com.endercrest.colorcube.Game;
+import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class Disable implements SubCommand {

@@ -1,23 +1,37 @@
 package com.endercrest.colorcube.api;
 
-import org.bukkit.event.Cancellable;
+import com.endercrest.colorcube.game.Game;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class PlayerLeaveArenaEvent extends Event implements Cancellable {
-    //TODO Implement this
-    @Override
-    public boolean isCancelled() {
-        return false;
+public class PlayerLeaveArenaEvent extends Event {
+
+    private static final HandlerList handlers = new HandlerList();
+    Player player;
+    Game game;
+    private boolean logout;
+
+    public PlayerLeaveArenaEvent(Player player, Game game, boolean logout){
+        this.player = player;
+        this.game = game;
+        this.logout = logout;
     }
 
-    @Override
-    public void setCancelled(boolean b) {
+    public Game getGame(){
+        return game;
+    }
 
+    public Player getPlayer(){
+        return player;
+    }
+
+    public boolean isLogout(){
+        return logout;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return null;
+        return handlers;
     }
 }

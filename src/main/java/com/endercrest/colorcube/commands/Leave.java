@@ -12,7 +12,7 @@ public class Leave implements SubCommand {
             MessageManager.getInstance().sendFMessage("error.notinarena", p);
             return true;
         }
-        GameManager.getInstance().removePlayer(p);
+        GameManager.getInstance().removePlayer(p, false);
         return true;
     }
 

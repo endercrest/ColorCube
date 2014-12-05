@@ -1,5 +1,6 @@
 package com.endercrest.colorcube;
 
+import com.endercrest.colorcube.game.Game;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Location;
@@ -54,8 +55,8 @@ public class GameManager {
         }
     }
 
-    public void removePlayer(Player p){
-        getGame(getPlayerGameID(p)).removePlayer(p);
+    public void removePlayer(Player p, boolean b){
+        getGame(getPlayerGameID(p)).removePlayer(p, b);
     }
 
     public int getBlockGameId(Location v) {

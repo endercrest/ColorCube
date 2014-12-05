@@ -1,5 +1,14 @@
-package com.endercrest.colorcube;
+package com.endercrest.colorcube.game;
 
+import com.endercrest.colorcube.ColorCube;
+import com.endercrest.colorcube.GameManager;
+import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
+import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
+import com.endercrest.colorcube.api.TeamWinEvent;
+import com.endercrest.colorcube.game.Arena;
+import com.endercrest.colorcube.game.Lobby;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -7,10 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Game {
 
@@ -180,7 +186,7 @@ public class Game {
 
         for (Player p : activePlayers) {
             try {
-                removePlayer(p);
+                removePlayer(p, false);
                 MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
             } catch (Exception e) {}
         }
@@ -225,7 +231,8 @@ public class Game {
         if(status == Status.LOBBY || status == Status.STARTING) {
             if (activePlayers.size() < SettingsManager.getInstance().getSpawnCount(id)) {
                 msg.sendFMessage("game.join", p, "arena-" + id);
-                //TODO API
+                PlayerJoinArenaEvent joinarena = new PlayerJoinArenaEvent(p, this);
+                Bukkit.getServer().getPluginManager().callEvent(joinarena);
                 p.setGameMode(GameMode.SURVIVAL);
                 p.setFallDistance(0);
                 p.teleport(lobby.getSpawn());
@@ -306,7 +313,7 @@ public class Game {
     int count = 20;
     int tid = 0;
     public void countdown(int time){
-        MessageManager.getInstance().broadcastFMessage("broadcast.gamestarting", "arena-"+id, "t-"+time);
+        MessageManager.getInstance().broadcastFMessage("broadcast.gamestarting", "arena-" + id, "t-" + time);
         countdownRunning = true;
         count = time;
         Bukkit.getScheduler().cancelTask(tid);
@@ -321,7 +328,6 @@ public class Game {
                         }
                         if (count < 6) {
                             msgArena("game.countdown","t-"+count);
-
                         }
                         count--;
                     } else {
@@ -337,7 +343,7 @@ public class Game {
     ///////////////////////////////////
     ///       Remove Player         ///
     ///////////////////////////////////
-    public void removePlayer(Player player){
+    public void removePlayer(Player player, boolean b){
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         activePlayers.remove(player);
@@ -350,6 +356,8 @@ public class Game {
         for (Object in : spawns.keySet().toArray()) {
             if (spawns.get(in) == player) spawns.remove(in);
         }
+
+        PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
     }
 
     ///////////////////////////////////
@@ -401,6 +409,7 @@ public class Game {
     public void winGame(){
         if(status == Status.INGAME) {
             String team = scoreResults();
+            TeamWinEvent tw = new TeamWinEvent(getTeam(team).getPlayers(), team);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -447,6 +456,19 @@ public class Game {
             return green;
         }
         if(yellow.getPlayers().contains(player)){
+            return yellow;
+        }
+        return null;
+    }
+
+    public Team getTeam(String teamName){
+        if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red").equalsIgnoreCase(teamName)){
+            return red;
+        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue").equalsIgnoreCase(teamName)){
+            return blue;
+        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green").equalsIgnoreCase(teamName)){
+            return green;
+        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow").equalsIgnoreCase(teamName)){
             return yellow;
         }
         return null;
@@ -545,8 +567,6 @@ public class Game {
                 --counter;
                 timerScore.setScore(counter);
             }else{
-                //Bukkit.getScheduler().cancelTask(timerTaskID);
-                //timerRunning = false;
                 endGame();
             }
 
