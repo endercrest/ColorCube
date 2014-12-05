@@ -1,7 +1,7 @@
 package com.endercrest.colorcube.commands;
 
 import com.endercrest.colorcube.*;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.endercrest.colorcube.game.Game;
 import org.bukkit.entity.Player;
 
 public class CreateLobby implements SubCommand {

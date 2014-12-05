@@ -1,5 +1,6 @@
-package com.endercrest.colorcube;
+package com.endercrest.colorcube.game;
 
+import com.endercrest.colorcube.MessageManager;
 import org.bukkit.Location;
 
 public class Arena {

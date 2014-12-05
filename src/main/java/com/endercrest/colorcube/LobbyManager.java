@@ -1,5 +1,7 @@
 package com.endercrest.colorcube;
 
+import com.endercrest.colorcube.game.Game;
+import com.endercrest.colorcube.game.Lobby;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Location;
