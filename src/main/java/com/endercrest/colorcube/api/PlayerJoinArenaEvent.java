@@ -9,9 +9,9 @@ import org.bukkit.event.HandlerList;
 public class PlayerJoinArenaEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
+    private boolean cancelled = false;
     private Player player;
     private Game game;
-    private boolean cancelled = false;
 
     public PlayerJoinArenaEvent(Player player, Game game){
         this.player = player;

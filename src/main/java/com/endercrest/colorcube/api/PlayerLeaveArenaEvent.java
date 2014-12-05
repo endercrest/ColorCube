@@ -8,8 +8,8 @@ import org.bukkit.event.HandlerList;
 public class PlayerLeaveArenaEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    Player player;
-    Game game;
+    private Player player;
+    private Game game;
     private boolean logout;
 
     public PlayerLeaveArenaEvent(Player player, Game game, boolean logout){

@@ -1,11 +1,9 @@
 package com.endercrest.colorcube.api;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
