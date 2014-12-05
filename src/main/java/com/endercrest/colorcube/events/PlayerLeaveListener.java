@@ -12,7 +12,7 @@ public class PlayerLeaveListener implements Listener {
     public void onPlayerLeave(PlayerQuitEvent event){
         Player player = event.getPlayer();
         if(GameManager.getInstance().isPlayerActive(player)){
-            GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(player)).removePlayer(player);
+            GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(player)).removePlayer(player, true);
         }
     }
 }

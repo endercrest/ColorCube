@@ -55,8 +55,8 @@ public class GameManager {
         }
     }
 
-    public void removePlayer(Player p){
-        getGame(getPlayerGameID(p)).removePlayer(p);
+    public void removePlayer(Player p, boolean b){
+        getGame(getPlayerGameID(p)).removePlayer(p, b);
     }
 
     public int getBlockGameId(Location v) {
