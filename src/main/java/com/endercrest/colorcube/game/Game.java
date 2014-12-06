@@ -549,7 +549,11 @@ public class Game {
     }
 
     public boolean isBlockInLobby(Location v) {
-        return lobby.containsBlock(v);
+        if(lobby != null) {
+            return lobby.containsBlock(v);
+        }else{
+            return false;
+        }
     }
 
     public void resetCallback() {
