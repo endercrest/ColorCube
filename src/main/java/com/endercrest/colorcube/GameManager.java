@@ -70,8 +70,10 @@ public class GameManager {
 
     public int getBlockGameIdLobby(Location v) {
         for (Game g: games) {
-            if (g.isBlockInLobby(v)) {
-                return g.getGameID();
+            if(g.isLobbySet()) {
+                if (g.isBlockInLobby(v)) {
+                    return g.getGameID();
+                }
             }
         }
         return -1;
