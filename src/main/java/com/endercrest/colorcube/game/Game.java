@@ -29,6 +29,7 @@ public class Game {
     private List<Player> activePlayers = new ArrayList<Player>();
     private List<Player> spectators = new ArrayList<Player>();
     private ArrayList<Integer>tasks = new ArrayList<Integer>();
+    private List<Powerup> powerups = new ArrayList<Powerup>();
 
     private Arena arena;
     private Lobby lobby;
@@ -577,7 +578,30 @@ public class Game {
             if(counter <= 10){
                 msgArena("game.time", "time-" + counter);
             }
+            Random random = new Random();
+            int randomNum = random.nextInt((50 - 1) + 1) + 1;
+            if(randomNum == 5){
+                int randomNum2 = random.nextInt(activePlayers.size() + 1);
+                powerups.add(new Powerup(activePlayers.get(randomNum2).getLocation()));
+                msgArena("game.powerup");
+            }
+
+            if(powerups.size() > 0){
+                for(Powerup pu: powerups){
+                    for(Player p: activePlayers){
+                        p.playEffect(pu.getLocation(), Effect.RECORD_PLAY, 6);
+                    }
+                }
+            }
         }
+    }
+
+    public List<Powerup> getPowerups() {
+        return powerups;
+    }
+
+    public void removePowerup(Powerup powerup){
+        powerups.remove(powerup);
     }
 
     public void setLobbySpawn(int id, Location loc){

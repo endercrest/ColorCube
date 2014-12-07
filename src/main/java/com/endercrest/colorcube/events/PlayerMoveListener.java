@@ -4,6 +4,7 @@ import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
+import com.endercrest.colorcube.game.Powerup;
 import com.endercrest.colorcube.logging.LoggingManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -49,6 +50,15 @@ public class PlayerMoveListener implements Listener {
                                 }
                             }, 20L);
                         }
+                    }
+                }
+            }
+            Game game = GameManager.getInstance().getGame(id);
+            if(game.getPowerups().size() > 0) {
+                for (Powerup powerup : GameManager.getInstance().getGame(id).getPowerups()) {
+                    if (powerup.getLocation().equals(player.getLocation())) {
+                        MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + powerup.getType().toString());
+                        game.removePowerup(powerup);
                     }
                 }
             }
