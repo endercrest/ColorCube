@@ -581,9 +581,21 @@ public class Game {
             Random random = new Random();
             int randomNum = random.nextInt((50 - 1) + 1) + 1;
             if(randomNum == 5){
-                int randomNum2 = random.nextInt(activePlayers.size() + 1);
-                powerups.add(new Powerup(activePlayers.get(randomNum2).getLocation()));
-                msgArena("game.powerup");
+                int x;
+                int y;
+                int z;
+                boolean finish = true;
+                while(finish) {
+                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX();
+                    y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
+                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ();
+                    Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
+                    if(loc.subtract(0, 1, 0).getBlock().getType() == Material.STAINED_CLAY){
+                       powerups.add(new Powerup(loc));
+                       msgArena("game.powerup");
+                       finish = false;
+                    }
+                }
             }
 
             if(powerups.size() > 0){
