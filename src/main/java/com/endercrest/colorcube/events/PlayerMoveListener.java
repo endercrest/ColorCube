@@ -2,6 +2,7 @@ package com.endercrest.colorcube.events;
 
 import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.PowerupManager;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.game.Powerup;
@@ -60,7 +61,7 @@ public class PlayerMoveListener implements Listener {
                     if(powerup.getLocation().getBlockX() == player.getLocation().getBlockX()){
                         if(powerup.getLocation().getBlockY() == player.getLocation().getBlockY()){
                             if(powerup.getLocation().getBlockZ() == player.getLocation().getBlockZ()){
-                                MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + powerup.getType().toString());
+                                MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + PowerupManager.getInstance().getPowerupName(powerup.getType()));
                                 remove.add(powerup);
                             }
                         }
@@ -70,6 +71,7 @@ public class PlayerMoveListener implements Listener {
 
             if(!remove.isEmpty()){
                 for(Powerup pu: remove){
+                    player.getInventory().addItem(pu.getType().getItem());
                     game.removePowerup(pu);
                 }
             }

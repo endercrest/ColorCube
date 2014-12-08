@@ -7,8 +7,6 @@ import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
-import com.endercrest.colorcube.game.Arena;
-import com.endercrest.colorcube.game.Lobby;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
@@ -611,12 +609,12 @@ public class Game {
                 for(Powerup pu: powerups){
                     for(Player p: activePlayers){
                         Random r = new Random();
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
                     }
                 }
             }
