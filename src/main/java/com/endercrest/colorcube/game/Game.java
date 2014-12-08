@@ -10,6 +10,7 @@ import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.game.Arena;
 import com.endercrest.colorcube.game.Lobby;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -566,7 +567,7 @@ public class Game {
 
     class GameTimer implements Runnable {
         int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
-        int powerupDefault = counter / 10;
+        int powerupDefault = 15;
         int powerup = powerupDefault;
         @Override
         public void run() {
@@ -609,7 +610,13 @@ public class Game {
             if(powerups.size() > 0){
                 for(Powerup pu: powerups){
                     for(Player p: activePlayers){
-                        p.playEffect(pu.getLocation(), Effect.RECORD_PLAY, 6);
+                        Random r = new Random();
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float)(r.nextDouble() * 0.5), (float)(r.nextDouble() * 0.5) + 1, (float)(r.nextDouble() * 0.5), 5, 1, pu.getLocation(), activePlayers);
                     }
                 }
             }

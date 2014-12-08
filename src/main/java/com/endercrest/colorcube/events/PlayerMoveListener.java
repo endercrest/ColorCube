@@ -54,16 +54,23 @@ public class PlayerMoveListener implements Listener {
                 }
             }
             Game game = GameManager.getInstance().getGame(id);
+            List<Powerup> remove = new ArrayList<Powerup>();
             if(game.getPowerups().size() > 0) {
                 for (Powerup powerup : game.getPowerups()) {
                     if(powerup.getLocation().getBlockX() == player.getLocation().getBlockX()){
                         if(powerup.getLocation().getBlockY() == player.getLocation().getBlockY()){
                             if(powerup.getLocation().getBlockZ() == player.getLocation().getBlockZ()){
                                 MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + powerup.getType().toString());
-                                game.removePowerup(powerup);
+                                remove.add(powerup);
                             }
                         }
                     }
+                }
+            }
+
+            if(!remove.isEmpty()){
+                for(Powerup pu: remove){
+                    game.removePowerup(pu);
                 }
             }
         }

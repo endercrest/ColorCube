@@ -14,17 +14,22 @@ public class Debug implements SubCommand {
                 MessageManager.getInstance().sendFMessage("error.nopermission", p);
             }
             //cc debug end <id>
-            if (args.length == 1) {
-                try {
-                    Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
-                    game.endGame();
-                } catch (Exception e) {
+            if(args.length > 1) {
+                if(args[0].equalsIgnoreCase("end")) {
+                    if (args.length == 2) {
+                        try {
+                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
+                            game.endGame();
+                        } catch (Exception e) {
+                        }
+                    } else if (args.length == 3) {
+                        try {
+                            Game game = GameManager.getInstance().getGame(Integer.parseInt(args[2]));
+                            game.endGame();
+                        } catch (Exception e) {
+                        }
+                    }
                 }
-            } else if (args.length == 2) {
-                try {
-                    Game game = GameManager.getInstance().getGame(Integer.parseInt(args[1]));
-                    game.endGame();
-                }catch (Exception e){}
             }
         }
         return true;
