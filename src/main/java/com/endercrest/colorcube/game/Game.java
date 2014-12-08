@@ -246,7 +246,7 @@ public class Game {
 
                 activePlayers.add(p);
                 addToTeam(p);
-                msgArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
+                msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
                 if (spawnCount == activePlayers.size()) {
                     countdown(5);
                 }
@@ -255,7 +255,7 @@ public class Game {
             } else {
                 msg.sendFMessage("error.gamefull", p, "arena-" + id);
             }
-            msgArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
+            msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
             //TODO Auto Start
             return true;
         }
@@ -325,10 +325,10 @@ public class Game {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {
-                            msgArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown","t-"+count);
                         }
                         if (count < 6) {
-                            msgArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown","t-"+count);
                         }
                         count--;
                     } else {
@@ -348,9 +348,9 @@ public class Game {
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         activePlayers.remove(player);
-        msgArena("game.playerleave", "player-" + player.getDisplayName());
+        msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() == 1){
-            msgArena("game.end", "reason-Not enough players");
+            msgFArena("game.end", "reason-Not enough players");
             endGame();
         }
         player.setScoreboard(manager.getNewScoreboard());
@@ -566,6 +566,8 @@ public class Game {
 
     class GameTimer implements Runnable {
         int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        int powerupDefault = counter / 10;
+        int powerup = powerupDefault;
         @Override
         public void run() {
             if(counter > 0){
@@ -576,11 +578,12 @@ public class Game {
             }
 
             if(counter <= 10){
-                msgArena("game.time", "time-" + counter);
+                msgFArena("game.time", "time-" + counter);
             }
             Random random = new Random();
-            int randomNum = random.nextInt((50 - 1) + 1) + 1;
-            if(randomNum == 5){
+            //int randomNum = random.nextInt((50 - 1) + 1) + 1;
+
+            if(powerup == 0){
                 int x;
                 int y;
                 int z;
@@ -590,12 +593,17 @@ public class Game {
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
                     z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ();
                     Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
-                    if(loc.subtract(0, 1, 0).getBlock().getType() == Material.STAINED_CLAY){
-                       powerups.add(new Powerup(loc));
-                       msgArena("game.powerup");
-                       finish = false;
+                    Location loc2 = loc.subtract(0, 1, 0);
+                    if(loc2.getBlock().getType() == Material.STAINED_CLAY){
+                        powerups.add(new Powerup(loc.add(0,1,0)));
+                        msgFArena("game.powerup");
+                        msgArena("X: " + x + " Y: " + y + " Z: " + z);
+                        finish = false;
                     }
                 }
+                powerup = powerupDefault;
+            }else{
+                --powerup;
             }
 
             if(powerups.size() > 0){
@@ -732,12 +740,17 @@ public class Game {
         }
         p.getInventory().setArmorContents(inv);
         p.updateInventory();
-
     }
 
-    public void msgArena(String string, String...args){
+    public void msgFArena(String string, String...args){
         for(Player p: getAllPlayers()){
             msg.sendFMessage(string, p, args);
+        }
+    }
+
+    public void msgArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendMessage(string, p);
         }
     }
 }
