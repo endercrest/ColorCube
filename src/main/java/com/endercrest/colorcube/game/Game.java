@@ -596,7 +596,6 @@ public class Game {
                     if(loc2.getBlock().getType() == Material.STAINED_CLAY){
                         powerups.add(new Powerup(loc.add(0,1,0)));
                         msgFArena("game.powerup");
-                        msgArena("X: " + x + " Y: " + y + " Z: " + z);
                         finish = false;
                     }
                 }

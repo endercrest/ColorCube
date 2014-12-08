@@ -32,7 +32,7 @@ public class PowerupManager {
 
     public SubPowerup getRandomPowerup(){
         Random r = new Random();
-        int random = r.nextInt(powerupTypes.size() - 1 + 1) + 1;
+        int random = r.nextInt(powerupTypes.size());
         int count = 0;
         for(String s: powerupTypes.keySet()){
             if(count == random){
@@ -48,6 +48,15 @@ public class PowerupManager {
         for(String string: powerupTypes.keySet()){
             if(powerupTypes.get(string).equals(powerup)){
                 return string;
+            }
+        }
+        return null;
+    }
+
+    public SubPowerup getPowerup(ItemStack item){
+        for(SubPowerup p: powerupTypes.values()){
+            if(p.getItem().equals(item)){
+                return p;
             }
         }
         return null;

@@ -62,6 +62,7 @@ public class ColorCube extends JavaPlugin {
             pm.registerEvents(new PlayerPlaceListener(), p);
             pm.registerEvents(new PlayerFallListener(), p);
             pm.registerEvents(new PlayerLeaveListener(), p);
+            pm.registerEvents(new PlayerRightClickListener(), p);
 
             loadDependencies();
             getCommand("colorcube").setExecutor(new CommandHandler(p));
