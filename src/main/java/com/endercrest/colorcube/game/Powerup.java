@@ -14,6 +14,11 @@ public class Powerup {
         type = PowerupManager.getInstance().getRandomPowerup();
     }
 
+    public Powerup(Location location, int type){
+        this.type = PowerupManager.getInstance().getPowerup(type);
+        this.location = location;
+    }
+
     public Location getLocation() {
         return location;
     }

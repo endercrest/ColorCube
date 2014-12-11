@@ -62,5 +62,17 @@ public class PowerupManager {
         return null;
     }
 
+    public SubPowerup getPowerup(int num){
+        int count = 0;
+        for(String s: powerupTypes.keySet()){
+            if(count == num){
+                return powerupTypes.get(s);
+            }else{
+                count++;
+            }
+        }
+        return null;
+    }
+
 
 }

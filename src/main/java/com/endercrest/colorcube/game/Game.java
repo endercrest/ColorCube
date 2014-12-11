@@ -7,9 +7,11 @@ import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
+import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -369,6 +371,8 @@ public class Game {
         }
         tasks.clear();
 
+        powerups.clear();
+
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
         Set<OfflinePlayer> redPlayers = red.getPlayers();
@@ -544,6 +548,21 @@ public class Game {
         }
     }
 
+    public byte getTeamBlockByte(int teamId){
+        switch(teamId){
+            case 0:
+                return 14;
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
     public boolean isBlockInArena(Location v) {
         return arena.containsBlock(v);
     }
@@ -594,8 +613,7 @@ public class Game {
                     Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
                     Location loc2 = loc.subtract(0, 1, 0);
                     if(loc2.getBlock().getType() == Material.STAINED_CLAY){
-                        powerups.add(new Powerup(loc.add(0,1,0)));
-                        msgFArena("game.powerup");
+                        createPowerup(loc, true);
                         finish = false;
                     }
                 }
@@ -604,20 +622,88 @@ public class Game {
                 --powerup;
             }
 
+            //String version = ColorCube.getPlugin().getMCVersion();
+            //boolean spigot = ColorCube.getPlugin().isSpigot();
             if(powerups.size() > 0){
                 for(Powerup pu: powerups){
                     for(Player p: activePlayers){
                         Random r = new Random();
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5)), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float)(0.3 + (r.nextDouble() * 0.5)), (float)(0.2 + (r.nextDouble() * 0.5) + 1), (float)(0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
                     }
                 }
             }
         }
+    }
+
+    public Powerup createPowerup(Location location, boolean spawn){
+        Powerup pu = new Powerup(location.add(0,1,0));
+        if(spawn) {
+            powerups.add(pu);
+            msgFArena("game.powerup");
+        }
+        return pu;
+    }
+
+    public Powerup createPowerup(Location location, int type, boolean spawn){
+        Powerup pu = new Powerup(location.add(0,1,0), type);
+        if(spawn) {
+            powerups.add(pu);
+            msgFArena("game.powerup");
+        }
+        return pu;
+    }
+
+    public void changeBlock(Location loc, int team) {
+        byte data;
+        switch (team) {
+            case 0://Red Team
+                data = 14;
+                break;
+            case 1://Blue Team
+                data = 3;
+                break;
+            case 2://Green Team
+                data = 5;
+                break;
+            case 3://Yellow Team
+                data = 4;
+                break;
+            default:
+                data = 0;
+                break;
+        }
+        if (loc.getBlock().getData() != data) {
+            switch (loc.getBlock().getData()) {
+                case 14:
+                    scoreManagement(id, team, 0, 1);
+                    break;
+                case 3:
+                    scoreManagement(id, team, 1, 1);
+                    break;
+                case 5:
+                    scoreManagement(id, team, 2, 1);
+                    break;
+                case 4:
+                    scoreManagement(id, team, 3, 1);
+                    break;
+                case 0:
+                    scoreManagement(id, team, -1, 1);
+                    break;
+            }
+            LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+            loc.getBlock().setData(data);
+        }
+    }
+
+    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
+        Game game = GameManager.getInstance().getGame(id);
+        game.increaseScore(teamincrease, amount);
+        game.decreaseScore(teamdecrease, amount);
     }
 
     public List<Powerup> getPowerups() {
