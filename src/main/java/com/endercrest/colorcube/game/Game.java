@@ -46,6 +46,7 @@ public class Game {
     private boolean countdownRunning;
     private boolean timerRunning;
     private int timerTaskID = 0;
+    private int particleTaskID = 0;
     private HashMap<String, String> hookvars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
 
@@ -300,7 +301,9 @@ public class Game {
         }
         status = Status.INGAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
+        tasks.add(particleTaskID);
         timerRunning = true;
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
     }
@@ -405,6 +408,7 @@ public class Game {
 
         Bukkit.getScheduler().cancelTask(timerTaskID);
         Bukkit.getScheduler().cancelTask(endgameTaskID);
+        Bukkit.getScheduler().cancelTask(particleTaskID);
         QueueManager.getInstance().rollback(id, false);
     }
     ///////////////////////////////////
@@ -602,14 +606,14 @@ public class Game {
             //int randomNum = random.nextInt((50 - 1) + 1) + 1;
 
             if(powerup == 0){
-                int x;
-                int y;
-                int z;
+                double x;
+                double y;
+                double z;
                 boolean finish = true;
                 while(finish) {
-                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX();
+                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
-                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ();
+                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
                     Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
                     Location loc2 = loc.subtract(0, 1, 0);
                     if(loc2.getBlock().getType() == Material.STAINED_CLAY){
@@ -621,19 +625,16 @@ public class Game {
             }else{
                 --powerup;
             }
+        }
+    }
 
-            //String version = ColorCube.getPlugin().getMCVersion();
-            //boolean spigot = ColorCube.getPlugin().isSpigot();
-            if(powerups.size() > 0){
-                for(Powerup pu: powerups){
-                    for(Player p: activePlayers){
-                        Random r = new Random();
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5)), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
-                        ParticleEffect.NOTE.display((float) (0.3 + (r.nextDouble() * 0.5)), (float) (0.2 + (r.nextDouble() * 0.5) + 1), (float) (0.3 + (r.nextDouble() * 0.5)), 5, 1, pu.getLocation(), activePlayers);
+    class ParticleTimer implements Runnable {
+        @Override
+        public void run() {
+            if (powerups.size() > 0) {
+                for (Powerup pu : powerups) {
+                    for (Player p : activePlayers) {
+                        ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), activePlayers);
                     }
                 }
             }
