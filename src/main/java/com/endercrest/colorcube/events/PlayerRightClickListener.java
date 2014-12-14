@@ -21,6 +21,7 @@ public class PlayerRightClickListener implements Listener {
                     SubPowerup powerup = PowerupManager.getInstance().getPowerup(player.getItemInHand());
                     powerup.onRightClick(player, GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(player)));
                     event.setCancelled(true);
+                    player.getInventory().setItem(player.getInventory().getHeldItemSlot(), null);
                     player.updateInventory();
                 }catch(NullPointerException e){}
             }

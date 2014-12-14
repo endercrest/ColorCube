@@ -35,14 +35,13 @@ public class Debug implements SubCommand {
                         try{
                             Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
                             Powerup pu = game.createPowerup(p.getLocation(), false);
-                            p.getInventory().addItem(pu.getType().getItem());
+                            for(int i = 0; i < 9; i++){
+                                if(p.getInventory().getItem(i) == null){
+                                    p.getInventory().setItem(i, pu.getType().getItem());
+                                    break;
+                                }
+                            }
                         }catch(NullPointerException e){}
-                    }else if(args.length == 2){
-                        try {
-                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
-                            Powerup pu = game.createPowerup(p.getLocation(), Integer.parseInt(args[2]), false);
-                            p.getInventory().addItem(pu.getType().getItem());
-                        }catch(Exception e){}
                     }
                 }
             }

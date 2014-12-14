@@ -2,12 +2,9 @@ package com.endercrest.colorcube.powerups;
 
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.game.Game;
-import com.endercrest.colorcube.logging.LoggingManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,7 +22,7 @@ public class Splash implements SubPowerup {
 
     @Override
     public ItemStack getItem() {
-        ItemStack item = new ItemStack(Material.BUCKET);
+        ItemStack item = new ItemStack(Material.BUCKET, 1);
         ItemMeta itemMeta = item.getItemMeta();
         itemMeta.setDisplayName(ChatColor.AQUA + "Splash!");
         item.setItemMeta(itemMeta);

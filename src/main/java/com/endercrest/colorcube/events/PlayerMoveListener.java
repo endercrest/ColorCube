@@ -7,6 +7,7 @@ import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.game.Powerup;
 import com.endercrest.colorcube.logging.LoggingManager;
+import net.minecraft.server.v1_7_R3.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,7 +72,12 @@ public class PlayerMoveListener implements Listener {
 
             if(!remove.isEmpty()){
                 for(Powerup pu: remove){
-                    player.getInventory().addItem(pu.getType().getItem());
+                    for(int i = 0; i < 9; i++){
+                        if(player.getInventory().getItem(i) == null){
+                            player.getInventory().setItem(i, pu.getType().getItem());
+                            break;
+                        }
+                    }
                     game.removePowerup(pu);
                 }
             }

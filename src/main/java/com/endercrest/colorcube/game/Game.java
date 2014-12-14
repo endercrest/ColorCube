@@ -660,44 +660,46 @@ public class Game {
     }
 
     public void changeBlock(Location loc, int team) {
-        byte data;
-        switch (team) {
-            case 0://Red Team
-                data = 14;
-                break;
-            case 1://Blue Team
-                data = 3;
-                break;
-            case 2://Green Team
-                data = 5;
-                break;
-            case 3://Yellow Team
-                data = 4;
-                break;
-            default:
-                data = 0;
-                break;
-        }
-        if (loc.getBlock().getData() != data) {
-            switch (loc.getBlock().getData()) {
-                case 14:
-                    scoreManagement(id, team, 0, 1);
+        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
+            byte data;
+            switch (team) {
+                case 0://Red Team
+                    data = 14;
                     break;
-                case 3:
-                    scoreManagement(id, team, 1, 1);
+                case 1://Blue Team
+                    data = 3;
                     break;
-                case 5:
-                    scoreManagement(id, team, 2, 1);
+                case 2://Green Team
+                    data = 5;
                     break;
-                case 4:
-                    scoreManagement(id, team, 3, 1);
+                case 3://Yellow Team
+                    data = 4;
                     break;
-                case 0:
-                    scoreManagement(id, team, -1, 1);
+                default:
+                    data = 0;
                     break;
             }
-            LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
-            loc.getBlock().setData(data);
+            if (loc.getBlock().getData() != data) {
+                switch (loc.getBlock().getData()) {
+                    case 14:
+                        scoreManagement(id, team, 0, 1);
+                        break;
+                    case 3:
+                        scoreManagement(id, team, 1, 1);
+                        break;
+                    case 5:
+                        scoreManagement(id, team, 2, 1);
+                        break;
+                    case 4:
+                        scoreManagement(id, team, 3, 1);
+                        break;
+                    case 0:
+                        scoreManagement(id, team, -1, 1);
+                        break;
+                }
+                LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+                loc.getBlock().setData(data);
+            }
         }
     }
 
