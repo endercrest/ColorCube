@@ -23,7 +23,8 @@ public class PlayerRespawnListener implements Listener {
             id = GameManager.getInstance().getPlayerGameID(p);
             for(int i: GameManager.getInstance().getGame(id).getSpawns().keySet()){
                 spawnID = i;
-                if(GameManager.getInstance().getGame(id).getSpawns().get(i) == p){
+                event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(id, spawnID));
+                /*if(GameManager.getInstance().getGame(id).getSpawns().get(i) == p){
                     BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
                     scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
                         @Override
@@ -31,7 +32,7 @@ public class PlayerRespawnListener implements Listener {
                             p.teleport(SettingsManager.getInstance().getSpawnPoint(id, spawnID));
                         }
                     }, 1L);
-                }
+                }*/
             }
         }
     }
