@@ -6,7 +6,7 @@
 
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
-    <version>Test</version>
+    <version>0.1.6-SNAPSHOT</version>
     <developers>
         <developer>
             <id>endercrest</id>
