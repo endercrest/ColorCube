@@ -34,6 +34,7 @@ public class PlayerMoveListener implements Listener {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
                 if(loc.getBlock().getType() == Material.STAINED_CLAY) {
+                    //Checks if player is on black wool or not
                     if(loc.getBlock().getData() != (byte) 15) {
                         changeBlock(id, loc.getBlock(), teamID);
                     }else{
@@ -54,6 +55,8 @@ public class PlayerMoveListener implements Listener {
                     }
                 }
             }
+
+            //Check if at powerup location
             Game game = GameManager.getInstance().getGame(id);
             List<Powerup> remove = new ArrayList<Powerup>();
             if(game.getPowerups().size() > 0) {
@@ -69,6 +72,8 @@ public class PlayerMoveListener implements Listener {
                 }
             }
 
+
+            //Remove Powerup and give item to player
             if(!remove.isEmpty()){
                 for(Powerup pu: remove){
                     for(int i = 0; i < 9; i++){
@@ -79,6 +84,11 @@ public class PlayerMoveListener implements Listener {
                     }
                     game.removePowerup(pu);
                 }
+            }
+
+            //
+            if(PowerupManager.getInstance().isPlayerFrozen(player)){
+                player.teleport(player.getLocation());
             }
         }
     }

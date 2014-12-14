@@ -1,9 +1,12 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.powerups.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public class PowerupManager {
@@ -13,6 +16,8 @@ public class PowerupManager {
     private ColorCube plugin;
     private HashMap<String, SubPowerup> powerupTypes = new HashMap<String, SubPowerup>();
 
+    private List<Player> frozenPlayers = new ArrayList<Player>();
+
     public static PowerupManager getInstance(){
         return instance;
     }
@@ -20,7 +25,7 @@ public class PowerupManager {
     public void setup(ColorCube plugin){
         this.plugin = plugin;
 
-        //powerupTypes.put("freeze", new Freeze());
+        powerupTypes.put("freeze", new Freeze());
         powerupTypes.put("splash", new Splash());
         //powerupTypes.put("swap", new Swap());
         //powerupTypes.put("scatter", new Scatter());
@@ -72,6 +77,30 @@ public class PowerupManager {
             }
         }
         return null;
+    }
+
+    public void addFrozenPlayer(Player p){
+        frozenPlayers.add(p);
+    }
+
+    public void addFrozenPlayers(List<Player> players){
+        for(Player p: players){
+            frozenPlayers.add(p);
+        }
+    }
+
+    public void removeFrozenPlayer(Player p){
+        frozenPlayers.remove(p);
+    }
+
+    public void removeFrozenPlayers(List<Player> players){
+        for(Player p: players){
+            frozenPlayers.remove(p);
+        }
+    }
+
+    public boolean isPlayerFrozen(Player p){
+        return frozenPlayers.contains(p);
     }
 
 
