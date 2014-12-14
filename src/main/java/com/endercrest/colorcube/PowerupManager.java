@@ -20,8 +20,8 @@ public class PowerupManager {
     public void setup(ColorCube plugin){
         this.plugin = plugin;
 
-        powerupTypes.put("freeze", new Freeze());
-        //powerupTypes.put("splash", new Splash());
+        //powerupTypes.put("freeze", new Freeze());
+        powerupTypes.put("splash", new Splash());
         //powerupTypes.put("swap", new Swap());
         //powerupTypes.put("scatter", new Scatter());
     }

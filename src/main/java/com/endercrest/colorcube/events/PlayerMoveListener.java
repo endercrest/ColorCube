@@ -7,7 +7,6 @@ import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.game.Powerup;
 import com.endercrest.colorcube.logging.LoggingManager;
-import net.minecraft.server.v1_7_R3.ItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
