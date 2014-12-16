@@ -36,6 +36,7 @@ messages:
         time: '&6Game ends in {$time}'
         powerup: '&6New power has spawned!'
         pickup: '&6You have picked up a power up!'
+        freeze: '&6{$player} has frozen everyone for 5 seconds!'
     info:
         create: '&6Arena {$arena} has been created!'
         delete: '&6Arena {$arena} has been deleted!'
