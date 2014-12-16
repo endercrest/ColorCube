@@ -20,6 +20,8 @@ public class Freeze implements SubPowerup {
         PowerupManager.getInstance().addFrozenPlayers(g.getActivePlayers());
         PowerupManager.getInstance().removeFrozenPlayer(p);
 
+        g.msgFArena("game.freeze", "player-" + p.getDisplayName());
+
         BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
         scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
             @Override
