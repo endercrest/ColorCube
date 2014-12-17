@@ -28,9 +28,12 @@ public class PowerupManager {
         powerupTypes.put("freeze", new Freeze());
         powerupTypes.put("splash", new Splash());
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         /*powerupTypes.put("swap", new Swap());
         //powerupTypes.put("scatter", new Scatter());*/
 =======
+=======
+>>>>>>> Stashed changes
         powerupTypes.put("swap", new Swap());
         //powerupTypes.put("scatter", new Scatter());
 >>>>>>> Stashed changes
