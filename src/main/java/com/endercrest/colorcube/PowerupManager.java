@@ -27,8 +27,13 @@ public class PowerupManager {
 
         powerupTypes.put("freeze", new Freeze());
         powerupTypes.put("splash", new Splash());
+<<<<<<< Updated upstream
         /*powerupTypes.put("swap", new Swap());
         //powerupTypes.put("scatter", new Scatter());*/
+=======
+        powerupTypes.put("swap", new Swap());
+        //powerupTypes.put("scatter", new Scatter());
+>>>>>>> Stashed changes
     }
 
     public HashMap<String, SubPowerup> getPowerupTypes(){
