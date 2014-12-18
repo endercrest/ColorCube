@@ -3,7 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
-import com.endercrest.colorcube.utils.Updater;
+import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -71,11 +71,7 @@ public class ColorCube extends JavaPlugin {
             MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest enabled");
 
             if(SettingsManager.getInstance().getPluginConfig().getBoolean("update-checker")){
-                Updater updater = new Updater(p, 87360, p.getFile(), Updater.UpdateType.NO_DOWNLOAD, true);
-                if(updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE){
-                    MessageManager.getInstance().log("New Version Available! " + updater.getLatestName());
-                    MessageManager.getInstance().log("Download from here: " + updater.getLatestFileLink());
-                }
+                Update update = new Update(87360);
             }
         }
     }
