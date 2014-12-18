@@ -184,6 +184,9 @@ public class SettingsManager {
         if(!plugin.getConfig().contains("game-length")){
             plugin.getConfig().addDefault("game-length", 600);
         }
+        if(!plugin.getConfig().contains("update-checker")){
+            plugin.getConfig().addDefault("update-checker", true);
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
