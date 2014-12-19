@@ -78,6 +78,17 @@ public class PowerupManager {
         return null;
     }
 
+    public int getPowerupId(SubPowerup powerup){
+        int id = 0;
+        for(String s: powerupTypes.keySet()){
+            if(powerupTypes.get(s).equals(powerup)){
+                return id;
+            }
+            id++;
+        }
+        return -1;
+    }
+
     public void addFrozenPlayer(Player p){
         frozenPlayers.add(p);
     }
