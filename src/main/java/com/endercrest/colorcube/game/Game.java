@@ -588,7 +588,7 @@ public class Game {
 
     class GameTimer implements Runnable {
         int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
-        int powerupDefault = 15;
+        int powerupDefault = SettingsManager.getInstance().getPluginConfig().getInt("powerup-freq", 15);
         int powerup = powerupDefault;
         @Override
         public void run() {
