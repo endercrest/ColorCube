@@ -2,8 +2,10 @@ package com.endercrest.colorcube.events;
 
 import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.PowerupManager;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
+import com.endercrest.colorcube.game.Powerup;
 import com.endercrest.colorcube.logging.LoggingManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,6 +34,7 @@ public class PlayerMoveListener implements Listener {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
                 if(loc.getBlock().getType() == Material.STAINED_CLAY) {
+                    //Checks if player is on black wool or not
                     if(loc.getBlock().getData() != (byte) 15) {
                         changeBlock(id, loc.getBlock(), teamID);
                     }else{
@@ -51,6 +54,41 @@ public class PlayerMoveListener implements Listener {
                         }
                     }
                 }
+            }
+
+            //Check if at powerup location
+            Game game = GameManager.getInstance().getGame(id);
+            List<Powerup> remove = new ArrayList<Powerup>();
+            if(game.getPowerups().size() > 0) {
+                for (Powerup powerup : game.getPowerups()) {
+                    if(powerup.getLocation().getBlockX() == player.getLocation().getBlockX()){
+                        if(powerup.getLocation().getBlockY() == player.getLocation().getBlockY()){
+                            if(powerup.getLocation().getBlockZ() == player.getLocation().getBlockZ()){
+                                MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + PowerupManager.getInstance().getPowerupName(powerup.getType()));
+                                remove.add(powerup);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            //Remove Powerup and give item to player
+            if(!remove.isEmpty()){
+                for(Powerup pu: remove){
+                    for(int i = 0; i < 9; i++){
+                        if(player.getInventory().getItem(i) == null){
+                            player.getInventory().setItem(i, pu.getType().getItem());
+                            break;
+                        }
+                    }
+                    game.removePowerup(pu);
+                }
+            }
+
+            //
+            if(PowerupManager.getInstance().isPlayerFrozen(player)){
+                player.teleport(player.getLocation());
             }
         }
     }

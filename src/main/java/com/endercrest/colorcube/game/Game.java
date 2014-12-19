@@ -7,10 +7,11 @@ import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
-import com.endercrest.colorcube.game.Arena;
-import com.endercrest.colorcube.game.Lobby;
+import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +30,7 @@ public class Game {
     private List<Player> activePlayers = new ArrayList<Player>();
     private List<Player> spectators = new ArrayList<Player>();
     private ArrayList<Integer>tasks = new ArrayList<Integer>();
+    private List<Powerup> powerups = new ArrayList<Powerup>();
 
     private Arena arena;
     private Lobby lobby;
@@ -44,6 +46,7 @@ public class Game {
     private boolean countdownRunning;
     private boolean timerRunning;
     private int timerTaskID = 0;
+    private int particleTaskID = 0;
     private HashMap<String, String> hookvars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
 
@@ -245,7 +248,7 @@ public class Game {
 
                 activePlayers.add(p);
                 addToTeam(p);
-                msgArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
+                msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
                 if (spawnCount == activePlayers.size()) {
                     countdown(5);
                 }
@@ -254,7 +257,7 @@ public class Game {
             } else {
                 msg.sendFMessage("error.gamefull", p, "arena-" + id);
             }
-            msgArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
+            msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
             //TODO Auto Start
             return true;
         }
@@ -298,7 +301,9 @@ public class Game {
         }
         status = Status.INGAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
+        tasks.add(particleTaskID);
         timerRunning = true;
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
     }
@@ -324,10 +329,10 @@ public class Game {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {
-                            msgArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown","t-"+count);
                         }
                         if (count < 6) {
-                            msgArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown","t-"+count);
                         }
                         count--;
                     } else {
@@ -347,9 +352,9 @@ public class Game {
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         activePlayers.remove(player);
-        msgArena("game.playerleave", "player-" + player.getDisplayName());
+        msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() == 1){
-            msgArena("game.end", "reason-Not enough players");
+            msgFArena("game.end", "reason-Not enough players");
             endGame();
         }
         player.setScoreboard(manager.getNewScoreboard());
@@ -368,6 +373,8 @@ public class Game {
             Bukkit.getScheduler().cancelTask(i);
         }
         tasks.clear();
+
+        powerups.clear();
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
@@ -401,6 +408,7 @@ public class Game {
 
         Bukkit.getScheduler().cancelTask(timerTaskID);
         Bukkit.getScheduler().cancelTask(endgameTaskID);
+        Bukkit.getScheduler().cancelTask(particleTaskID);
         QueueManager.getInstance().rollback(id, false);
     }
     ///////////////////////////////////
@@ -544,6 +552,21 @@ public class Game {
         }
     }
 
+    public byte getTeamBlockByte(int teamId){
+        switch(teamId){
+            case 0:
+                return 14;
+            case 1:
+                return 3;
+            case 2:
+                return 5;
+            case 3:
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
     public boolean isBlockInArena(Location v) {
         return arena.containsBlock(v);
     }
@@ -565,6 +588,8 @@ public class Game {
 
     class GameTimer implements Runnable {
         int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        int powerupDefault = SettingsManager.getInstance().getPluginConfig().getInt("powerup-freq", 15);
+        int powerup = powerupDefault;
         @Override
         public void run() {
             if(counter > 0){
@@ -575,9 +600,121 @@ public class Game {
             }
 
             if(counter <= 10){
-                msgArena("game.time", "time-" + counter);
+                msgFArena("game.time", "time-" + counter);
+            }
+            Random random = new Random();
+            //int randomNum = random.nextInt((50 - 1) + 1) + 1;
+
+            if(powerup == 0){
+                double x;
+                double y;
+                double z;
+                boolean finish = true;
+                while(finish) {
+                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
+                    y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
+                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
+                    Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
+                    Location loc2 = loc.subtract(0, 1, 0);
+                    if(loc2.getBlock().getType() == Material.STAINED_CLAY){
+                        createPowerup(loc, true);
+                        finish = false;
+                    }
+                }
+                powerup = powerupDefault;
+            }else{
+                --powerup;
             }
         }
+    }
+
+    class ParticleTimer implements Runnable {
+        @Override
+        public void run() {
+            if (powerups.size() > 0) {
+                for (Powerup pu : powerups) {
+                    for (Player p : activePlayers) {
+                        ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), activePlayers);
+                    }
+                }
+            }
+        }
+    }
+
+    public Powerup createPowerup(Location location, boolean spawn){
+        Powerup pu = new Powerup(location.add(0,1,0));
+        if(spawn) {
+            powerups.add(pu);
+            msgFArena("game.powerup");
+        }
+        return pu;
+    }
+
+    public Powerup createPowerup(Location location, int type, boolean spawn){
+        Powerup pu = new Powerup(location.add(0,1,0), type);
+        if(spawn) {
+            powerups.add(pu);
+            msgFArena("game.powerup");
+        }
+        return pu;
+    }
+
+    public void changeBlock(Location loc, int team) {
+        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
+            byte data;
+            switch (team) {
+                case 0://Red Team
+                    data = 14;
+                    break;
+                case 1://Blue Team
+                    data = 3;
+                    break;
+                case 2://Green Team
+                    data = 5;
+                    break;
+                case 3://Yellow Team
+                    data = 4;
+                    break;
+                default:
+                    data = 0;
+                    break;
+            }
+            if (loc.getBlock().getData() != data) {
+                switch (loc.getBlock().getData()) {
+                    case 14:
+                        scoreManagement(id, team, 0, 1);
+                        break;
+                    case 3:
+                        scoreManagement(id, team, 1, 1);
+                        break;
+                    case 5:
+                        scoreManagement(id, team, 2, 1);
+                        break;
+                    case 4:
+                        scoreManagement(id, team, 3, 1);
+                        break;
+                    case 0:
+                        scoreManagement(id, team, -1, 1);
+                        break;
+                }
+                LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+                loc.getBlock().setData(data);
+            }
+        }
+    }
+
+    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
+        Game game = GameManager.getInstance().getGame(id);
+        game.increaseScore(teamincrease, amount);
+        game.decreaseScore(teamdecrease, amount);
+    }
+
+    public List<Powerup> getPowerups() {
+        return powerups;
+    }
+
+    public void removePowerup(Powerup powerup){
+        powerups.remove(powerup);
     }
 
     public void setLobbySpawn(int id, Location loc){
@@ -696,12 +833,17 @@ public class Game {
         }
         p.getInventory().setArmorContents(inv);
         p.updateInventory();
-
     }
 
-    public void msgArena(String string, String...args){
+    public void msgFArena(String string, String...args){
         for(Player p: getAllPlayers()){
             msg.sendFMessage(string, p, args);
+        }
+    }
+
+    public void msgArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendMessage(string, p);
         }
     }
 }

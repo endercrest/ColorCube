@@ -184,6 +184,12 @@ public class SettingsManager {
         if(!plugin.getConfig().contains("game-length")){
             plugin.getConfig().addDefault("game-length", 600);
         }
+        if(!plugin.getConfig().contains("update-checker")){
+            plugin.getConfig().addDefault("update-checker", true);
+        }
+        if(!plugin.getConfig().contains("powerup-freq")){
+            plugin.getConfig().addDefault("powerup-freq", 15);
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }

@@ -1,7 +1,6 @@
 name: ${project.name}
 main: com.endercrest.colorcube.ColorCube
 version: ${project.version}
-website: ${project.url}
 description: ColorCube is a minigame.
 authors: [tcvs]
 depend: [WorldEdit]

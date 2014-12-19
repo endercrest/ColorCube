@@ -6,7 +6,7 @@
 
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
-    <version>0.1.6-SNAPSHOT</version>
+    <version>0.2.0-BETA</version>
     <developers>
         <developer>
             <id>endercrest</id>
@@ -30,6 +30,10 @@
         <repository>
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>http://repo.md-5.net/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>

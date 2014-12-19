@@ -3,6 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -53,6 +54,7 @@ public class ColorCube extends JavaPlugin {
             LobbyManager.getInstance().setup(p);
             GameManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
+            PowerupManager.getInstance().setup(p);
 
             pm.registerEvents(new PlayerMoveListener(), p);
             pm.registerEvents(new PlayerRespawnListener(), p);
@@ -61,10 +63,16 @@ public class ColorCube extends JavaPlugin {
             pm.registerEvents(new PlayerPlaceListener(), p);
             pm.registerEvents(new PlayerFallListener(), p);
             pm.registerEvents(new PlayerLeaveListener(), p);
+            pm.registerEvents(new PlayerRightClickListener(), p);
+            pm.registerEvents(new PlayerInventoryListener(), p);
 
             loadDependencies();
             getCommand("colorcube").setExecutor(new CommandHandler(p));
             MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest enabled");
+
+            if(SettingsManager.getInstance().getPluginConfig().getBoolean("update-checker")){
+                Update update = new Update(87360);
+            }
         }
     }
 
