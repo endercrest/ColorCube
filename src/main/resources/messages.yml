@@ -43,6 +43,7 @@ messages:
         createlobby: '&6Lobby created for Arena {$arena}'
         spawnset: '&6Spawn {$num} set in Arena {$arena}'
         lobbyspawn: '&6Lobby has been set.'
+        setspawnusage: '&6Usage: /cc setspawn <id/next>'
     help:
         createarena: 'Create a new arena.'
         deletearena: 'Delete an arena.'
