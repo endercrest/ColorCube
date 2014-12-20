@@ -33,28 +33,31 @@ public class SetSpawn implements SubCommand {
             MessageManager.getInstance().sendFMessage("error.notinarena", p);
             return true;
         }
-
-        int i = 0;
-        if(args[0].equalsIgnoreCase("next")){
-            i = next.get(id);
-            next.put(id, next.get(id));
-        }else{
-            try{
-                i = Integer.parseInt(args[0]);
-                if(i>next.get(id)+1 || i<1){
-                    MessageManager.getInstance().sendFMessage("error.between", p, "num-" + next.get(id));
+        if(args.length == 1) {
+            int i = 0;
+            if (args[0].equalsIgnoreCase("next")) {
+                i = next.get(id);
+                next.put(id, next.get(id));
+            } else {
+                try {
+                    i = Integer.parseInt(args[0]);
+                    if (i > next.get(id) + 1 || i < 1) {
+                        MessageManager.getInstance().sendFMessage("error.between", p, "num-" + next.get(id));
+                        return true;
+                    }
+                    if (i == next.get(id)) {
+                        next.put(id, next.get(id) + 1);
+                    }
+                } catch (Exception e) {
+                    MessageManager.getInstance().sendFMessage("error.badinput", p);
                     return true;
                 }
-                if(i == next.get(id)){
-                    next.put(id, next.get(id)+1);
-                }
-            }catch(Exception e){
-                MessageManager.getInstance().sendFMessage("error.badinput", p);
-                return true;
             }
+            SettingsManager.getInstance().setSpawn(id, i, loc);
+            MessageManager.getInstance().sendFMessage("info.spawnset", p, "num-" + i, "arena-" + id);
+        }else{
+            MessageManager.getInstance().sendFMessage("info.setspawnusage", p);
         }
-        SettingsManager.getInstance().setSpawn(id, i, loc);
-        MessageManager.getInstance().sendFMessage("info.spawnset", p, "num-" + i, "arena-" + id);
         return true;
     }
 
