@@ -1,9 +1,6 @@
 package com.endercrest.colorcube.game;
 
-import com.endercrest.colorcube.ColorCube;
-import com.endercrest.colorcube.GameManager;
-import com.endercrest.colorcube.MessageManager;
-import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
@@ -375,6 +372,7 @@ public class Game {
         tasks.clear();
 
         powerups.clear();
+        PowerupManager.getInstance().removeFrozenPlayers(activePlayers);
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
