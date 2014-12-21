@@ -4,7 +4,6 @@ import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.game.Game;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ListArenas implements SubCommand {
@@ -12,21 +11,18 @@ public class ListArenas implements SubCommand {
     public boolean onCommand(Player p, String[] args) {
         StringBuilder arenas = new StringBuilder();
         try{
-            if(args.length == 0 || Integer.parseInt(args[0]) < 0 || Integer.parseInt(args[0]) > GameManager.getInstance().getGameCount()){
-                MessageManager.getInstance().sendFMessage("error.gamenoexist", p);
-            }
-            if (GameManager.getInstance().getGames().isEmpty()) {
-                arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.noarenas", "No arenas")).append(": ");
-                p.sendMessage(ChatColor.RED + arenas.toString());
+            if(GameManager.getInstance().getGames().isEmpty()){
+                arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.noarenas", "No arenas"));
+                MessageManager.getInstance().sendMessage("&c" + arenas.toString(), p);
                 return true;
             }
-            arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.noarenas", "Arenas")).append(": ");
-            for (Game g : GameManager.getInstance().getGames()) {
+            arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.arenas", "Arenas")).append(": ");
+            for(Game g: GameManager.getInstance().getGames()){
                 arenas.append(g.getGameID()).append(", ");
             }
-            p.sendMessage(ChatColor.GREEN + arenas.toString());
-        }catch(Exception e){
-            MessageManager.getInstance().sendFMessage("error.gamenoexist", p);
+            MessageManager.getInstance().sendMessage("&6" + arenas.toString(), p);
+        }catch (Exception e){
+            MessageManager.getInstance().sendFMessage("error.gamenotexist", p);
         }
         return true;
     }
