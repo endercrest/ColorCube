@@ -3,6 +3,7 @@ package com.endercrest.colorcube.events;
 import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,16 +24,11 @@ public class PlayerRespawnListener implements Listener {
             id = GameManager.getInstance().getPlayerGameID(p);
             for(int i: GameManager.getInstance().getGame(id).getSpawns().keySet()){
                 spawnID = i;
-                event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(id, spawnID));
-                /*if(GameManager.getInstance().getGame(id).getSpawns().get(i) == p){
-                    BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-                    scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
-                        @Override
-                        public void run() {
-                            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, spawnID));
-                        }
-                    }, 1L);
-                }*/
+                if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
+                    event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(id, spawnID));
+                }else if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.LOBBY || GameManager.getInstance().getGame(id).getStatus() == Game.Status.STARTING){
+                    event.setRespawnLocation(GameManager.getInstance().getGame(id).getLobbySpawn());
+                }
             }
         }
     }

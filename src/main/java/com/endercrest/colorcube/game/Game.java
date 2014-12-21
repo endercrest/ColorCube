@@ -639,6 +639,13 @@ public class Game {
         }
     }
 
+    public Location getLobbySpawn(){
+        if(lobby.isSpawnSet()){
+            return lobby.getSpawn();
+        }
+        return null;
+    }
+
     public Powerup createPowerup(Location location, boolean spawn){
         Powerup pu = new Powerup(location.add(0,1,0));
         if(spawn) {
