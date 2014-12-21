@@ -111,6 +111,10 @@ public class GameManager {
         msg.sendFMessage("info.create", p, "arena-" + id);
     }
 
+    public int getGameCount(){
+        return games.size();
+    }
+
     public Game.Status getStatus(int a) {
         for (Game g: games) {
             if (g.getGameID() == a) {
