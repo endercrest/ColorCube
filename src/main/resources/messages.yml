@@ -19,6 +19,7 @@ messages:
         badinput: '&cInput must be "next" or a number'
         between: '&cSpawn must be between 1 & {$num}.'
         nolobby: '&cThat arena has no lobby'
+        gamenotexist: "&cGame doesn't exist!"
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -44,6 +45,9 @@ messages:
         spawnset: '&6Spawn {$num} set in Arena {$arena}'
         lobbyspawn: '&6Lobby has been set.'
         setspawnusage: '&6Usage: /cc setspawn <id/next>'
+    words:
+        noarenas: "No arenas"
+        arenas: "Arenas"
     help:
         createarena: 'Create a new arena.'
         deletearena: 'Delete an arena.'
@@ -58,6 +62,7 @@ messages:
         forcestart: 'Force start a game'
         setspawn: 'Set the spawn in a arena'
         resetspawns: 'Reset all the spawns in the arena.'
+        arenalist: 'List of arenas'
     color:
         red: 'red'
         green: 'green'
