@@ -31,7 +31,7 @@ public class Swap implements SubPowerup {
                 Location loc2 = new Location(arena.getPos1().getWorld(), x, y, z).subtract(0,1,0);
                 if(loc2.getBlock().getType() == Material.STAINED_CLAY){
                     if(loc.getBlock().getType() == Material.AIR) {
-                        if (loc.getBlock().getData() != (byte) 15) {
+                        if (loc2.getBlock().getData() != (byte) 15) {
                             if (loc2.getBlock().getData() != g.getTeamBlockByte(g.getTeamID(p))) {
                                 g.changeBlock(loc2, g.getTeamID(p));
                                 finish = true;

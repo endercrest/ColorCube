@@ -235,7 +235,7 @@ public class Game {
                 Bukkit.getServer().getPluginManager().callEvent(joinarena);
                 p.setGameMode(GameMode.SURVIVAL);
                 p.setFallDistance(0);
-                p.teleport(lobby.getSpawn());
+                p.teleport(lobby.getSpawn().add(0.5, 0, 0.5));
                 saveInv(p);
                 clearInv(p);
                 p.setHealth(p.getMaxHealth());
@@ -285,7 +285,7 @@ public class Game {
                 for(int i = 1; i <= spawnCount; i++){
                     if(spawns.get(i) == null){
                         spawns.put(i, p);
-                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i).add(0.5, 0, 0.5));
                         clearInv(p);
                         p.setGameMode(GameMode.SURVIVAL);
                         p.setHealth(p.getMaxHealth());
