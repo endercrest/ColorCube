@@ -39,7 +39,7 @@ public class Swap implements SubPowerup {
                         }
                     }
                 }
-                if(attempt == 10){
+                if(attempt == 50){
                     finish = true;
                     MessageManager.getInstance().debugConsole("Could Not swap block failed after 5 tries.");
                 }

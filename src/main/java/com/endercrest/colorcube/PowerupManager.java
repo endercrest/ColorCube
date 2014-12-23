@@ -104,9 +104,9 @@ public class PowerupManager {
     }
 
     public void removeFrozenPlayers(List<Player> players){
-        for(Player p: players){
-            frozenPlayers.remove(p);
-        }
+        for(Player p: players)
+            if(frozenPlayers.contains(p))
+                frozenPlayers.remove(p);
     }
 
     public boolean isPlayerFrozen(Player p){
