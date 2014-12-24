@@ -608,6 +608,7 @@ public class Game {
                 double y;
                 double z;
                 boolean finish = true;
+                int attempt = 0;
                 while(finish) {
                     x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
@@ -618,6 +619,10 @@ public class Game {
                         createPowerup(loc, true);
                         finish = false;
                     }
+                    if(attempt == 50){
+                        finish = true;
+                    }
+                    attempt++;
                 }
                 powerup = powerupDefault;
             }else{
