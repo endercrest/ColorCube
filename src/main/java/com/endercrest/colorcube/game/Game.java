@@ -620,7 +620,7 @@ public class Game {
                         finish = false;
                     }
                     if(attempt == 50){
-                        finish = true;
+                        finish = false;
                     }
                     attempt++;
                 }
