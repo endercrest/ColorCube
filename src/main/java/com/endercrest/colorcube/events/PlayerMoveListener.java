@@ -34,26 +34,23 @@ public class PlayerMoveListener implements Listener {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
                 if(loc.getBlock().getType() == Material.STAINED_CLAY) {
-                    //Check if player is inside of arena
-                    if(GameManager.getInstance().getBlockGameId(loc) != -1) {
-                        //Checks if player is on black wool or not
-                        if (loc.getBlock().getData() != (byte) 15) {
-                            changeBlock(id, loc.getBlock(), teamID);
-                        } else {
-                            if (!black.contains(player)) {
-                                loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 0F, false, false);
-                                Random random = new Random();
-                                player.setVelocity(new Vector(random.nextDouble(), random.nextDouble() * 2, random.nextDouble()));
-                                black.add(player);
-                                player.setFallDistance(0);
-                                BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-                                scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        black.remove(player);
-                                    }
-                                }, 20L);
-                            }
+                    //Checks if player is on black wool or not
+                    if(loc.getBlock().getData() != (byte) 15) {
+                        changeBlock(id, loc.getBlock(), teamID);
+                    }else{
+                        if(!black.contains(player)) {
+                            loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 0F, false, false);
+                            Random random = new Random();
+                            player.setVelocity(new Vector(random.nextDouble(), random.nextDouble() * 2, random.nextDouble()));
+                            black.add(player);
+                            player.setFallDistance(0);
+                            BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+                            scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    black.remove(player);
+                                }
+                            }, 20L);
                         }
                     }
                 }
