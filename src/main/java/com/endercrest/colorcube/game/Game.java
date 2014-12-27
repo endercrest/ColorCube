@@ -235,7 +235,7 @@ public class Game {
                 Bukkit.getServer().getPluginManager().callEvent(joinarena);
                 p.setGameMode(GameMode.SURVIVAL);
                 p.setFallDistance(0);
-                p.teleport(lobby.getSpawn().add(0.5, 0, 0.5));
+                p.teleport(lobby.getSpawn());
                 saveInv(p);
                 clearInv(p);
                 p.setHealth(p.getMaxHealth());
@@ -285,7 +285,7 @@ public class Game {
                 for(int i = 1; i <= spawnCount; i++){
                     if(spawns.get(i) == null){
                         spawns.put(i, p);
-                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i).add(0.5, 0, 0.5));
+                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
                         clearInv(p);
                         p.setGameMode(GameMode.SURVIVAL);
                         p.setHealth(p.getMaxHealth());
@@ -415,7 +415,13 @@ public class Game {
     public void winGame(){
         if(status == Status.INGAME) {
             String team = scoreResults();
-            TeamWinEvent tw = new TeamWinEvent(getTeam(team).getPlayers(), team);
+            Set<OfflinePlayer> players;
+            if(!team.equals("None")) {
+                players = getTeam(team).getPlayers();
+            }else{
+                players = new HashSet<OfflinePlayer>();
+            }
+            TeamWinEvent tw = new TeamWinEvent(players, team);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -584,6 +590,10 @@ public class Game {
         else status = Status.DISABLED;
     }
 
+    ///////////////////////////////////
+    ///         Game Timer          ///
+    ///////////////////////////////////
+
     class GameTimer implements Runnable {
         int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
         int powerupDefault = SettingsManager.getInstance().getPluginConfig().getInt("powerup-freq", 15);
@@ -608,7 +618,7 @@ public class Game {
                 double y;
                 double z;
                 boolean finish = true;
-                int attempt = 0;
+                int attempt = 1;
                 while(finish) {
                     x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
@@ -619,10 +629,13 @@ public class Game {
                         createPowerup(loc, true);
                         finish = false;
                     }
+
                     if(attempt == 50){
+                        MessageManager.getInstance().debugConsole("Could not spawn powerup.");
                         finish = false;
+                    }else {
+                        attempt++;
                     }
-                    attempt++;
                 }
                 powerup = powerupDefault;
             }else{
@@ -727,8 +740,8 @@ public class Game {
         powerups.remove(powerup);
     }
 
-    public void setLobbySpawn(int id, Location loc){
-        lobby.setSpawn(id, loc);
+    public void setLobbySpawn(int id, World world, int x, int y, int z){
+        lobby.setSpawn(id, new Location(world, x, y, z));
     }
 
     public boolean isPlayerActive(Player player) {

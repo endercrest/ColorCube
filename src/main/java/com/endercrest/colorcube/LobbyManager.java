@@ -49,6 +49,6 @@ public class LobbyManager {
     }
 
     public void setLobbySpawn(int id, Location loc){
-        GameManager.getInstance().getGame(id).setLobbySpawn(id, loc);
+        GameManager.getInstance().getGame(id).setLobbySpawn(id, loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 }
