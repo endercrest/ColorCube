@@ -8,7 +8,6 @@ import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,27 +23,26 @@ public class Game {
     }
 
     private Status status = Status.DISABLED;
-    private List<Player> activePlayers = new ArrayList<Player>();
-    private List<Player> spectators = new ArrayList<Player>();
-    private ArrayList<Integer>tasks = new ArrayList<Integer>();
-    private List<Powerup> powerups = new ArrayList<Powerup>();
+    private List<Player> activePlayers = new ArrayList<>();
+    private List<Player> spectators = new ArrayList<>();
+    private ArrayList<Integer>tasks = new ArrayList<>();
+    private List<Powerup> powerups = new ArrayList<>();
 
     private Arena arena;
     private Lobby lobby;
     private Integer id;
     private FileConfiguration config;
     private FileConfiguration system;
-    private HashMap<Integer, Player> spawns = new HashMap<Integer, Player>();
-    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<Player, ItemStack[][]>();
+    private HashMap<Integer, Player> spawns = new HashMap<>();
+    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
     private int spawnCount = 0;
     private boolean disabled = false;
     private int endgameTaskID = 0;
     private boolean endgameRunning = false;
     private boolean countdownRunning;
-    private boolean timerRunning;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
-    private HashMap<String, String> hookvars = new HashMap<String, String>();
+    private HashMap<String, String> hookVars = new HashMap<>();
     private MessageManager msg = MessageManager.getInstance();
 
     Team red;
@@ -116,9 +114,9 @@ public class Game {
 
         loadspawns();
 
-        hookvars.put("arena", id + "");
-        hookvars.put("maxplayers", spawnCount + "");
-        hookvars.put("activeplayers", "0");
+        hookVars.put("arena", id + "");
+        hookVars.put("maxplayers", spawnCount + "");
+        hookVars.put("activeplayers", "0");
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -301,7 +299,6 @@ public class Game {
         particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
-        timerRunning = true;
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
     }
 
@@ -401,7 +398,6 @@ public class Game {
 
         status = Status.RESETING;
         endgameRunning = false;
-        timerRunning = false;
         spawns.clear();
 
         Bukkit.getScheduler().cancelTask(timerTaskID);
@@ -814,7 +810,7 @@ public class Game {
     }
 
     public HashMap<String, String> getHookvars() {
-        return hookvars;
+        return hookVars;
     }
 
     public ArrayList < Player > getAllPlayers() {

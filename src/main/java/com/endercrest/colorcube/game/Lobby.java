@@ -50,7 +50,7 @@ public class Lobby {
                 system.getInt("lobby." + id + ".y"),
                 system.getInt("lobby." + id + ".z"),
                 system.getInt("lobby." + id + ".yaw"),
-                system.getInt("lobby." + id + ".pitch"));
+                system.getInt("lobby." + id + ".pitch")).add(0.5, 0, 0.5);
     }
 
     public void setSpawn(int id, Location location){
@@ -61,12 +61,11 @@ public class Lobby {
         SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".yaw", location.getYaw());
         SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".pitch", location.getPitch());
         SettingsManager.getInstance().saveSystemConfig();
-        spawn = location;
+        spawn = location.add(0.5, 0, 0.5);
     }
 
     public Location getSpawn(){
-        Location loc = spawn;
-        return loc.add(0.5, 1, 0.5);
+        return spawn;
     }
 
     public boolean isSpawnSet(){
