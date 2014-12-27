@@ -35,7 +35,6 @@ public class Arena {
         double x = pos.getX();
         double y = pos.getY();
         double z = pos.getZ();
-        MessageManager.getInstance().debugConsole("X:" + x + " Y:" + y + " Z:" + z + " World:" + pos.getWorld().getName());
         return x >= pos2.getBlockX() && x < pos1.getBlockX() + 1 && y >= pos2.getBlockY() && y < pos1.getBlockY() + 1 && z >= pos2.getBlockZ() && z < pos1.getBlockZ() + 1;
     }
 }

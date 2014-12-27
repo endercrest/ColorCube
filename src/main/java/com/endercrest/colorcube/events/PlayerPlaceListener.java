@@ -8,9 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-/**
- * Created by Thomas on 11/29/2014.
- */
 public class PlayerPlaceListener implements Listener {
 
     @EventHandler
