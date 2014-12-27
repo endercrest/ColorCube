@@ -415,7 +415,13 @@ public class Game {
     public void winGame(){
         if(status == Status.INGAME) {
             String team = scoreResults();
-            TeamWinEvent tw = new TeamWinEvent(getTeam(team).getPlayers(), team);
+            Set<OfflinePlayer> players;
+            if(!team.equals("None")) {
+                players = getTeam(team).getPlayers();
+            }else{
+                players = new HashSet<OfflinePlayer>();
+            }
+            TeamWinEvent tw = new TeamWinEvent(players, team);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
