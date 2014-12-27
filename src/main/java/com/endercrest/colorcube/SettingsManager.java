@@ -221,7 +221,7 @@ public class SettingsManager {
                 system.getInt("spawns." + gameid + "." + spawnid + ".y"),
                 system.getInt("spawns." + gameid + "." + spawnid + ".z"),
                 (float)system.getDouble("spawns." + gameid + "." + spawnid + ".yaw"),
-                (float)system.getDouble("spawns." + gameid + "." + spawnid + ".pitch"));
+                (float)system.getDouble("spawns." + gameid + "." + spawnid + ".pitch")).add(0.5, 0, 0.5);
     }
 
     /**
@@ -235,7 +235,7 @@ public class SettingsManager {
                     system.getInt("lobby.global.y"),
                     system.getInt("lobby.global.z"),
                     system.getInt("lobby.global.yaw"),
-                    system.getInt("lobby.global.pitch"));
+                    system.getInt("lobby.global.pitch")).add(0.5, 0, 0.5);
         }catch(Exception e){
             return null;
         }

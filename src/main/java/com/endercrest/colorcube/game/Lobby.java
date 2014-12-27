@@ -65,7 +65,8 @@ public class Lobby {
     }
 
     public Location getSpawn(){
-        return spawn;
+        Location loc = spawn;
+        return loc.add(0.5, 1, 0.5);
     }
 
     public boolean isSpawnSet(){
