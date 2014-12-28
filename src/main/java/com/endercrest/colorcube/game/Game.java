@@ -438,11 +438,11 @@ public class Game {
     }
 
     public void addToTeam(Player player){
-        if(red.getSize() <= blue.getSize() && red.getSize() <= green.getSize() && red.getSize() <= yellow.getSize()){
+        if(red.getSize() <= blue.getSize()){
             red.addPlayer(player);
             return;
         }
-        if(blue.getSize() <= green.getSize() && blue.getSize() <= yellow.getSize()){
+        if(blue.getSize() <= green.getSize()){
             blue.addPlayer(player);
             return;
         }
