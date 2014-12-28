@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class SettingsManager {
 
@@ -189,6 +190,9 @@ public class SettingsManager {
         }
         if(!plugin.getConfig().contains("powerup-freq")){
             plugin.getConfig().addDefault("powerup-freq", 15);
+        }
+        if(!plugin.getConfig().contains("command-whitelist")){
+            plugin.getConfig().addDefault("command-whitelist", new ArrayList<String>());
         }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
