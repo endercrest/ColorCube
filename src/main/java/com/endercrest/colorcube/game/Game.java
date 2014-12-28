@@ -23,18 +23,18 @@ public class Game {
     }
 
     private Status status = Status.DISABLED;
-    private List<Player> activePlayers = new ArrayList<>();
-    private List<Player> spectators = new ArrayList<>();
-    private ArrayList<Integer>tasks = new ArrayList<>();
-    private List<Powerup> powerups = new ArrayList<>();
+    private List<Player> activePlayers = new ArrayList<Player>();
+    private List<Player> spectators = new ArrayList<Player>();
+    private ArrayList<Integer>tasks = new ArrayList<Integer>();
+    private List<Powerup> powerups = new ArrayList<Powerup>();
 
     private Arena arena;
     private Lobby lobby;
     private Integer id;
     private FileConfiguration config;
     private FileConfiguration system;
-    private HashMap<Integer, Player> spawns = new HashMap<>();
-    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
+    private HashMap<Integer, Player> spawns = new HashMap<Integer, Player>();
+    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<Player, ItemStack[][]>();
     private int spawnCount = 0;
     private boolean disabled = false;
     private int endgameTaskID = 0;
@@ -42,7 +42,7 @@ public class Game {
     private boolean countdownRunning;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
-    private HashMap<String, String> hookVars = new HashMap<>();
+    private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
 
     Team red;
@@ -438,11 +438,11 @@ public class Game {
     }
 
     public void addToTeam(Player player){
-        if(red.getSize() <= blue.getSize()){
+        if(red.getSize() <= blue.getSize() && red.getSize() <= green.getSize() && red.getSize() <= yellow.getSize()){
             red.addPlayer(player);
             return;
         }
-        if(blue.getSize() <= green.getSize()){
+        if(blue.getSize() <= green.getSize() && blue.getSize() <= yellow.getSize()){
             blue.addPlayer(player);
             return;
         }
