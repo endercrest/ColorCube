@@ -253,7 +253,13 @@ public class Game {
                 msg.sendFMessage("error.gamefull", p, "arena-" + id);
             }
             msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
-            //TODO Auto Start
+            if(!countdownRunning){
+                float startMin = (float)SettingsManager.getInstance().getPluginConfig().getDouble("auto-start", 0.75);
+                float start = (float) activePlayers.size()/SettingsManager.getInstance().getSpawnCount(id);
+                if(start >= startMin){
+                    countdown(20);
+                }
+            }
             return true;
         }
         if(status == Status.INGAME)

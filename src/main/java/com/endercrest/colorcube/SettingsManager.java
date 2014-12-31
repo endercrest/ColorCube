@@ -194,6 +194,9 @@ public class SettingsManager {
         if(!plugin.getConfig().contains("command-whitelist")){
             plugin.getConfig().addDefault("command-whitelist", new ArrayList<String>());
         }
+        if(!plugin.getConfig().contains("auto-start")){
+            plugin.getConfig().addDefault("auto-start", 0.75);
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
