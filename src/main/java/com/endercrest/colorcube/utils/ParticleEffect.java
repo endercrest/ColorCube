@@ -1,18 +1,21 @@
 package com.endercrest.colorcube.utils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
+        import java.lang.reflect.Constructor;
+        import java.lang.reflect.Field;
+        import java.lang.reflect.Method;
+        import java.util.Arrays;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
+        import java.util.Map.Entry;
+
+        import org.bukkit.Bukkit;
+        import org.bukkit.Location;
+        import org.bukkit.Material;
+        import org.bukkit.entity.Player;
+        import org.bukkit.util.Vector;
 
 /**
  * <b>ParticleEffect Library</b>
@@ -426,7 +429,7 @@ public enum ParticleEffect {
      * @param name Name of this particle effect
      * @param id Id of this particle effect
      * @param requiredVersion Version which is required (1.x)
-     * @see //#ParticleEffect(String, int, boolean)
+     * @see #//ParticleEffect(String, int, boolean)
      */
     private ParticleEffect(String name, int id, int requiredVersion) {
         this(name, id, requiredVersion, false);
@@ -540,12 +543,23 @@ public enum ParticleEffect {
      */
     private static boolean isLongDistance(Location location, List<Player> players) {
         for (Player player : players) {
-            if (player.getLocation().distance(location) < 256) {
+            if (player.getLocation().distanceSquared(location) < 65536) {
                 continue;
             }
             return true;
         }
         return false;
+    }
+
+    /**
+     * Determine if the data type for a particle effect is correct
+     *
+     * @param effect Particle effect
+     * @param data Particle data
+     * @return Whether the data type is correct or not
+     */
+    private static boolean isDataCorrect(ParticleEffect effect, ParticleData data) {
+        return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && data instanceof BlockData) || effect == ITEM_CRACK && data instanceof ItemData;
     }
 
     /**
@@ -607,6 +621,25 @@ public enum ParticleEffect {
     }
 
     /**
+     * Displays a particle effect which is only visible for the specified players
+     *
+     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
+     * @param speed Display speed of the particles
+     * @param amount Amount of particles
+     * @param center Center location of the effect
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleDataException If the particle effect requires additional data
+     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
+     * @see #display(float, float, float, float, int, Location, List)
+     */
+    public void display(float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Player... players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
+        display(offsetX, offsetY, offsetZ, speed, amount, center, Arrays.asList(players));
+    }
+
+    /**
      * Displays a single particle which flies into a determined direction and is only visible for all players within a certain range in the world of @param center
      *
      * @param direction Direction of the particle
@@ -659,6 +692,22 @@ public enum ParticleEffect {
     }
 
     /**
+     * Displays a single particle which flies into a determined direction and is only visible for the specified players
+     *
+     * @param direction Direction of the particle
+     * @param speed Display speed of the particle
+     * @param center Center location of the effect
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleDataException If the particle effect requires additional data
+     * @throws IllegalArgumentException If the particle effect requires water and none is at the center location
+     * @see #display(Vector, float, Location, List)
+     */
+    public void display(Vector direction, float speed, Location center, Player... players) throws ParticleVersionException, ParticleDataException, IllegalArgumentException {
+        display(direction, speed, center, Arrays.asList(players));
+    }
+
+    /**
      * Displays a particle effect which requires additional data and is only visible for all players within a certain range in the world of @param center
      *
      * @param data Data of the effect
@@ -670,7 +719,7 @@ public enum ParticleEffect {
      * @param center Center location of the effect
      * @param range Range of the visibility
      * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
      * @see ParticlePacket
      * @see ParticlePacket#sendTo(Location, double)
      */
@@ -680,6 +729,9 @@ public enum ParticleEffect {
         }
         if (!requiresData) {
             throw new ParticleDataException("This particle effect does not require additional data");
+        }
+        if (!isDataCorrect(this, data)) {
+            throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, offsetX, offsetY, offsetZ, speed, amount, range > 256, data).sendTo(center, range);
     }
@@ -696,7 +748,7 @@ public enum ParticleEffect {
      * @param center Center location of the effect
      * @param players Receivers of the effect
      * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
      * @see ParticlePacket
      * @see ParticlePacket#sendTo(Location, List)
      */
@@ -707,7 +759,29 @@ public enum ParticleEffect {
         if (!requiresData) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
+        if (!isDataCorrect(this, data)) {
+            throw new ParticleDataException("The particle data type is incorrect");
+        }
         new ParticlePacket(this, offsetX, offsetY, offsetZ, speed, amount, isLongDistance(center, players), data).sendTo(center, players);
+    }
+
+    /**
+     * Displays a particle effect which requires additional data and is only visible for the specified players
+     *
+     * @param data Data of the effect
+     * @param offsetX Maximum distance particles can fly away from the center on the x-axis
+     * @param offsetY Maximum distance particles can fly away from the center on the y-axis
+     * @param offsetZ Maximum distance particles can fly away from the center on the z-axis
+     * @param speed Display speed of the particles
+     * @param amount Amount of particles
+     * @param center Center location of the effect
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
+     * @see #display(ParticleData, float, float, float, float, int, Location, List)
+     */
+    public void display(ParticleData data, float offsetX, float offsetY, float offsetZ, float speed, int amount, Location center, Player... players) throws ParticleVersionException, ParticleDataException {
+        display(data, offsetX, offsetY, offsetZ, speed, amount, center, Arrays.asList(players));
     }
 
     /**
@@ -719,7 +793,7 @@ public enum ParticleEffect {
      * @param center Center location of the effect
      * @param range Range of the visibility
      * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
      * @see ParticlePacket
      * @see ParticlePacket#sendTo(Location, double)
      */
@@ -729,6 +803,9 @@ public enum ParticleEffect {
         }
         if (!requiresData) {
             throw new ParticleDataException("This particle effect does not require additional data");
+        }
+        if (!isDataCorrect(this, data)) {
+            throw new ParticleDataException("The particle data type is incorrect");
         }
         new ParticlePacket(this, direction, speed, range > 256, data).sendTo(center, range);
     }
@@ -742,7 +819,7 @@ public enum ParticleEffect {
      * @param center Center location of the effect
      * @param players Receivers of the effect
      * @throws ParticleVersionException If the particle effect is not supported by the server version
-     * @throws ParticleDataException If the particle effect does not require additional data
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
      * @see ParticlePacket
      * @see ParticlePacket#sendTo(Location, List)
      */
@@ -753,7 +830,26 @@ public enum ParticleEffect {
         if (!requiresData) {
             throw new ParticleDataException("This particle effect does not require additional data");
         }
+        if (!isDataCorrect(this, data)) {
+            throw new ParticleDataException("The particle data type is incorrect");
+        }
         new ParticlePacket(this, direction, speed, isLongDistance(center, players), data).sendTo(center, players);
+    }
+
+    /**
+     * Displays a single particle which requires additional data that flies into a determined direction and is only visible for the specified players
+     *
+     * @param data Data of the effect
+     * @param direction Direction of the particle
+     * @param speed Display speed of the particles
+     * @param center Center location of the effect
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleDataException If the particle effect does not require additional data or if the data type is incorrect
+     * @see #display(ParticleData, Vector, float, Location, List)
+     */
+    public void display(ParticleData data, Vector direction, float speed, Location center, Player... players) throws ParticleVersionException, ParticleDataException {
+        display(data, direction, speed, center, Arrays.asList(players));
     }
 
     /**
@@ -866,7 +962,7 @@ public enum ParticleEffect {
     }
 
     /**
-     * Represents a runtime exception that is thrown if the displayed particle effect requires data and has none or vice-versa
+     * Represents a runtime exception that is thrown either if the displayed particle effect requires data and has none or vice-versa or if the data type is wrong
      * <p>
      * This class is part of the <b>ParticleEffect Library</b> and follows the same usage conditions
      *
@@ -1051,10 +1147,7 @@ public enum ParticleEffect {
                     packet = packetConstructor.newInstance();
                     Object id;
                     if (version < 8) {
-                        id = effect.getName();
-                        if (data != null) {
-                            id = id + data.getPacketDataString();
-                        }
+                        id = effect.getName() + (data == null ? "" : data.getPacketDataString());
                     } else {
                         id = enumParticle.getEnumConstants()[effect.getId()];
                     }
