@@ -17,7 +17,7 @@ public class SettingsManager {
     private FileConfiguration messages;
     private FileConfiguration system;
 
-    private static final int MESSAGE_VERSION = 0;
+    private static final int MESSAGE_VERSION = 1;
     private static final int SYSTEM_VERSION = 0;
 
     //Systems file
