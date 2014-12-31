@@ -191,6 +191,7 @@ public class Game {
             } catch (Exception e) {}
         }
         endGame();
+        status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
     }
 

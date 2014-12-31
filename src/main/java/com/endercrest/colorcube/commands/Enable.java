@@ -25,7 +25,7 @@ public class Enable implements SubCommand {
                 return true;
             } else {
                 Game game = GameManager.getInstance().getGame(Integer.parseInt(args[0]));
-                game.disable();
+                game.enable();
 
                 MessageManager.getInstance().sendFMessage("game.state", p, "state-enabled");
             }
