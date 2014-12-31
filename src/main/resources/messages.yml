@@ -67,6 +67,7 @@ messages:
         setspawn: 'Set the spawn in a arena'
         resetspawns: 'Reset all the spawns in the arena.'
         arenalist: 'List of arenas'
+        vote: 'Vote to start the game'
     color:
         red: 'red'
         green: 'green'

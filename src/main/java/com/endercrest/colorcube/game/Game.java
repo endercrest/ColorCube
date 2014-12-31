@@ -296,7 +296,7 @@ public class Game {
         msgFArena("game.playervote", "player-" + p.getDisplayName());
         msgFArena("game.voteamount", "percent-" + Math.round((voted.size()/activePlayers.size())*100));
 
-        if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start")){
+        if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start") && activePlayers.size() > 1){
             countdown(20);
         }
     }
