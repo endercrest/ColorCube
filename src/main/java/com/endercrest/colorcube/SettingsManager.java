@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class SettingsManager {
 
@@ -16,7 +17,7 @@ public class SettingsManager {
     private FileConfiguration messages;
     private FileConfiguration system;
 
-    private static final int MESSAGE_VERSION = 0;
+    private static final int MESSAGE_VERSION = 1;
     private static final int SYSTEM_VERSION = 0;
 
     //Systems file
@@ -189,6 +190,15 @@ public class SettingsManager {
         }
         if(!plugin.getConfig().contains("powerup-freq")){
             plugin.getConfig().addDefault("powerup-freq", 15);
+        }
+        if(!plugin.getConfig().contains("command-whitelist")){
+            plugin.getConfig().addDefault("command-whitelist", new ArrayList<String>());
+        }
+        if(!plugin.getConfig().contains("auto-start")){
+            plugin.getConfig().addDefault("auto-start", 0.75);
+        }
+        if(!plugin.getConfig().contains("vote-start")){
+            plugin.getConfig().addDefault("vote-start", 0.5);
         }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();

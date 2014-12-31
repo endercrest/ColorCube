@@ -45,6 +45,8 @@ public class Game {
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
 
+    private List<Player> voted = new ArrayList<Player>();
+
     Team red;
     Team blue;
     Team green;
@@ -189,6 +191,7 @@ public class Game {
             } catch (Exception e) {}
         }
         endGame();
+        status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
     }
 
@@ -253,7 +256,13 @@ public class Game {
                 msg.sendFMessage("error.gamefull", p, "arena-" + id);
             }
             msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
-            //TODO Auto Start
+            if(!countdownRunning){
+                float startMin = (float)SettingsManager.getInstance().getPluginConfig().getDouble("auto-start", 0.75);
+                float start = (float) activePlayers.size()/SettingsManager.getInstance().getSpawnCount(id);
+                if(start >= startMin){
+                    countdown(20);
+                }
+            }
             return true;
         }
         if(status == Status.INGAME)
@@ -265,6 +274,32 @@ public class Game {
         else
             msg.sendFMessage("error.joinfail", p);
         return false;
+    }
+
+    ///////////////////////////////////
+    ///         Vote Start          ///
+    ///////////////////////////////////
+    public void vote(Player p){
+        if(status == Status.INGAME){
+            msg.sendFMessage("error.alreadyingame", p);
+            return;
+        }else if(status != Status.LOBBY){
+            msg.sendFMessage("error.alreadyingame", p);
+            return;
+        }
+
+        if(voted.contains(p)){
+            msg.sendFMessage("error.alreadyvoted", p);
+            return;
+        }
+
+        voted.add(p);
+        msgFArena("game.playervote", "player-" + p.getDisplayName());
+        msgFArena("game.voteamount", "percent-" + Math.round((voted.size()/activePlayers.size())*100));
+
+        if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start") && activePlayers.size() > 1){
+            countdown(20);
+        }
     }
 
     ///////////////////////////////////
