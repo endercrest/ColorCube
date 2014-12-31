@@ -197,6 +197,9 @@ public class SettingsManager {
         if(!plugin.getConfig().contains("auto-start")){
             plugin.getConfig().addDefault("auto-start", 0.75);
         }
+        if(!plugin.getConfig().contains("vote-start")){
+            plugin.getConfig().addDefault("vote-start", 0.5);
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }

@@ -45,6 +45,8 @@ public class Game {
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
 
+    private List<Player> voted = new ArrayList<Player>();
+
     Team red;
     Team blue;
     Team green;
@@ -271,6 +273,32 @@ public class Game {
         else
             msg.sendFMessage("error.joinfail", p);
         return false;
+    }
+
+    ///////////////////////////////////
+    ///         Vote Start          ///
+    ///////////////////////////////////
+    public void vote(Player p){
+        if(status == Status.INGAME){
+            msg.sendFMessage("error.alreadyingame", p);
+            return;
+        }else if(status != Status.LOBBY){
+            msg.sendFMessage("error.alreadyingame", p);
+            return;
+        }
+
+        if(voted.contains(p)){
+            msg.sendFMessage("error.alreadyvoted", p);
+            return;
+        }
+
+        voted.add(p);
+        msgFArena("game.playervote", "player-" + p.getDisplayName());
+        msgFArena("game.voteamount", "percent-" + Math.round((voted.size()/activePlayers.size())*100));
+
+        if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start")){
+            countdown(20);
+        }
     }
 
     ///////////////////////////////////
