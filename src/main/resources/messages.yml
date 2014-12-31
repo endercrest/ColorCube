@@ -21,6 +21,7 @@ messages:
         nolobby: '&cThat arena has no lobby'
         gamenotexist: '&cGame doesn't exist'
         nocommand: '&cThat command cannot be used in this arena.'
+        alreadyvoted: '&cYou have already voted!'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -39,6 +40,8 @@ messages:
         powerup: '&6New power has spawned!'
         pickup: '&6You have picked up a power up!'
         freeze: '&6{$player} has frozen everyone for 5 seconds!'
+        playervote: '&6{$player} has voted to start the game.'
+        voteamount: '&6{$percent}% of players have voted to start the game'
     info:
         create: '&6Arena {$arena} has been created!'
         delete: '&6Arena {$arena} has been deleted!'
@@ -64,6 +67,7 @@ messages:
         setspawn: 'Set the spawn in a arena'
         resetspawns: 'Reset all the spawns in the arena.'
         arenalist: 'List of arenas'
+        vote: 'Vote to start the game'
     color:
         red: 'red'
         green: 'green'
