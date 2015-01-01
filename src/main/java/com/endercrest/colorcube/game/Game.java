@@ -183,12 +183,12 @@ public class Game {
     public void disable(){
         disabled = true;
         spawns.clear();
+        ListIterator<Player> players = activePlayers.listIterator();
 
-        for (Player p : activePlayers) {
-            try {
-                removePlayer(p, false);
-                MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
-            } catch (Exception e) {}
+        while(players.hasNext()){
+            Player p = players.next();
+            removePlayer(p, false);
+            MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
         status = Status.DISABLED;
@@ -295,7 +295,7 @@ public class Game {
 
         voted.add(p);
         msgFArena("game.playervote", "player-" + p.getDisplayName());
-        msgFArena("game.voteamount", "percent-" + Math.round((voted.size()/activePlayers.size())*100));
+        msgFArena("game.voteamount", "percent-" + Math.round(((voted.size()+0.0)/(activePlayers.size()+0.0))*100));
 
         if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start") && activePlayers.size() > 1){
             countdown(20);
@@ -405,6 +405,8 @@ public class Game {
 
         powerups.clear();
         PowerupManager.getInstance().removeFrozenPlayers(activePlayers);
+
+        voted.clear();
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
@@ -575,13 +577,13 @@ public class Game {
 
     public String scoreResults(){
         if(redScore > blueScore && redScore > greenScore && redScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red");
+            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red", "Red");
         }else if(blueScore > redScore && blueScore > greenScore && blueScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue");
+            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue", "Blue");
         }else if(greenScore > redScore && greenScore > blueScore && greenScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green");
+            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green", "Green");
         }else if(yellowScore > redScore && yellowScore > blueScore && yellowScore > greenScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow");
+            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow", "Yellow");
         }else{
            return "None";
         }
