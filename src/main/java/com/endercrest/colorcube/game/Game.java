@@ -183,12 +183,12 @@ public class Game {
     public void disable(){
         disabled = true;
         spawns.clear();
+        ListIterator<Player> players = activePlayers.listIterator();
 
-        for (Player p : activePlayers) {
-            try {
-                removePlayer(p, false);
-                MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
-            } catch (Exception e) {}
+        while(players.hasNext()){
+            Player p = players.next();
+            removePlayer(p, false);
+            MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
         status = Status.DISABLED;
