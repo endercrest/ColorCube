@@ -19,7 +19,7 @@ messages:
         badinput: '&cInput must be "next" or a number'
         between: '&cSpawn must be between 1 & {$num}.'
         nolobby: '&cThat arena has no lobby'
-        gamenotexist: '&cGame doesn't exist'
+        gamenotexist: '&cGame doesnot exist'
         nocommand: '&cThat command cannot be used in this arena.'
         alreadyvoted: '&cYou have already voted!'
     game:
