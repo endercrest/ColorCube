@@ -31,7 +31,6 @@ public class PlayerMoveListener implements Listener {
             if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
-                //TODO Paintable
                 if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())){
                     if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
                         if (loc.getBlock().getData() != (byte) 15) {
@@ -41,31 +40,6 @@ public class PlayerMoveListener implements Listener {
                         game.changeBlock(loc, teamID);
                     }
                 }
-                /*
-                if(loc.getBlock().getType() == Material.STAINED_CLAY) {
-                    //Check if player is inside of arena
-                    if(GameManager.getInstance().getBlockGameId(loc) != -1) {
-                        //Checks if player is on black wool or not
-                        if (loc.getBlock().getData() != (byte) 15) {
-                            GameManager.getInstance().getGame(id).changeBlock(loc, teamID);
-                        } else {
-                            if (!black.contains(player)) {
-                                loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 0F, false, false);
-                                Random random = new Random();
-                                player.setVelocity(new Vector(random.nextDouble(), random.nextDouble() * 2, random.nextDouble()));
-                                black.add(player);
-                                player.setFallDistance(0);
-                                BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-                                scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        black.remove(player);
-                                    }
-                                }, 20L);
-                            }
-                        }
-                    }
-                }*/
 
                 //Check for explosive blocks
                 if(loc.getBlock().getType() == Material.STAINED_CLAY){
