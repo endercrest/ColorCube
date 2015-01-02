@@ -8,6 +8,7 @@ import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -716,26 +717,26 @@ public class Game {
     }
 
     public void changeBlock(Location loc, int team) {
-        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
-            byte data;
-            switch (team) {
-                case 0://Red Team
-                    data = 14;
-                    break;
-                case 1://Blue Team
-                    data = 3;
-                    break;
-                case 2://Green Team
-                    data = 5;
-                    break;
-                case 3://Yellow Team
-                    data = 4;
-                    break;
-                default:
-                    data = 0;
-                    break;
-            }
-            if (loc.getBlock().getData() != data) {
+        byte data;
+        switch (team) {
+            case 0://Red Team
+                data = 14;
+                break;
+            case 1://Blue Team
+                data = 3;
+                break;
+            case 2://Green Team
+                data = 5;
+                break;
+            case 3://Yellow Team
+                data = 4;
+                break;
+            default:
+                data = 0;
+                break;
+        }
+        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)){
+            if(loc.getBlock().getData() != data){
                 switch (loc.getBlock().getData()) {
                     case 14:
                         scoreManagement(id, team, 0, 1);
@@ -753,16 +754,16 @@ public class Game {
                         scoreManagement(id, team, -1, 1);
                         break;
                 }
-                LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
-                loc.getBlock().setData(data);
             }
         }
+        LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+        loc.getBlock().setType(Material.STAINED_CLAY);
+        loc.getBlock().setData(data);
     }
 
     public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
-        Game game = GameManager.getInstance().getGame(id);
-        game.increaseScore(teamincrease, amount);
-        game.decreaseScore(teamdecrease, amount);
+        increaseScore(teamincrease, amount);
+        decreaseScore(teamdecrease, amount);
     }
 
     public List<Powerup> getPowerups() {
