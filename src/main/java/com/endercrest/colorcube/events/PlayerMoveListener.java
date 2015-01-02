@@ -1,10 +1,7 @@
 package com.endercrest.colorcube.events;
 
-import com.endercrest.colorcube.ColorCube;
-import com.endercrest.colorcube.MessageManager;
-import com.endercrest.colorcube.PowerupManager;
+import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.game.Game;
-import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.game.Powerup;
 import com.endercrest.colorcube.logging.LoggingManager;
 import org.bukkit.Bukkit;
@@ -30,15 +27,27 @@ public class PlayerMoveListener implements Listener {
         final List<Player> black = new ArrayList<Player>();
         int id = GameManager.getInstance().getPlayerGameID(player);
         if(GameManager.getInstance().getGame(id) != null){
+            Game game = GameManager.getInstance().getGame(id);
             if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
+                //TODO Paintable
+                if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())){
+                    if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
+                        if (loc.getBlock().getData() != (byte) 15) {
+                            game.changeBlock(loc, teamID);
+                        }
+                    }else{
+                        game.changeBlock(loc, teamID);
+                    }
+                }
+                /*
                 if(loc.getBlock().getType() == Material.STAINED_CLAY) {
                     //Check if player is inside of arena
                     if(GameManager.getInstance().getBlockGameId(loc) != -1) {
                         //Checks if player is on black wool or not
                         if (loc.getBlock().getData() != (byte) 15) {
-                            changeBlock(id, loc.getBlock(), teamID);
+                            GameManager.getInstance().getGame(id).changeBlock(loc, teamID);
                         } else {
                             if (!black.contains(player)) {
                                 loc.getWorld().createExplosion(loc.getX(), loc.getY(), loc.getZ(), 0F, false, false);
