@@ -2,12 +2,14 @@ package com.endercrest.colorcube;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsManager {
 
@@ -199,6 +201,11 @@ public class SettingsManager {
         }
         if(!plugin.getConfig().contains("vote-start")){
             plugin.getConfig().addDefault("vote-start", 0.5);
+        }
+        if(!plugin.getConfig().contains("paintable-blocks")){
+            List<String> blocks = new ArrayList<String>();
+            blocks.add(Material.STAINED_CLAY.toString());
+            plugin.getConfig().addDefault("paintable-blocks", blocks);
         }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
