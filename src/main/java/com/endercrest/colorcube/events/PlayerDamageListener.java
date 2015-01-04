@@ -16,7 +16,7 @@ public class PlayerDamageListener implements Listener {
                 EntityDamageEvent.DamageCause cause = event.getCause();
                 if(cause.equals(EntityDamageEvent.DamageCause.FALL)){
                     event.setCancelled(true);
-                }else {
+                }else if(cause.equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)){
                     event.setDamage(0);
                 }
             }
