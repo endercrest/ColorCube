@@ -188,7 +188,7 @@ public class Game {
 
         while(players.hasNext()){
             Player p = players.next();
-            removePlayer(p, false);
+            //removePlayer(p, false);
             MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
