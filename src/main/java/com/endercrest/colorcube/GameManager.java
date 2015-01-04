@@ -186,6 +186,15 @@ public class GameManager {
         return -1;
     }
 
+    public boolean isPlayerSpectator(Player p){
+        for(Game g: games){
+            if(g.isSpectator(p)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isPlayerActive(Player player) {
         for (Game g: games) {
             if (g.isPlayerActive(player)) {

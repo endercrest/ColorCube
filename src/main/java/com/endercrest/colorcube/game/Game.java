@@ -227,8 +227,9 @@ public class Game {
         if(p.isInsideVehicle()){
             p.leaveVehicle();
         }
-        //if(isSpectator(p))
-          //  removeSpectator(p);
+
+        if(isSpectator(p))
+            removeSpectator(p);
 
         if(status == Status.LOBBY || status == Status.STARTING) {
             if (activePlayers.size() < SettingsManager.getInstance().getSpawnCount(id)) {
@@ -473,6 +474,81 @@ public class Game {
         status = Status.FINISHING;
         resetArena();
         status = Status.LOBBY;
+    }
+
+    ///////////////////////////////////
+    ///        Add Spectator        ///
+    ///////////////////////////////////
+    public boolean addSpectator(Player p){
+        if(!p.hasPermission("cc.arena.spectate." + id) || !p.hasPermission("cc.arena.spectate.*")){
+            msg.debugConsole("Need cc.arena.spectate." + id + "or cc.arena.spectate.*");
+            msg.sendFMessage("error.nopermission", p);
+            return false;
+        }
+        if(!p.hasPermission("cc.arena.join."+ id) || !p.hasPermission("cc.arena.join.*")){
+            msg.debugConsole("Need cc.arena.join." + id + "or cc.arena.join.*");
+            msg.sendFMessage("error.nopermission", p);
+            return false;
+        }
+        if(lobby == null){
+            MessageManager.getInstance().sendFMessage("error.nolobby", p);
+            return false;
+        }
+        if(!lobby.isSpawnSet()){
+            MessageManager.getInstance().sendFMessage("error.nolobbyspawn", p, "arena-" + id);
+            return false;
+        }
+        if(SettingsManager.getInstance().getGlobalLobbySpawn() == null){
+            MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
+            return false;
+        }
+        if (GameManager.getInstance().getSpectatePlayerId(p) != -1) {
+            if (GameManager.getInstance().isPlayerActive(p)) {
+                MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
+                return false;
+            }
+        }
+
+        if(p.isInsideVehicle()){
+            p.leaveVehicle();
+        }
+
+        if(status == Status.INGAME){
+            msg.sendFMessage("game.join", p, "arena-" + id);
+            //TODO Spectate API
+            p.setGameMode(GameMode.CREATIVE);
+            p.teleport(activePlayers.get(0).getLocation());
+            saveInv(p);
+            clearInv(p);
+            p.setHealth(p.getMaxHealth());
+            p.setFoodLevel(20);
+            clearInv(p);
+            p.setScoreboard(board);
+
+            spectators.add(p);
+            return true;
+        }else if(status == Status.DISABLED){
+            msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
+        }else if(status == Status.RESETING){
+            msg.sendFMessage("error.gameresetting", p);
+        }else if(status == Status.LOBBY || status == Status.STARTING){
+            msg.sendFMessage("error.notingame", p);
+        }else{
+            msg.sendFMessage("error.joinfail", p);
+        }
+        return false;
+    }
+
+    ///////////////////////////////////
+    ///       Remove Spectator      ///
+    ///////////////////////////////////
+    public boolean removeSpectator(Player player){
+        player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
+        restoreInv(player);
+        player.setScoreboard(manager.getNewScoreboard());
+
+        //TODO Spectator API
+        return true;
     }
 
     public void addToTeam(Player player){

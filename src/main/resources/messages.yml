@@ -22,6 +22,7 @@ messages:
         gamenotexist: '&cGame doesnot exist'
         nocommand: '&cThat command cannot be used in this arena.'
         alreadyvoted: '&cYou have already voted!'
+        notingame: '&cThe game is not in-game'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
