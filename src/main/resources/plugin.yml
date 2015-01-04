@@ -57,7 +57,10 @@ permissions:
         description: Grants you the arena setspawn command
         default: op
     cc.arena.join:
-        description: Grants you the arena delete command
+        description: Grants you the arena join command
+        default: op
+    cc.arena.spectate:
+        description: Grants you the specate command
         default: op
     cc.arena.resetspawns:
         description: Gives you the arena reset spawn command
