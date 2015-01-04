@@ -16,6 +16,7 @@ public class PlayerPickupListener implements Listener {
                 if(player.getInventory().getItem(i) == null){
                     player.getInventory().setItem(i, event.getItem().getItemStack());
                     event.getItem().remove();
+                    break;
                 }
             }
             event.setCancelled(true);
