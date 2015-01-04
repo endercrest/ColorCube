@@ -12,6 +12,8 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.*;
 
 import java.util.*;
@@ -52,6 +54,7 @@ public class Game {
     Team blue;
     Team green;
     Team yellow;
+    Team spectate;
 
     private int redScore = 0;
     private int blueScore = 0;
@@ -127,10 +130,12 @@ public class Game {
         blue = board.registerNewTeam("blue" + id);
         green = board.registerNewTeam("green" + id);
         yellow = board.registerNewTeam("yellow" + id);
+        spectate = board.registerNewTeam("spectate" + id);
         red.setPrefix(ChatColor.RED + "");
         blue.setPrefix(ChatColor.AQUA + "");
         green.setPrefix(ChatColor.GREEN + "");
         yellow.setPrefix(ChatColor.YELLOW + "");
+
 
         objective = board.registerNewObjective("Arena" + id, "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -239,6 +244,10 @@ public class Game {
                 p.setGameMode(GameMode.SURVIVAL);
                 p.setFallDistance(0);
                 p.teleport(lobby.getSpawn());
+                Collection<PotionEffect> effects = p.getActivePotionEffects();
+                for(PotionEffect pe: effects){
+                    p.removePotionEffect(pe.getType());
+                }
                 saveInv(p);
                 clearInv(p);
                 p.setHealth(p.getMaxHealth());
@@ -382,9 +391,13 @@ public class Game {
     public void removePlayer(Player player, boolean b){
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
+        Collection<PotionEffect> effects = player.getActivePotionEffects();
+        for(PotionEffect pe: effects){
+            player.removePotionEffect(pe.getType());
+        }
         activePlayers.remove(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
-        if(activePlayers.size() == 1){
+        if(activePlayers.size() <= 1){
             msgFArena("game.end", "reason-Not enough players");
             endGame();
         }
@@ -392,6 +405,7 @@ public class Game {
         for (Object in : spawns.keySet().toArray()) {
             if (spawns.get(in) == player) spawns.remove(in);
         }
+
 
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
     }
@@ -428,6 +442,10 @@ public class Game {
         Set<OfflinePlayer> yellowPlayers = yellow.getPlayers();
         for(OfflinePlayer player: yellowPlayers){
             yellow.removePlayer(player);
+        }
+        Set<OfflinePlayer> spectatePlayers = spectate.getPlayers();
+        for(OfflinePlayer player: spectatePlayers){
+            spectate.removePlayer(player);
         }
         redScore = 0;
         blueScore = 0;
@@ -523,7 +541,7 @@ public class Game {
             msg.sendFMessage("game.join", p, "arena-" + id);
             //TODO Spectate API
             p.setGameMode(GameMode.CREATIVE);
-            p.teleport(activePlayers.get(0).getLocation());
+            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, 1));
             saveInv(p);
             clearInv(p);
             p.setHealth(p.getMaxHealth());
@@ -531,7 +549,9 @@ public class Game {
             clearInv(p);
             p.setScoreboard(board);
 
+            p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600) * 20, 1, true));
             spectators.add(p);
+            //spectate.addPlayer(p);
             return true;
         }else if(status == Status.DISABLED){
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
@@ -553,6 +573,9 @@ public class Game {
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());
 
+        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        spectate.removePlayer(player);
+        spectators.remove(player);
         //TODO Spectator API
         return true;
     }
@@ -765,9 +788,7 @@ public class Game {
         public void run() {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
-                    for (Player p : activePlayers) {
-                        ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), activePlayers);
-                    }
+                    ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), getAllPlayers());
                 }
             }
         }
@@ -933,9 +954,10 @@ public class Game {
         return hookVars;
     }
 
-    public ArrayList < Player > getAllPlayers() {
-        ArrayList < Player > all = new ArrayList < Player > ();
+    public ArrayList <Player> getAllPlayers() {
+        ArrayList <Player> all = new ArrayList < Player > ();
         all.addAll(activePlayers);
+        all.addAll(spectators);
         return all;
     }
 
