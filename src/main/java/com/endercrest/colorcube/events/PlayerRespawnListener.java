@@ -15,7 +15,7 @@ public class PlayerRespawnListener implements Listener {
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player p = event.getPlayer();
         if(GameManager.getInstance().isPlayerActive(p)){
-            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
+            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
             if(game.getStatus() == Game.Status.INGAME){
                 for(int id: game.getSpawns().keySet()){
                     if(game.getSpawns().get(id).getName().equals(p.getName())){
