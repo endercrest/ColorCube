@@ -412,6 +412,7 @@ public class Game {
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
+        spectators.clear();
         Set<OfflinePlayer> redPlayers = red.getPlayers();
         for(OfflinePlayer player: redPlayers){
             red.removePlayer(player);
@@ -467,6 +468,11 @@ public class Game {
     public void endGame() {
         winGame();
         for(Player p : activePlayers){
+            p.setScoreboard(manager.getNewScoreboard());
+            p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
+            restoreInv(p);
+        }
+        for(Player p: spectators){
             p.setScoreboard(manager.getNewScoreboard());
             p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
             restoreInv(p);
