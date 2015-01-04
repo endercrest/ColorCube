@@ -25,7 +25,7 @@ public class PlayerMoveListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event){
         final Player player = event.getPlayer();
         final List<Player> black = new ArrayList<Player>();
-        int id = GameManager.getInstance().getPlayerGameID(player);
+        int id = GameManager.getInstance().getActivePlayerGameID(player);
         if(GameManager.getInstance().getGame(id) != null){
             Game game = GameManager.getInstance().getGame(id);
             if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {

@@ -21,9 +21,9 @@ public class PlayerRightClickListener implements Listener {
             if(GameManager.getInstance().isPlayerActive(player)){
                 try {
                     SubPowerup powerup = PowerupManager.getInstance().getPowerup(player.getItemInHand());
-                    PlayerPowerupEvent pe = new PlayerPowerupEvent(event.getPlayer(), GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(player)), PowerupManager.getInstance().getPowerupId(powerup));
+                    PlayerPowerupEvent pe = new PlayerPowerupEvent(event.getPlayer(), GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(player)), PowerupManager.getInstance().getPowerupId(powerup));
                     Bukkit.getServer().getPluginManager().callEvent(pe);
-                    powerup.onRightClick(player, GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(player)));
+                    powerup.onRightClick(player, GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(player)));
                     event.setCancelled(true);
                     player.getInventory().setItem(player.getInventory().getHeldItemSlot(), null);
                     player.updateInventory();

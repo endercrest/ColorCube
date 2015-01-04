@@ -17,7 +17,7 @@ public class Vote implements SubCommand {
             return true;
         }
 
-        GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p)).vote(p);
+        GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p)).vote(p);
         return false;
     }
 

@@ -14,7 +14,7 @@ public class PlayerInventoryListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event){
         if(event.getWhoClicked() instanceof Player){
             Player p = (Player)event.getWhoClicked();
-            int id = GameManager.getInstance().getPlayerGameID(p);
+            int id = GameManager.getInstance().getActivePlayerGameID(p);
             if(id != -1){
                 if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
                     if(p.getGameMode() != GameMode.CREATIVE) {

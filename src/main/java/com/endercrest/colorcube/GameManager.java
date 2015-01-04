@@ -56,7 +56,7 @@ public class GameManager {
     }
 
     public void removePlayer(Player p, boolean b){
-        getGame(getPlayerGameID(p)).removePlayer(p, b);
+        getGame(getActivePlayerGameID(p)).removePlayer(p, b);
     }
 
     public int getBlockGameId(Location v) {
@@ -168,7 +168,7 @@ public class GameManager {
         return games;
     }
 
-    public int getPlayerGameID(Player p){
+    public int getActivePlayerGameID(Player p){
         for(Game game: games){
             if(game.isPlayerActive(p)){
                 return game.getGameID();
@@ -177,7 +177,7 @@ public class GameManager {
         return -1;
     }
 
-    public int getPlayerSpectateId(Player p) {
+    public int getSpectatePlayerId(Player p) {
         for (Game g: games) {
             if (g.isSpectator(p)) {
                 return g.getGameID();

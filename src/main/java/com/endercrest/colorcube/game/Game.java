@@ -218,7 +218,7 @@ public class Game {
             MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
             return false;
         }
-        if (GameManager.getInstance().getPlayerGameID(p) != -1) {
+        if (GameManager.getInstance().getActivePlayerGameID(p) != -1) {
             if (GameManager.getInstance().isPlayerActive(p)) {
                 MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
                 return false;

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class Leave implements SubCommand {
     @Override
     public boolean onCommand(Player p, String[] args) {
-        if(GameManager.getInstance().getPlayerGameID(p) == -1){
+        if(GameManager.getInstance().getActivePlayerGameID(p) == -1){
             MessageManager.getInstance().sendFMessage("error.notinarena", p);
             return true;
         }

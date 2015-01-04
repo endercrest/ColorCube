@@ -20,7 +20,7 @@ public class Debug implements SubCommand {
                 if(args[0].equalsIgnoreCase("end")) {
                     if (args.length == 1) {
                         try {
-                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
+                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
                             game.endGame();
                         } catch (Exception e) {
                         }
@@ -33,7 +33,7 @@ public class Debug implements SubCommand {
                 }else if(args[0].equalsIgnoreCase("powerup")){
                     if(args.length == 1) {
                         try{
-                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getPlayerGameID(p));
+                            Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
                             Powerup pu = game.createPowerup(p.getLocation(), false);
                             for(int i = 0; i < 9; i++){
                                 if(p.getInventory().getItem(i) == null){
