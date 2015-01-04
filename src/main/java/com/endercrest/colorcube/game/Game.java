@@ -348,6 +348,32 @@ public class Game {
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
     }
 
+    public void forceStartGame(){
+        if(status == Status.INGAME){
+            return;
+        }
+        for(Player p: activePlayers){
+            for(int i = 1; i <= spawnCount; i++){
+                if(spawns.get(i) == null){
+                    spawns.put(i, p);
+                    p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                    clearInv(p);
+                    p.setGameMode(GameMode.SURVIVAL);
+                    p.setHealth(p.getMaxHealth());
+                    p.setFoodLevel(20);
+                    msg.sendFMessage("game.goodluck", p);
+                    break;
+                }
+            }
+        }
+        status = Status.INGAME;
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        tasks.add(timerTaskID);
+        tasks.add(particleTaskID);
+        MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
+    }
+
     ///////////////////////////////////
     ///         CountDown           ///
     ///////////////////////////////////
