@@ -30,7 +30,7 @@ public class Swap implements SubPowerup {
                 z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
                 Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
                 Location loc2 = new Location(arena.getPos1().getWorld(), x, y, z).subtract(0,1,0);
-                if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())){
+                if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
                     if(loc.getBlock().getType() == Material.AIR) {
                         if (loc2.getBlock().getData() != (byte) 15) {
                             if (loc2.getBlock().getData() != g.getTeamBlockByte(g.getTeamID(p))) {
