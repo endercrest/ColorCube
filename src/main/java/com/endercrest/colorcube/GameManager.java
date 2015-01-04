@@ -59,6 +59,10 @@ public class GameManager {
         getGame(getActivePlayerGameID(p)).removePlayer(p, b);
     }
 
+    public void removeSpectator(Player p, boolean b){
+        getGame(getSpectatePlayerId(p)).removeSpectator(p);
+    }
+
     public int getBlockGameId(Location v) {
         for (Game g: games) {
             if (g.isBlockInArena(v)) {
@@ -211,6 +215,15 @@ public class GameManager {
             return;
         }
         game.addPlayer(p);
+    }
+
+    public void addSpectator(Player p, int id){
+        Game game = getGame(id);
+        if(game == null){
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + id);
+            return;
+        }
+        game.addSpectator(p);
     }
 
     public int getPlayerTeamID(Player player){

@@ -69,6 +69,7 @@ messages:
         resetspawns: 'Reset all the spawns in the arena.'
         arenalist: 'List of arenas'
         vote: 'Vote to start the game'
+        spectate: 'Spectate a game in an arena'
     color:
         red: 'red'
         green: 'green'
