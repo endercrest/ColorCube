@@ -229,7 +229,7 @@ public class Game {
         }
 
         if(isSpectator(p))
-            removeSpectator(p);
+            removeSpectator(p, false);
 
         if(status == Status.LOBBY || status == Status.STARTING) {
             if (activePlayers.size() < SettingsManager.getInstance().getSpawnCount(id)) {
@@ -542,7 +542,7 @@ public class Game {
     ///////////////////////////////////
     ///       Remove Spectator      ///
     ///////////////////////////////////
-    public boolean removeSpectator(Player player){
+    public boolean removeSpectator(Player player, boolean logout){
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());

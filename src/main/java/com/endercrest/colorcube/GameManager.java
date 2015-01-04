@@ -60,7 +60,7 @@ public class GameManager {
     }
 
     public void removeSpectator(Player p, boolean b){
-        getGame(getSpectatePlayerId(p)).removeSpectator(p);
+        getGame(getSpectatePlayerId(p)).removeSpectator(p, b);
     }
 
     public int getBlockGameId(Location v) {

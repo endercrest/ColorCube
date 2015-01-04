@@ -13,6 +13,8 @@ public class PlayerLeaveListener implements Listener {
         Player player = event.getPlayer();
         if(GameManager.getInstance().isPlayerActive(player)){
             GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(player)).removePlayer(player, true);
+        }else if(GameManager.getInstance().isPlayerSpectator(player)){
+            GameManager.getInstance().getGame(GameManager.getInstance().getSpectatePlayerId(player)).removeSpectator(player, true);
         }
     }
 }
