@@ -422,6 +422,7 @@ public class Game {
             player.removePotionEffect(pe.getType());
         }
         activePlayers.remove(player);
+        getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() <= 1){
             msgFArena("game.end", "reason-Not enough players");
