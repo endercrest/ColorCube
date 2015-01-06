@@ -16,8 +16,6 @@ public class PowerupManager {
     private ColorCube plugin;
     private HashMap<String, SubPowerup> powerupTypes = new HashMap<String, SubPowerup>();
 
-    private List<Player> frozenPlayers = new ArrayList<Player>();
-
     public static PowerupManager getInstance(){
         return instance;
     }
@@ -78,39 +76,15 @@ public class PowerupManager {
         return null;
     }
 
-    public int getPowerupId(SubPowerup powerup){
+    public int getPowerupId(SubPowerup powerup) {
         int id = 0;
-        for(String s: powerupTypes.keySet()){
-            if(powerupTypes.get(s).equals(powerup)){
+        for (String s : powerupTypes.keySet()) {
+            if (powerupTypes.get(s).equals(powerup)) {
                 return id;
             }
             id++;
         }
         return -1;
-    }
-
-    public void addFrozenPlayer(Player p){
-        frozenPlayers.add(p);
-    }
-
-    public void addFrozenPlayers(List<Player> players){
-        for(Player p: players){
-            frozenPlayers.add(p);
-        }
-    }
-
-    public void removeFrozenPlayer(Player p){
-        frozenPlayers.remove(p);
-    }
-
-    public void removeFrozenPlayers(List<Player> players){
-        for(Player p: players)
-            if(frozenPlayers.contains(p))
-                frozenPlayers.remove(p);
-    }
-
-    public boolean isPlayerFrozen(Player p){
-        return frozenPlayers.contains(p);
     }
 
 

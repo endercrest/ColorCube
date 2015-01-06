@@ -88,11 +88,6 @@ public class PlayerMoveListener implements Listener {
                         game.removePowerup(pu);
                     }
                 }
-
-                //
-                if(PowerupManager.getInstance().isPlayerFrozen(player)){
-                    player.teleport(player.getLocation());
-                }
             }
         }
     }

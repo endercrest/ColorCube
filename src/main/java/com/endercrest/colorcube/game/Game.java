@@ -329,8 +329,10 @@ public class Game {
                 for(int i = 1; i <= spawnCount; i++){
                     if(spawns.get(i) == null){
                         spawns.put(i, p);
-                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
-                        clearInv(p);
+                        if(!p.isDead()) {
+                            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                            clearInv(p);
+                        }
                         p.setGameMode(GameMode.SURVIVAL);
                         p.setHealth(p.getMaxHealth());
                         p.setFoodLevel(20);
@@ -422,6 +424,7 @@ public class Game {
             player.removePotionEffect(pe.getType());
         }
         activePlayers.remove(player);
+        getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() <= 1){
             msgFArena("game.end", "reason-Not enough players");
@@ -446,7 +449,6 @@ public class Game {
         tasks.clear();
 
         powerups.clear();
-        PowerupManager.getInstance().removeFrozenPlayers(activePlayers);
 
         voted.clear();
 
@@ -789,13 +791,16 @@ public class Game {
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
                     z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
                     Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
-                    Location loc2 = loc.subtract(0, 1, 0);
-                    if(loc2.getBlock().getType() == Material.STAINED_CLAY){
-                        createPowerup(loc, true);
-                        finish = false;
+                    Location loc2 = loc.clone();
+                    loc2.subtract(0, 1, 0);
+                    if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
+                        if(loc.getBlock().getType() != Material.AIR) {
+                            createPowerup(loc, true);
+                            finish = false;
+                        }
                     }
 
-                    if(attempt == 50){
+                    if(attempt == 100){
                         MessageManager.getInstance().debugConsole("Could not spawn powerup.");
                         finish = false;
                     }else {
