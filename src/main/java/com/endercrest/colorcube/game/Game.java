@@ -446,7 +446,6 @@ public class Game {
         tasks.clear();
 
         powerups.clear();
-        PowerupManager.getInstance().removeFrozenPlayers(activePlayers);
 
         voted.clear();
 
