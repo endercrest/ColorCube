@@ -329,8 +329,10 @@ public class Game {
                 for(int i = 1; i <= spawnCount; i++){
                     if(spawns.get(i) == null){
                         spawns.put(i, p);
-                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
-                        clearInv(p);
+                        if(!p.isDead()) {
+                            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                            clearInv(p);
+                        }
                         p.setGameMode(GameMode.SURVIVAL);
                         p.setHealth(p.getMaxHealth());
                         p.setFoodLevel(20);
