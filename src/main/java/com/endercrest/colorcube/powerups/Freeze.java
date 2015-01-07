@@ -9,13 +9,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Freeze implements SubPowerup {
     @Override
     public void onRightClick(Player p, Game g) {
         g.msgFArena("game.freeze", "player-" + p.getDisplayName());
-        List<Player> players = g.getActivePlayers();
+        List<Player> players = new ArrayList<Player>();
+        Collections.copy(g.getActivePlayers(), players);
         players.remove(p);
         for(Player player: players){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5 * 20, 100, true));
