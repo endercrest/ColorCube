@@ -68,8 +68,13 @@ public class PlayerMoveListener implements Listener {
                         if(powerup.getLocation().getBlockX() == player.getLocation().getBlockX()){
                             if(powerup.getLocation().getBlockY() == player.getLocation().getBlockY()){
                                 if(powerup.getLocation().getBlockZ() == player.getLocation().getBlockZ()){
-                                    MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + PowerupManager.getInstance().getPowerupName(powerup.getType()));
-                                    remove.add(powerup);
+                                    for(int i = 0; i < 9; i++){
+                                        if(player.getInventory().getItem(i) == null){
+                                            MessageManager.getInstance().sendFMessage("game.pickup", player, "type-" + PowerupManager.getInstance().getPowerupName(powerup.getType()));
+                                            remove.add(powerup);
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                         }
