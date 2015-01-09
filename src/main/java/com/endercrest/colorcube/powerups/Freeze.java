@@ -18,7 +18,9 @@ public class Freeze implements SubPowerup {
     public void onRightClick(Player p, Game g) {
         g.msgFArena("game.freeze", "player-" + p.getDisplayName());
         List<Player> players = new ArrayList<Player>();
-        Collections.copy(g.getActivePlayers(), players);
+        for(Player player: g.getAllPlayers()){
+            players.add(player);
+        }
         players.remove(p);
         for(Player player: players){
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5 * 20, 100, true));
