@@ -2,22 +2,22 @@ package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.game.Lobby;
-import com.endercrest.colorcube.game.LobbyWall;
+import com.endercrest.colorcube.game.LobbySign;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LobbyManager {
 
     public static LobbyManager instance = new LobbyManager();
 
     private ColorCube plugin;
-    private HashMap<Integer, LobbyWall> lobbyWall = new HashMap<Integer, LobbyWall>();
+    private List<LobbySign> lobbySigns = new ArrayList<LobbySign>();
 
     public static LobbyManager getInstance(){
         return instance;
@@ -26,45 +26,6 @@ public class LobbyManager {
     public void setup(ColorCube plugin){
         this.plugin = plugin;
         MessageManager.getInstance().debugConsole("&eLobby Manager Set up");
-
-        //TODO Lobby wall loading is done here
-    }
-
-    public void createLobbyWallFromSelection(Player p, int id){
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
-        WorldEditPlugin worldEdit = plugin.getWorldEdit();
-        Selection selection = worldEdit.getSelection(p);
-
-        if(selection == null){
-            MessageManager.getInstance().sendFMessage("error.noselection", p);
-            return;
-        }
-        if(selection.getLength() > 1 && selection.getWidth() > 1){
-            MessageManager.getInstance().sendFMessage("error.bigselection", p, "detail-Cannot be bigger than 1 wide");
-            return;
-        }
-        if(selection.getHeight() > 1){
-            MessageManager.getInstance().sendFMessage("error.bigselection", p, "detail-Cannot be bigger than 1 tall");
-            return;
-        }
-
-        for(int x = selection.getMinimumPoint().getBlockX(); x < selection.getMaximumPoint().getBlockX(); x++){
-            for(int z = selection.getMinimumPoint().getBlockZ();  z< selection.getMaximumPoint().getBlockZ(); z++){
-                Location loc = new Location(selection.getWorld(), x, selection.getMinimumPoint().getBlockY(), z);
-                if(loc.getBlock().getType() != Material.WALL_SIGN || loc.getBlock().getType() != Material.SIGN || loc.getBlock().getType() != Material.SIGN_POST){
-
-                    return;
-                }
-            }
-        }
-    }
-
-    public void updateWall(int gameID){
-
-    }
-
-    public void updateAllWalls(){
-
     }
 
     public void createLobbyFromSelection(Player p, Game game){
@@ -94,5 +55,23 @@ public class LobbyManager {
 
     public void setLobbySpawn(int id, Location loc){
         GameManager.getInstance().getGame(id).setLobbySpawn(id, loc.getWorld(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    }
+
+    public void createLobbySign(Player p, Game game) {
+
+    }
+
+    public void updateAll(){
+        for(LobbySign sign: lobbySigns){
+            sign.update();
+        }
+    }
+
+    public void update(int id){
+        for(LobbySign sign: lobbySigns){
+            if(sign.getSignGameID() == id){
+                sign.update();
+            }
+        }
     }
 }

@@ -207,6 +207,18 @@ public class SettingsManager {
             blocks.add(Material.STAINED_CLAY.toString());
             plugin.getConfig().addDefault("paintable-blocks", blocks);
         }
+        if(!plugin.getConfig().contains("sign.line1")){
+            plugin.getConfig().addDefault("sign.line1", "[&6ColorCube&f]");
+        }
+        if(!plugin.getConfig().contains("sign.line2")){
+            plugin.getConfig().addDefault("sign.line2", "[&6{$arenaname}&f]");
+        }
+        if(!plugin.getConfig().contains("sign.line3")){
+            plugin.getConfig().addDefault("sign.line3", "{$players} / {$maxplayers}");
+        }
+        if(!plugin.getConfig().contains("sign.line4")){
+            plugin.getConfig().addDefault("sign.line4", "{$status}");
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
