@@ -100,7 +100,7 @@ public class LobbyManager {
         }
         LobbySign lobbySign = getLobbySign(p.getTargetBlock(null, 10).getLocation());
         if(lobbySign != null) {
-            SettingsManager.getInstance().getSystemConfig().set("sign_next_id", SettingsManager.getInstance().getSystemConfig().getInt("sign_next_id") + 1);
+            //SettingsManager.getInstance().getSystemConfig().set("sign_next_id", SettingsManager.getInstance().getSystemConfig().getInt("sign_next_id") + 1);
             SettingsManager.getInstance().getSystemConfig().set("signs." + lobbySign.getSignID() + ".enabled", false);
             SettingsManager.getInstance().saveSystemConfig();
             lobbySigns.remove(lobbySign);
