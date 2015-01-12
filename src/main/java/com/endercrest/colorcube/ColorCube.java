@@ -52,8 +52,8 @@ public class ColorCube extends JavaPlugin {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
             SettingsManager.getInstance().setup(p);
-            LobbyManager.getInstance().setup(p);
             GameManager.getInstance().setup(p);
+            LobbyManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
 

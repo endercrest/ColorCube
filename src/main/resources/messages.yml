@@ -23,6 +23,10 @@ messages:
         nocommand: '&cThat command cannot be used in this arena.'
         alreadyvoted: '&cYou have already voted!'
         notingame: '&cThe game is not in-game'
+        bigselection: '&cYour selection is too big. {$detail}'
+        wrongblock: '&cSelection contains {$block}. Could not '
+        notsign: '&cThis block is not a sign.'
+        nolobbysign: '&cThere is no lobby sign there!'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -70,6 +74,8 @@ messages:
         arenalist: 'List of arenas'
         vote: 'Vote to start the game'
         spectate: 'Spectate a game in an arena'
+        createsign: 'Creates a new lobby sign.'
+        deletesign: 'Delets the lobby sign you are looking at'
     color:
         red: 'red'
         green: 'green'
