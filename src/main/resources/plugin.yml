@@ -41,6 +41,8 @@ permissions:
         children:
             cc.lobby.create: true
             cc.lobby.setlobbyspawn: true
+            cc.lobby.sign.create: true
+            cc.lobby.sign.delete: true
     cc.arena.create:
         description: Grants you the arena create command
         default: op
@@ -73,6 +75,12 @@ permissions:
         default: op
     cc.lobby.setlobbyspawn:
         description: Grants you the setlobbyspawn create command
+        default: op
+    cc.lobby.sign.delete:
+        description: Grants you the deletesign command
+        default: op
+    cc.lobby.sign.create:
+        description: Grants you the createsign command
         default: op
     cc.*:
         description: Gives all permissions

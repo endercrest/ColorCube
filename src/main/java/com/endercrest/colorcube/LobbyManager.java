@@ -5,7 +5,11 @@ import com.endercrest.colorcube.game.Lobby;
 import com.endercrest.colorcube.game.LobbySign;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -25,6 +29,8 @@ public class LobbyManager {
 
     public void setup(ColorCube plugin){
         this.plugin = plugin;
+        loadSigns();
+        updateAll();
         MessageManager.getInstance().debugConsole("&eLobby Manager Set up");
     }
 
@@ -58,7 +64,83 @@ public class LobbyManager {
     }
 
     public void createLobbySign(Player p, Game game) {
+        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN)){
+            MessageManager.getInstance().sendFMessage("error.notsign", p);
+            return;
+        }
 
+        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
+
+        int id = SettingsManager.getInstance().getNextSignID() + 1;
+        system.set("sign_next_id", id);
+        if(id == 0 || lobbySigns.isEmpty()){
+            id = 1;
+        }
+        Location loc = p.getTargetBlock(null, 10).getLocation();
+
+        system.set("signs." + id, null);
+        system.set("signs." + id + ".x", loc.getBlockX());
+        system.set("signs." + id + ".y", loc.getBlockY());
+        system.set("signs." + id + ".z", loc.getBlockZ());
+        system.set("signs." + id + ".world", loc.getWorld().getName());
+        system.set("signs." + id + ".gameID", game.getGameID());
+        system.set("signs." + id + ".enabled", true);
+        SettingsManager.getInstance().saveSystemConfig();
+
+        LobbySign sign = new LobbySign(loc, game, id);
+        lobbySigns.add(sign);
+        sign.update();
+        MessageManager.getInstance().debugConsole("Created LobbySign: " + id);
+    }
+
+    public void removeLobbySign(Player p){
+        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN)){
+            MessageManager.getInstance().sendFMessage("error.notsign", p);
+            return;
+        }
+        LobbySign lobbySign = getLobbySign(p.getTargetBlock(null, 10).getLocation());
+        if(lobbySign != null) {
+            SettingsManager.getInstance().getSystemConfig().set("sign_next_id", SettingsManager.getInstance().getSystemConfig().getInt("sign_next_id") + 1);
+            SettingsManager.getInstance().getSystemConfig().set("signs." + lobbySign.getSignID() + ".enabled", false);
+            SettingsManager.getInstance().saveSystemConfig();
+            lobbySigns.remove(lobbySign);
+            MessageManager.getInstance().debugConsole("Deleting Sign:" + lobbySign.getSignID());
+        }else{
+            MessageManager.getInstance().sendFMessage("error.nolobbysign", p);
+        }
+    }
+
+    public void loadSigns(){
+        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
+        lobbySigns.clear();
+        int signID = SettingsManager.getInstance().getNextSignID();
+        int sign = 1;
+        for(int loaded = 0; loaded < signID; loaded++){
+            if(system.isSet("signs." + sign + ".x")){
+                if(system.isSet("signs." + sign + ".enabled")){
+                    MessageManager.getInstance().debugConsole("Loading Sign: " + sign);
+                    int x = system.getInt("signs." + sign + ".x");
+                    int y = system.getInt("signs." + sign + ".y");
+                    int z = system.getInt("signs." + sign + ".z");
+                    World world = Bukkit.getWorld(system.getString("signs." + sign + ".world"));
+                    int gameID = system.getInt("signs." + sign + ".gameID");
+                    Game game = GameManager.getInstance().getGame(gameID);
+                    Location loc = new Location(world, x, y, z);
+                    if(system.getBoolean("signs." + sign + ".enabled")) {
+                        lobbySigns.add(new LobbySign(loc, game, sign));
+                    }
+                }
+            }
+        }
+    }
+
+    public LobbySign getLobbySign(Location loc){
+        for(LobbySign lobbySign: lobbySigns){
+            if(lobbySign.getLocation().equals(loc)){
+                return lobbySign;
+            }
+        }
+        return null;
     }
 
     public void updateAll(){

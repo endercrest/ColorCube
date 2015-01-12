@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.commands;
 
+import com.endercrest.colorcube.LobbyManager;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
@@ -122,6 +123,9 @@ public class Debug implements SubCommand {
                             game.addSpectator(player);
                         }catch (Exception e){}
                     }
+                }else if(args[0].equalsIgnoreCase("update")){
+                    LobbyManager.getInstance().updateAll();
+                    MessageManager.getInstance().sendMessage("Updating All Lobby Signs", p);
                 }
             }
         }

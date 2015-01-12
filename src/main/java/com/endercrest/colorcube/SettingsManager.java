@@ -208,10 +208,10 @@ public class SettingsManager {
             plugin.getConfig().addDefault("paintable-blocks", blocks);
         }
         if(!plugin.getConfig().contains("sign.line1")){
-            plugin.getConfig().addDefault("sign.line1", "[&6ColorCube&f]");
+            plugin.getConfig().addDefault("sign.line1", "&f[&6ColorCube&f]");
         }
         if(!plugin.getConfig().contains("sign.line2")){
-            plugin.getConfig().addDefault("sign.line2", "[&6{$arenaname}&f]");
+            plugin.getConfig().addDefault("sign.line2", "&f[&6{$arenaname}&f]");
         }
         if(!plugin.getConfig().contains("sign.line3")){
             plugin.getConfig().addDefault("sign.line3", "{$players} / {$maxplayers}");
@@ -225,6 +225,10 @@ public class SettingsManager {
 
     public int getNextArenaID(){
         return getSystemConfig().getInt("arena_next_id", 0);
+    }
+
+    public int getNextSignID(){
+        return getSystemConfig().getInt("sign_next_id", 0);
     }
 
     public FileConfiguration getPluginConfig(){

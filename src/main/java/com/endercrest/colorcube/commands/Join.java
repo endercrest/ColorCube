@@ -16,7 +16,7 @@ public class Join implements SubCommand {
                 MessageManager.getInstance().sendFMessage("error.notanumber", p, "input-" + args[0]);
             }
         } else {
-            MessageManager.getInstance().sendFMessage("error.nospecified", p, "input-Arena");
+            MessageManager.getInstance().sendFMessage("error.notspecified", p, "input-Arena");
         }
         return true;
     }
