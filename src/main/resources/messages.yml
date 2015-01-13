@@ -23,8 +23,6 @@ messages:
         nocommand: '&cThat command cannot be used in this arena.'
         alreadyvoted: '&cYou have already voted!'
         notingame: '&cThe game is not in-game'
-        bigselection: '&cYour selection is too big. {$detail}'
-        wrongblock: '&cSelection contains {$block}. Could not '
         notsign: '&cThis block is not a sign.'
         nolobbysign: '&cThere is no lobby sign there!'
     game:

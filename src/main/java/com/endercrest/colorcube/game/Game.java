@@ -143,11 +143,14 @@ public class Game {
         timerScore = objective.getScore("Time");
 
         status = Status.LOBBY;
+
+        LobbyManager.getInstance().update(getGameID());
     }
 
     public void addSpawn() {
         spawnCount++;
         spawns.put(spawnCount, null);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     public void loadspawns(){
@@ -181,6 +184,7 @@ public class Game {
         status = Status.LOBBY;
         disabled = false;
         MessageManager.getInstance().debugConsole("Arena " + id + " enabled");
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -199,6 +203,7 @@ public class Game {
         endGame();
         status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -274,6 +279,7 @@ public class Game {
                     countdown(20);
                 }
             }
+            LobbyManager.getInstance().update(getGameID());
             return true;
         }
         if(status == Status.INGAME)
@@ -348,6 +354,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     public void forceStartGame(){
@@ -374,6 +381,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -437,6 +445,7 @@ public class Game {
 
 
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -483,6 +492,7 @@ public class Game {
         board.resetScores("Time");
 
         status = Status.RESETING;
+        LobbyManager.getInstance().update(getGameID());
         endgameRunning = false;
         spawns.clear();
 
@@ -524,8 +534,10 @@ public class Game {
             restoreInv(p);
         }
         status = Status.FINISHING;
+        LobbyManager.getInstance().update(getGameID());
         resetArena();
         status = Status.LOBBY;
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -580,6 +592,7 @@ public class Game {
             p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600) * 20, 1, true));
             spectators.add(p);
             //spectate.addPlayer(p);
+            LobbyManager.getInstance().update(getGameID());
             return true;
         }else if(status == Status.DISABLED){
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
@@ -605,6 +618,7 @@ public class Game {
         spectate.removePlayer(player);
         spectators.remove(player);
         //TODO Spectator API
+        LobbyManager.getInstance().update(getGameID());
         return true;
     }
 
