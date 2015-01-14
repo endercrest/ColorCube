@@ -102,7 +102,7 @@ public class LobbyManager {
     }
 
     public void removeLobbySign(Player p){
-        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN)){
+        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN) && !p.getTargetBlock(null, 10).getType().equals(Material.SIGN_POST)){
             MessageManager.getInstance().sendFMessage("error.notsign", p);
             return;
         }
@@ -136,8 +136,13 @@ public class LobbyManager {
                     int gameID = system.getInt("signs." + sign + ".gameID");
                     Game game = GameManager.getInstance().getGame(gameID);
                     Location loc = new Location(world, x, y, z);
-                    if(system.getBoolean("signs." + sign + ".enabled")) {
-                        lobbySigns.add(new LobbySign(loc, game, sign));
+                    if(loc.getBlock().getType().equals(Material.WALL_SIGN) || loc.getBlock().getType().equals(Material.SIGN_POST)) {
+                        if (system.getBoolean("signs." + sign + ".enabled")) {
+                            lobbySigns.add(new LobbySign(loc, game, sign));
+                        }
+                    }else{
+                        MessageManager.getInstance().debugConsole("No sign at set location. Aborting loading of sign " + signID);
+                        return;
                     }
                 }
             }
