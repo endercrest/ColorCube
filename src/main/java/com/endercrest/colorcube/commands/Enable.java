@@ -39,7 +39,7 @@ public class Enable implements SubCommand {
 
     @Override
     public String helpInfo() {
-        return "/cc enable - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.enable", "Enables arena");
+        return "/cc enable <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.enable", "Enables arena");
     }
 
     @Override

@@ -48,6 +48,17 @@ public class LobbySign {
         MessageManager.getInstance().debugConsole("Updating Sign " + signID);
     }
 
+    public void clear(){
+        Sign sign = (Sign)loc.getBlock().getState();
+
+        sign.setLine(0, "");
+        sign.setLine(1, "");
+        sign.setLine(2, "");
+        sign.setLine(3, "");
+        sign.update();
+        MessageManager.getInstance().debugConsole("Clearing Sign " + signID);
+    }
+
     public String[] getVars(){
         String[] vars = new String[5];
         vars[0] = "players-" + game.getActivePlayers().size();

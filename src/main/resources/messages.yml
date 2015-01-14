@@ -23,10 +23,9 @@ messages:
         nocommand: '&cThat command cannot be used in this arena.'
         alreadyvoted: '&cYou have already voted!'
         notingame: '&cThe game is not in-game'
-        bigselection: '&cYour selection is too big. {$detail}'
-        wrongblock: '&cSelection contains {$block}. Could not '
         notsign: '&cThis block is not a sign.'
         nolobbysign: '&cThere is no lobby sign there!'
+        alreadysign: '&cThat is already a lobby sign.'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -47,6 +46,9 @@ messages:
         freeze: '&6{$player} has frozen everyone for 5 seconds!'
         playervote: '&6{$player} has voted to start the game.'
         voteamount: '&6{$percent}% of players have voted to start the game'
+    lobby:
+        created: '&6Lobby sign created.'
+        removed: '&6Lobby sign removed.'
     info:
         create: '&6Arena {$arena} has been created!'
         delete: '&6Arena {$arena} has been deleted!'

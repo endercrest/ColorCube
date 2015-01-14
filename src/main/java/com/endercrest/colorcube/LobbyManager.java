@@ -69,6 +69,13 @@ public class LobbyManager {
             return;
         }
 
+        for(LobbySign sign: lobbySigns){
+            if(sign.getLocation().equals(p.getTargetBlock(null, 10).getLocation())){
+                MessageManager.getInstance().sendFMessage("error.alreadysign", p);
+                return;
+            }
+        }
+
         FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
 
         int id = SettingsManager.getInstance().getNextSignID() + 1;
@@ -91,6 +98,7 @@ public class LobbyManager {
         lobbySigns.add(sign);
         sign.update();
         MessageManager.getInstance().debugConsole("Created LobbySign: " + id);
+        MessageManager.getInstance().sendFMessage("lobby.created", p);
     }
 
     public void removeLobbySign(Player p){
@@ -104,7 +112,9 @@ public class LobbyManager {
             SettingsManager.getInstance().getSystemConfig().set("signs." + lobbySign.getSignID() + ".enabled", false);
             SettingsManager.getInstance().saveSystemConfig();
             lobbySigns.remove(lobbySign);
+            lobbySign.clear();
             MessageManager.getInstance().debugConsole("Deleting Sign:" + lobbySign.getSignID());
+            MessageManager.getInstance().sendFMessage("lobby.deleted", p);
         }else{
             MessageManager.getInstance().sendFMessage("error.nolobbysign", p);
         }
@@ -155,5 +165,14 @@ public class LobbyManager {
                 sign.update();
             }
         }
+    }
+
+    public boolean isLobbySign(Location loc){
+        for(LobbySign sign: lobbySigns){
+            if(sign.getLocation().equals(loc)){
+                return true;
+            }
+        }
+        return false;
     }
 }

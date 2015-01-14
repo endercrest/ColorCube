@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.events;
 
+import com.endercrest.colorcube.LobbyManager;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
@@ -25,6 +26,11 @@ public class PlayerBreakListener implements Listener {
                 MessageManager.getInstance().sendMessage("&cCan't break blocks when the game is in-game", player);
                 return;
             }
+        }
+
+        if(LobbyManager.getInstance().isLobbySign(event.getBlock().getLocation())){
+            event.setCancelled(true);
+            return;
         }
     }
 }
