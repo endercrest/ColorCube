@@ -39,7 +39,7 @@ public class Disable implements SubCommand {
 
     @Override
     public String helpInfo() {
-        return "/cc enable - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.info.disable", "Disable arena");
+        return "/cc disable <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.info.disable", "Disable arena");
     }
 
     @Override
