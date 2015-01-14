@@ -49,19 +49,19 @@ public class Splash implements SubPowerup {
                 }
                 if(g.isBlockInArena(loc1)){
                     if (loc1.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc1.getBlock().getType().toString())) {
                             g.changeBlock(loc1, g.getTeamID(p));
                         }
                 }
                 if(g.isBlockInArena(loc2)){
                     if (loc2.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())) {
                             g.changeBlock(loc2, g.getTeamID(p));
                         }
                 }
                 if(g.isBlockInArena(loc3)){
                     if (loc3.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc3.getBlock().getType().toString())) {
                             g.changeBlock(loc3, g.getTeamID(p));
                         }
                 }
