@@ -21,7 +21,7 @@ public class ForceStart implements SubCommand {
         if(args.length >= 1){
             id = Integer.parseInt(args[0]);
         }else{
-            id = GameManager.getInstance().getPlayerGameID(p);
+            id = GameManager.getInstance().getActivePlayerGameID(p);
         }
 
         if(id == -1){

@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.powerups;
 
 import com.endercrest.colorcube.MessageManager;
+import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.game.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -41,24 +42,28 @@ public class Splash implements SubPowerup {
                 loc2.subtract(0,1,0);
                 loc3.subtract(0,1,0);
                 if(g.isBlockInArena(loc)) {
-                    if(loc.getBlock().getType() == Material.STAINED_CLAY && loc.getBlock().getData() != (byte) 15){
-                        g.changeBlock(loc, g.getTeamID(p));
-                    }
+                    if (loc.getBlock().getData() != (byte) 15)
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
+                            g.changeBlock(loc, g.getTeamID(p));
+                        }
                 }
                 if(g.isBlockInArena(loc1)){
-                    if(loc1.getBlock().getType() == Material.STAINED_CLAY && loc1.getBlock().getData() != (byte) 15){
-                        g.changeBlock(loc1, g.getTeamID(p));
-                    }
+                    if (loc1.getBlock().getData() != (byte) 15)
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc1.getBlock().getType().toString())) {
+                            g.changeBlock(loc1, g.getTeamID(p));
+                        }
                 }
                 if(g.isBlockInArena(loc2)){
-                    if(loc2.getBlock().getType() == Material.STAINED_CLAY && loc2.getBlock().getData() != (byte) 15){
-                        g.changeBlock(loc2, g.getTeamID(p));
-                    }
+                    if (loc2.getBlock().getData() != (byte) 15)
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())) {
+                            g.changeBlock(loc2, g.getTeamID(p));
+                        }
                 }
                 if(g.isBlockInArena(loc3)){
-                    if(loc3.getBlock().getType() == Material.STAINED_CLAY && loc3.getBlock().getData() != (byte) 15){
-                        g.changeBlock(loc3, g.getTeamID(p));
-                    }
+                    if (loc3.getBlock().getData() != (byte) 15)
+                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc3.getBlock().getType().toString())) {
+                            g.changeBlock(loc3, g.getTeamID(p));
+                        }
                 }
 
             }

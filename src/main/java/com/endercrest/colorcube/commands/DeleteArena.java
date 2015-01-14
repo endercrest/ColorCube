@@ -44,6 +44,6 @@ public class DeleteArena implements SubCommand {
 
     @Override
     public String permission() {
-        return "cc.admin.arena.delete";
+        return "cc.arena.delete";
     }
 }

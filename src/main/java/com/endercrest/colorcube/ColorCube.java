@@ -23,6 +23,7 @@ public class ColorCube extends JavaPlugin {
     @Override
     public void onDisable(){
         SettingsManager.getInstance().saveSystemConfig();
+        reloadConfig();
         for (Game g: GameManager.getInstance().getGames()) {
             try{
                 g.disable();
@@ -51,8 +52,8 @@ public class ColorCube extends JavaPlugin {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
             SettingsManager.getInstance().setup(p);
-            LobbyManager.getInstance().setup(p);
             GameManager.getInstance().setup(p);
+            LobbyManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
 
@@ -61,11 +62,15 @@ public class ColorCube extends JavaPlugin {
             pm.registerEvents(new PlayerBreakListener(), p);
             pm.registerEvents(new ExplosionListener(), p);
             pm.registerEvents(new PlayerPlaceListener(), p);
-            pm.registerEvents(new PlayerFallListener(), p);
+            pm.registerEvents(new PlayerDamageListener(), p);
             pm.registerEvents(new PlayerLeaveListener(), p);
             pm.registerEvents(new PlayerRightClickListener(), p);
             pm.registerEvents(new PlayerInventoryListener(), p);
             pm.registerEvents(new PreCommandListener(), p);
+            pm.registerEvents(new PlayerPVPListener(), p);
+            pm.registerEvents(new PlayerPickupListener(), p);
+            pm.registerEvents(new PlayerDropListener(), p);
+            pm.registerEvents(new PlayerClickListener(), p);
 
             loadDependencies();
             getCommand("colorcube").setExecutor(new CommandHandler(p));

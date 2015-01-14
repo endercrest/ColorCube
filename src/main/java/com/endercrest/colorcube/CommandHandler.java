@@ -42,6 +42,9 @@ public class CommandHandler implements CommandExecutor {
         commands.put("resetspawns", new ResetSpawns());
         commands.put("arenalist", new ListArenas());
         commands.put("vote", new Vote());
+        commands.put("spectate", new Spectate());
+        commands.put("createsign", new CreateSign());
+        commands.put("deletesign", new DeleteSign());
 
         commands.put("debug", new Debug());
     }
@@ -61,6 +64,9 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("forcestart", 2);
         helpinfo.put("arenalist", 1);
         helpinfo.put("vote", 1);
+        helpinfo.put("spectate", 1);
+        helpinfo.put("createsign", 3);
+        helpinfo.put("deletesign", 3);
     }
 
     @Override

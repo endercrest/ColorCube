@@ -2,12 +2,14 @@ package com.endercrest.colorcube;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsManager {
 
@@ -200,12 +202,33 @@ public class SettingsManager {
         if(!plugin.getConfig().contains("vote-start")){
             plugin.getConfig().addDefault("vote-start", 0.5);
         }
+        if(!plugin.getConfig().contains("paintable-blocks")){
+            List<String> blocks = new ArrayList<String>();
+            blocks.add(Material.STAINED_CLAY.toString());
+            plugin.getConfig().addDefault("paintable-blocks", blocks);
+        }
+        if(!plugin.getConfig().contains("sign.line1")){
+            plugin.getConfig().addDefault("sign.line1", "&f[&6ColorCube&f]");
+        }
+        if(!plugin.getConfig().contains("sign.line2")){
+            plugin.getConfig().addDefault("sign.line2", "&f[&6{$arenaname}&f]");
+        }
+        if(!plugin.getConfig().contains("sign.line3")){
+            plugin.getConfig().addDefault("sign.line3", "{$players} / {$maxplayers}");
+        }
+        if(!plugin.getConfig().contains("sign.line4")){
+            plugin.getConfig().addDefault("sign.line4", "{$status}");
+        }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
     }
 
     public int getNextArenaID(){
         return getSystemConfig().getInt("arena_next_id", 0);
+    }
+
+    public int getNextSignID(){
+        return getSystemConfig().getInt("sign_next_id", 0);
     }
 
     public FileConfiguration getPluginConfig(){

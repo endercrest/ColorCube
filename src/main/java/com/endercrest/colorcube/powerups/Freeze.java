@@ -1,34 +1,30 @@
 package com.endercrest.colorcube.powerups;
 
-import com.endercrest.colorcube.ColorCube;
-import com.endercrest.colorcube.PowerupManager;
 import com.endercrest.colorcube.game.Game;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Freeze implements SubPowerup {
     @Override
     public void onRightClick(Player p, Game g) {
-        final List<Player> playerList = g.getActivePlayers();
-        PowerupManager.getInstance().addFrozenPlayers(g.getActivePlayers());
-        PowerupManager.getInstance().removeFrozenPlayer(p);
-
         g.msgFArena("game.freeze", "player-" + p.getDisplayName());
-
-        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-        scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                PowerupManager.getInstance().removeFrozenPlayers(playerList);
-            }
-        }, 100L);
+        List<Player> players = new ArrayList<Player>();
+        for(Player player: g.getAllPlayers()){
+            players.add(player);
+        }
+        players.remove(p);
+        for(Player player: players){
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5 * 20, 100, true));
+        }
     }
 
     @Override

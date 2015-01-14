@@ -8,9 +8,12 @@ import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.*;
 
 import java.util.*;
@@ -51,6 +54,7 @@ public class Game {
     Team blue;
     Team green;
     Team yellow;
+    Team spectate;
 
     private int redScore = 0;
     private int blueScore = 0;
@@ -126,10 +130,12 @@ public class Game {
         blue = board.registerNewTeam("blue" + id);
         green = board.registerNewTeam("green" + id);
         yellow = board.registerNewTeam("yellow" + id);
+        spectate = board.registerNewTeam("spectate" + id);
         red.setPrefix(ChatColor.RED + "");
         blue.setPrefix(ChatColor.AQUA + "");
         green.setPrefix(ChatColor.GREEN + "");
         yellow.setPrefix(ChatColor.YELLOW + "");
+
 
         objective = board.registerNewObjective("Arena" + id, "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -137,11 +143,14 @@ public class Game {
         timerScore = objective.getScore("Time");
 
         status = Status.LOBBY;
+
+        LobbyManager.getInstance().update(getGameID());
     }
 
     public void addSpawn() {
         spawnCount++;
         spawns.put(spawnCount, null);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     public void loadspawns(){
@@ -175,6 +184,7 @@ public class Game {
         status = Status.LOBBY;
         disabled = false;
         MessageManager.getInstance().debugConsole("Arena " + id + " enabled");
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -187,12 +197,13 @@ public class Game {
 
         while(players.hasNext()){
             Player p = players.next();
-            removePlayer(p, false);
+            //removePlayer(p, false);
             MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
         status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -217,7 +228,7 @@ public class Game {
             MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
             return false;
         }
-        if (GameManager.getInstance().getPlayerGameID(p) != -1) {
+        if (GameManager.getInstance().getActivePlayerGameID(p) != -1) {
             if (GameManager.getInstance().isPlayerActive(p)) {
                 MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
                 return false;
@@ -226,8 +237,9 @@ public class Game {
         if(p.isInsideVehicle()){
             p.leaveVehicle();
         }
-        //if(isSpectator(p))
-          //  removeSpectator(p);
+
+        if(isSpectator(p))
+            removeSpectator(p, false);
 
         if(status == Status.LOBBY || status == Status.STARTING) {
             if (activePlayers.size() < SettingsManager.getInstance().getSpawnCount(id)) {
@@ -237,6 +249,10 @@ public class Game {
                 p.setGameMode(GameMode.SURVIVAL);
                 p.setFallDistance(0);
                 p.teleport(lobby.getSpawn());
+                Collection<PotionEffect> effects = p.getActivePotionEffects();
+                for(PotionEffect pe: effects){
+                    p.removePotionEffect(pe.getType());
+                }
                 saveInv(p);
                 clearInv(p);
                 p.setHealth(p.getMaxHealth());
@@ -263,6 +279,7 @@ public class Game {
                     countdown(20);
                 }
             }
+            LobbyManager.getInstance().update(getGameID());
             return true;
         }
         if(status == Status.INGAME)
@@ -318,8 +335,10 @@ public class Game {
                 for(int i = 1; i <= spawnCount; i++){
                     if(spawns.get(i) == null){
                         spawns.put(i, p);
-                        p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
-                        clearInv(p);
+                        if(!p.isDead()) {
+                            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                            clearInv(p);
+                        }
                         p.setGameMode(GameMode.SURVIVAL);
                         p.setHealth(p.getMaxHealth());
                         p.setFoodLevel(20);
@@ -335,6 +354,34 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
+        LobbyManager.getInstance().update(getGameID());
+    }
+
+    public void forceStartGame(){
+        if(status == Status.INGAME){
+            return;
+        }
+        for(Player p: activePlayers){
+            for(int i = 1; i <= spawnCount; i++){
+                if(spawns.get(i) == null){
+                    spawns.put(i, p);
+                    p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
+                    clearInv(p);
+                    p.setGameMode(GameMode.SURVIVAL);
+                    p.setHealth(p.getMaxHealth());
+                    p.setFoodLevel(20);
+                    msg.sendFMessage("game.goodluck", p);
+                    break;
+                }
+            }
+        }
+        status = Status.INGAME;
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        tasks.add(timerTaskID);
+        tasks.add(particleTaskID);
+        MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -380,9 +427,14 @@ public class Game {
     public void removePlayer(Player player, boolean b){
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
+        Collection<PotionEffect> effects = player.getActivePotionEffects();
+        for(PotionEffect pe: effects){
+            player.removePotionEffect(pe.getType());
+        }
         activePlayers.remove(player);
+        getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
-        if(activePlayers.size() == 1){
+        if(activePlayers.size() <= 1){
             msgFArena("game.end", "reason-Not enough players");
             endGame();
         }
@@ -391,7 +443,9 @@ public class Game {
             if (spawns.get(in) == player) spawns.remove(in);
         }
 
+
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
+        LobbyManager.getInstance().update(getGameID());
     }
 
     ///////////////////////////////////
@@ -404,12 +458,12 @@ public class Game {
         tasks.clear();
 
         powerups.clear();
-        PowerupManager.getInstance().removeFrozenPlayers(activePlayers);
 
         voted.clear();
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
+        spectators.clear();
         Set<OfflinePlayer> redPlayers = red.getPlayers();
         for(OfflinePlayer player: redPlayers){
             red.removePlayer(player);
@@ -426,6 +480,10 @@ public class Game {
         for(OfflinePlayer player: yellowPlayers){
             yellow.removePlayer(player);
         }
+        Set<OfflinePlayer> spectatePlayers = spectate.getPlayers();
+        for(OfflinePlayer player: spectatePlayers){
+            spectate.removePlayer(player);
+        }
         redScore = 0;
         blueScore = 0;
         yellowScore = 0;
@@ -434,6 +492,7 @@ public class Game {
         board.resetScores("Time");
 
         status = Status.RESETING;
+        LobbyManager.getInstance().update(getGameID());
         endgameRunning = false;
         spawns.clear();
 
@@ -469,9 +528,98 @@ public class Game {
             p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
             restoreInv(p);
         }
+        for(Player p: spectators){
+            p.setScoreboard(manager.getNewScoreboard());
+            p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
+            restoreInv(p);
+        }
         status = Status.FINISHING;
+        LobbyManager.getInstance().update(getGameID());
         resetArena();
         status = Status.LOBBY;
+        LobbyManager.getInstance().update(getGameID());
+    }
+
+    ///////////////////////////////////
+    ///        Add Spectator        ///
+    ///////////////////////////////////
+    public boolean addSpectator(Player p){
+        if(!p.hasPermission("cc.arena.spectate." + id) || !p.hasPermission("cc.arena.spectate.*")){
+            msg.debugConsole("Need cc.arena.spectate." + id + "or cc.arena.spectate.*");
+            msg.sendFMessage("error.nopermission", p);
+            return false;
+        }
+        if(!p.hasPermission("cc.arena.join."+ id) || !p.hasPermission("cc.arena.join.*")){
+            msg.debugConsole("Need cc.arena.join." + id + "or cc.arena.join.*");
+            msg.sendFMessage("error.nopermission", p);
+            return false;
+        }
+        if(lobby == null){
+            MessageManager.getInstance().sendFMessage("error.nolobby", p);
+            return false;
+        }
+        if(!lobby.isSpawnSet()){
+            MessageManager.getInstance().sendFMessage("error.nolobbyspawn", p, "arena-" + id);
+            return false;
+        }
+        if(SettingsManager.getInstance().getGlobalLobbySpawn() == null){
+            MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
+            return false;
+        }
+        if (GameManager.getInstance().getSpectatePlayerId(p) != -1) {
+            if (GameManager.getInstance().isPlayerActive(p)) {
+                MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
+                return false;
+            }
+        }
+
+        if(p.isInsideVehicle()){
+            p.leaveVehicle();
+        }
+
+        if(status == Status.INGAME){
+            msg.sendFMessage("game.join", p, "arena-" + id);
+            //TODO Spectate API
+            p.setGameMode(GameMode.CREATIVE);
+            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, 1));
+            saveInv(p);
+            clearInv(p);
+            p.setHealth(p.getMaxHealth());
+            p.setFoodLevel(20);
+            clearInv(p);
+            p.setScoreboard(board);
+
+            p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600) * 20, 1, true));
+            spectators.add(p);
+            //spectate.addPlayer(p);
+            LobbyManager.getInstance().update(getGameID());
+            return true;
+        }else if(status == Status.DISABLED){
+            msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
+        }else if(status == Status.RESETING){
+            msg.sendFMessage("error.gameresetting", p);
+        }else if(status == Status.LOBBY || status == Status.STARTING){
+            msg.sendFMessage("error.notingame", p);
+        }else{
+            msg.sendFMessage("error.joinfail", p);
+        }
+        return false;
+    }
+
+    ///////////////////////////////////
+    ///       Remove Spectator      ///
+    ///////////////////////////////////
+    public boolean removeSpectator(Player player, boolean logout){
+        player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
+        restoreInv(player);
+        player.setScoreboard(manager.getNewScoreboard());
+
+        player.removePotionEffect(PotionEffectType.INVISIBILITY);
+        spectate.removePlayer(player);
+        spectators.remove(player);
+        //TODO Spectator API
+        LobbyManager.getInstance().update(getGameID());
+        return true;
     }
 
     public void addToTeam(Player player){
@@ -657,13 +805,16 @@ public class Game {
                     y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
                     z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
                     Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
-                    Location loc2 = loc.subtract(0, 1, 0);
-                    if(loc2.getBlock().getType() == Material.STAINED_CLAY){
-                        createPowerup(loc, true);
-                        finish = false;
+                    Location loc2 = loc.clone();
+                    loc2.subtract(0, 1, 0);
+                    if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
+                        if(loc.getBlock().getType() == Material.AIR) {
+                            createPowerup(loc2, true);
+                            finish = false;
+                        }
                     }
 
-                    if(attempt == 50){
+                    if(attempt == 100){
                         MessageManager.getInstance().debugConsole("Could not spawn powerup.");
                         finish = false;
                     }else {
@@ -682,9 +833,7 @@ public class Game {
         public void run() {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
-                    for (Player p : activePlayers) {
-                        ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), activePlayers);
-                    }
+                    ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), getAllPlayers());
                 }
             }
         }
@@ -716,26 +865,26 @@ public class Game {
     }
 
     public void changeBlock(Location loc, int team) {
-        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
-            byte data;
-            switch (team) {
-                case 0://Red Team
-                    data = 14;
-                    break;
-                case 1://Blue Team
-                    data = 3;
-                    break;
-                case 2://Green Team
-                    data = 5;
-                    break;
-                case 3://Yellow Team
-                    data = 4;
-                    break;
-                default:
-                    data = 0;
-                    break;
-            }
-            if (loc.getBlock().getData() != data) {
+        byte data;
+        switch (team) {
+            case 0://Red Team
+                data = 14;
+                break;
+            case 1://Blue Team
+                data = 3;
+                break;
+            case 2://Green Team
+                data = 5;
+                break;
+            case 3://Yellow Team
+                data = 4;
+                break;
+            default:
+                data = 0;
+                break;
+        }
+        if(loc.getBlock().getType().equals(Material.STAINED_CLAY)){
+            if(loc.getBlock().getData() != data){
                 switch (loc.getBlock().getData()) {
                     case 14:
                         scoreManagement(id, team, 0, 1);
@@ -753,16 +902,16 @@ public class Game {
                         scoreManagement(id, team, -1, 1);
                         break;
                 }
-                LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
-                loc.getBlock().setData(data);
             }
         }
+        LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+        loc.getBlock().setType(Material.STAINED_CLAY);
+        loc.getBlock().setData(data);
     }
 
     public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
-        Game game = GameManager.getInstance().getGame(id);
-        game.increaseScore(teamincrease, amount);
-        game.decreaseScore(teamdecrease, amount);
+        increaseScore(teamincrease, amount);
+        decreaseScore(teamdecrease, amount);
     }
 
     public List<Powerup> getPowerups() {
@@ -850,9 +999,10 @@ public class Game {
         return hookVars;
     }
 
-    public ArrayList < Player > getAllPlayers() {
-        ArrayList < Player > all = new ArrayList < Player > ();
+    public ArrayList <Player> getAllPlayers() {
+        ArrayList <Player> all = new ArrayList < Player > ();
         all.addAll(activePlayers);
+        all.addAll(spectators);
         return all;
     }
 
