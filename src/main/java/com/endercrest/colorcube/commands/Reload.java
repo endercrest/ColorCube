@@ -36,7 +36,7 @@ public class Reload implements SubCommand {
                 }
                 MessageManager.getInstance().sendMessage("Games Reloaded", p);
             }else if(args[0].equalsIgnoreCase("all")){
-                final Plugin pinstance = ColorCube.getPlugin();
+                final Plugin pinstance = GameManager.getInstance().getPlugin();
                 Bukkit.getPluginManager().disablePlugin(pinstance);
                 Bukkit.getPluginManager().enablePlugin(pinstance);
                 MessageManager.getInstance().sendMessage("Plugin reloaded", p);

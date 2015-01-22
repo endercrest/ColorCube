@@ -34,6 +34,6 @@ public class ListArenas implements SubCommand {
 
     @Override
     public String permission() {
-        return "";
+        return null;
     }
 }

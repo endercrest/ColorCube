@@ -3,6 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.ColorCubeTabCompleter;
 import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
@@ -13,11 +14,9 @@ public class ColorCube extends JavaPlugin {
 
     private static WorldEditPlugin worldEdit;
 
-    static ColorCube p = null;
     @Override
     public void onEnable(){
-        ColorCube.p = this;
-        getServer().getScheduler().scheduleSyncDelayedTask(this, new Startup(), 10);
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Startup(this), 10);
     }
 
     @Override
@@ -48,6 +47,12 @@ public class ColorCube extends JavaPlugin {
     }
 
     class Startup implements Runnable {
+        ColorCube p;
+
+        public Startup(ColorCube p){
+            this.p = p;
+        }
+
         public void run() {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
@@ -57,7 +62,7 @@ public class ColorCube extends JavaPlugin {
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
 
-            pm.registerEvents(new PlayerMoveListener(), p);
+            pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(), p);
             pm.registerEvents(new PlayerBreakListener(), p);
             pm.registerEvents(new ExplosionListener(), p);
@@ -74,15 +79,12 @@ public class ColorCube extends JavaPlugin {
 
             loadDependencies();
             getCommand("colorcube").setExecutor(new CommandHandler(p));
+            getCommand("colorcube").setTabCompleter(new ColorCubeTabCompleter(p));
             MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest enabled");
 
             if(SettingsManager.getInstance().getPluginConfig().getBoolean("update-checker")){
                 Update update = new Update(87360);
             }
         }
-    }
-
-    public static ColorCube getPlugin(){
-        return p;
     }
 }

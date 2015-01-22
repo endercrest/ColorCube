@@ -144,4 +144,8 @@ public class CommandHandler implements CommandExecutor {
             }catch(Exception e){}
         }
     }
+
+    public HashMap<String, SubCommand> getCommands(){
+        return commands;
+    }
 }
