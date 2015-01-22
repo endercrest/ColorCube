@@ -66,8 +66,11 @@ public class Game {
     private Objective objective;
     private Score timerScore;
 
-    public Game(Integer id){
+    private ColorCube plugin;
+
+    public Game(Integer id, ColorCube plugin){
         this.id = id;
+        this.plugin = plugin;
         reloadConfig();
         setup();
     }
@@ -349,8 +352,8 @@ public class Game {
             }
         }
         status = Status.INGAME;
-        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
-        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
@@ -376,8 +379,8 @@ public class Game {
             }
         }
         status = Status.INGAME;
-        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
-        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
@@ -401,7 +404,7 @@ public class Game {
 
         if(status == Status.LOBBY || status == Status.STARTING){
             status = Status.STARTING;
-            tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new Runnable() {
+            tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {

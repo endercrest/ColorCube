@@ -21,6 +21,12 @@ import java.util.Random;
 
 public class PlayerMoveListener implements Listener {
 
+    ColorCube plugin;
+
+    public PlayerMoveListener(ColorCube plugin){
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         final Player player = event.getPlayer();
@@ -51,7 +57,7 @@ public class PlayerMoveListener implements Listener {
                             black.add(player);
                             player.setFallDistance(0);
                             BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-                            scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
+                            scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
                                 @Override
                                 public void run() {
                                     black.remove(player);

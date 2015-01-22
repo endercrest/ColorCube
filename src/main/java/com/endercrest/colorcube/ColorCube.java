@@ -13,11 +13,9 @@ public class ColorCube extends JavaPlugin {
 
     private static WorldEditPlugin worldEdit;
 
-    static ColorCube p = null;
     @Override
     public void onEnable(){
-        ColorCube.p = this;
-        getServer().getScheduler().scheduleSyncDelayedTask(this, new Startup(), 10);
+        getServer().getScheduler().scheduleSyncDelayedTask(this, new Startup(this), 10);
     }
 
     @Override
@@ -48,6 +46,12 @@ public class ColorCube extends JavaPlugin {
     }
 
     class Startup implements Runnable {
+        ColorCube p;
+
+        public Startup(ColorCube p){
+            this.p = p;
+        }
+
         public void run() {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
@@ -57,7 +61,7 @@ public class ColorCube extends JavaPlugin {
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
 
-            pm.registerEvents(new PlayerMoveListener(), p);
+            pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(), p);
             pm.registerEvents(new PlayerBreakListener(), p);
             pm.registerEvents(new ExplosionListener(), p);
@@ -80,9 +84,5 @@ public class ColorCube extends JavaPlugin {
                 Update update = new Update(87360);
             }
         }
-    }
-
-    public static ColorCube getPlugin(){
-        return p;
     }
 }
