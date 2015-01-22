@@ -3,6 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.ColorCubeTabCompleter;
 import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
@@ -78,6 +79,7 @@ public class ColorCube extends JavaPlugin {
 
             loadDependencies();
             getCommand("colorcube").setExecutor(new CommandHandler(p));
+            getCommand("colorcube").setTabCompleter(new ColorCubeTabCompleter(p));
             MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest enabled");
 
             if(SettingsManager.getInstance().getPluginConfig().getBoolean("update-checker")){
