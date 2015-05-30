@@ -408,10 +408,12 @@ public class Game {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            subTitleFArena("game.countdown", "t-"+count);
                         }
                         if (count < 6) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            titleArena("&6" + count);
                         }
                         count--;
                     } else {
@@ -1053,6 +1055,30 @@ public class Game {
     public void msgArena(String string){
         for(Player p: getAllPlayers()){
             msg.sendMessage(string, p);
+        }
+    }
+
+    public void titleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFTitle(string, p, args);
+        }
+    }
+
+    public void titleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendTitle(string, p);
+        }
+    }
+
+    public void subTitleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFSubTitle(string, p, args);
+        }
+    }
+
+    public void subTitleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendSubTitle(string, p);
         }
     }
 }
