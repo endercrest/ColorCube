@@ -21,6 +21,12 @@ import java.util.Random;
 
 public class PlayerMoveListener implements Listener {
 
+    ColorCube plugin;
+
+    public PlayerMoveListener(ColorCube plugin){
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
         final Player player = event.getPlayer();
@@ -31,7 +37,9 @@ public class PlayerMoveListener implements Listener {
             if(GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
                 int teamID = GameManager.getInstance().getPlayerTeamID(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
-                if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())){
+                List<String> paintable = SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks");
+                paintable.remove("AIR");
+                if(paintable.contains(loc.getBlock().getType().toString())){
                     if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
                         if (loc.getBlock().getData() != (byte) 15) {
                             game.changeBlock(loc, teamID);
@@ -51,7 +59,7 @@ public class PlayerMoveListener implements Listener {
                             black.add(player);
                             player.setFallDistance(0);
                             BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
-                            scheduler.scheduleSyncDelayedTask(ColorCube.getPlugin(), new Runnable() {
+                            scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
                                 @Override
                                 public void run() {
                                     black.remove(player);

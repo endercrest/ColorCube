@@ -1,9 +1,12 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.utils.MessageUtil;
+import com.endercrest.colorcube.utils.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 public class MessageManager {
@@ -19,6 +22,7 @@ public class MessageManager {
 
     public void setup(ColorCube plugin){
         this.plugin = plugin;
+
         debugConsole("&eMessage Manager Set up");
     }
 
@@ -37,7 +41,7 @@ public class MessageManager {
      */
     public void log(Object obj){
         if(plugin.getConfig().getBoolean("color-logs", true)){
-            plugin.getServer().getConsoleSender().sendMessage(colorize("&3[&d" + plugin.getName() + "&3] &r" + obj));
+            plugin.getServer().getConsoleSender().sendMessage(colorize("&f[&6" + plugin.getName() + "&f] &r" + obj));
         }else{
             Bukkit.getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + (colorize((String) obj)).replaceAll("(?)\u00a7([a-f0-9k-or])", ""));
         }
@@ -50,6 +54,24 @@ public class MessageManager {
      */
     public void sendMessage(String msg, Player p){
         p.sendMessage(colorize(prefix + " " + msg));
+    }
+
+    public void sendTitle(String msg, Player player){
+        msg = MessageManager.getInstance().colorize(msg);
+
+        Title title = new Title("");
+        title.setTitle(msg);
+
+        title.send(player);
+    }
+
+    public void sendSubTitle(String msg, Player player){
+        msg = MessageManager.getInstance().colorize(msg);
+
+        Title title = new Title("");
+        title.setSubtitle(msg);
+
+        title.send(player);
     }
 
     /**
@@ -84,6 +106,30 @@ public class MessageManager {
         if(args != null && args.length != 0)
             msg = MessageUtil.replaceVars(msg, args);
         p.sendMessage(colorize(msg));
+    }
+
+    public void sendFTitle(String path, Player player, String ...args){
+        String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
+        if(args != null && args.length != 0)
+            msg = MessageUtil.replaceVars(msg, args);
+        msg = MessageManager.getInstance().colorize(msg);
+
+        Title title = new Title("");
+        title.setTitle(msg);
+
+        title.send(player);
+    }
+
+    public void sendFSubTitle(String path, Player player, String ...args){
+        String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
+        if(args != null && args.length != 0)
+            msg = MessageUtil.replaceVars(msg, args);
+        msg = MessageManager.getInstance().colorize(msg);
+
+        Title title = new Title("");
+        title.setSubtitle(msg);
+
+        title.send(player);
     }
 
     public void debug(String msg, Player p){

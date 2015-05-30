@@ -48,11 +48,15 @@ public class GameManager {
             if(system.isSet("arenas." + arena + ".x1")){
                 if(system.isSet("arenas." + arena + ".enabled")){
                     msg.debugConsole("Loading arena:" + arena);
-                    games.add(new Game(arena));
+                    games.add(new Game(arena, plugin));
                 }
             }
             arena++;
         }
+    }
+
+    public ColorCube getPlugin(){
+        return plugin;
     }
 
     public void removePlayer(Player p, boolean b){
@@ -108,6 +112,7 @@ public class GameManager {
         system.set("arenas." + id + ".x2", pos2.getBlockX());
         system.set("arenas." + id + ".y2", pos2.getBlockY());
         system.set("arenas." + id + ".z2", pos2.getBlockZ());
+        system.set("arenas." + id + ".pvp", false);
         system.set("arenas." + id + ".enabled", true);
 
         settingsManager.saveSystemConfig();
@@ -133,7 +138,7 @@ public class GameManager {
      * @param id The ID of the arena
      */
     public void addArena(int id){
-        Game game = new Game(id);
+        Game game = new Game(id, plugin);
         games.add(game);
     }
 

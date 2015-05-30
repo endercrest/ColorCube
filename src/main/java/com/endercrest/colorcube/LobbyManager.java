@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LobbyManager {
 
@@ -64,13 +65,13 @@ public class LobbyManager {
     }
 
     public void createLobbySign(Player p, Game game) {
-        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN)){
+        if(!p.getTargetBlock((Set)null, 10).getType().equals(Material.WALL_SIGN)){
             MessageManager.getInstance().sendFMessage("error.notsign", p);
             return;
         }
 
         for(LobbySign sign: lobbySigns){
-            if(sign.getLocation().equals(p.getTargetBlock(null, 10).getLocation())){
+            if(sign.getLocation().equals(p.getTargetBlock((Set)null, 10).getLocation())){
                 MessageManager.getInstance().sendFMessage("error.alreadysign", p);
                 return;
             }
@@ -83,7 +84,7 @@ public class LobbyManager {
         if(id == 0 || lobbySigns.isEmpty()){
             id = 1;
         }
-        Location loc = p.getTargetBlock(null, 10).getLocation();
+        Location loc = p.getTargetBlock((Set)null, 10).getLocation();
 
         system.set("signs." + id, null);
         system.set("signs." + id + ".x", loc.getBlockX());
@@ -102,11 +103,11 @@ public class LobbyManager {
     }
 
     public void removeLobbySign(Player p){
-        if(!p.getTargetBlock(null, 10).getType().equals(Material.WALL_SIGN) && !p.getTargetBlock(null, 10).getType().equals(Material.SIGN_POST)){
+        if(!p.getTargetBlock((Set)null, 10).getType().equals(Material.WALL_SIGN) && !p.getTargetBlock((Set)null, 10).getType().equals(Material.SIGN_POST)){
             MessageManager.getInstance().sendFMessage("error.notsign", p);
             return;
         }
-        LobbySign lobbySign = getLobbySign(p.getTargetBlock(null, 10).getLocation());
+        LobbySign lobbySign = getLobbySign(p.getTargetBlock((Set)null, 10).getLocation());
         if(lobbySign != null) {
             //SettingsManager.getInstance().getSystemConfig().set("sign_next_id", SettingsManager.getInstance().getSystemConfig().getInt("sign_next_id") + 1);
             SettingsManager.getInstance().getSystemConfig().set("signs." + lobbySign.getSignID() + ".enabled", false);

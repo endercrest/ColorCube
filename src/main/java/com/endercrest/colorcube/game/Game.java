@@ -47,6 +47,7 @@ public class Game {
     private int particleTaskID = 0;
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
+    private boolean pvp;
 
     private List<Player> voted = new ArrayList<Player>();
 
@@ -66,8 +67,11 @@ public class Game {
     private Objective objective;
     private Score timerScore;
 
-    public Game(Integer id){
+    private ColorCube plugin;
+
+    public Game(Integer id, ColorCube plugin){
         this.id = id;
+        this.plugin = plugin;
         reloadConfig();
         setup();
     }
@@ -117,6 +121,8 @@ public class Game {
             lobby.loadSpawn(id);
             msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
         }
+
+        pvp = system.getBoolean("arenas." + id + ".pvp", false);
 
         loadspawns();
 
@@ -349,8 +355,8 @@ public class Game {
             }
         }
         status = Status.INGAME;
-        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
-        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
@@ -376,8 +382,8 @@ public class Game {
             }
         }
         status = Status.INGAME;
-        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new GameTimer(), 0, 20);
-        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new ParticleTimer(), 0, 5);
+        timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
+        particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
@@ -401,14 +407,16 @@ public class Game {
 
         if(status == Status.LOBBY || status == Status.STARTING){
             status = Status.STARTING;
-            tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(ColorCube.getPlugin(), new Runnable() {
+            tid = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            subTitleFArena("game.countdown", "t-"+count);
                         }
                         if (count < 6) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            titleArena("&6" + count);
                         }
                         count--;
                     } else {
@@ -435,8 +443,17 @@ public class Game {
         getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() <= 1){
-            msgFArena("game.end", "reason-Not enough players");
-            endGame();
+            if(status.equals(Status.LOBBY)) {
+                msg.debugConsole("Player Left Arena " + id + " while waiting in lobby.");
+            }else if(status.equals(Status.STARTING)){
+                Bukkit.getScheduler().cancelTask(tid);
+                countdownRunning = false;
+                status = Status.LOBBY;
+                msgFArena("game.end", "reason-Player left the game.");
+            }else{
+                msgFArena("game.end", "reason-Not enough players");
+                endGame();
+            }
         }
         player.setScoreboard(manager.getNewScoreboard());
         for (Object in : spawns.keySet().toArray()) {
@@ -909,7 +926,7 @@ public class Game {
         loc.getBlock().setData(data);
     }
 
-    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
+    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
         increaseScore(teamincrease, amount);
         decreaseScore(teamdecrease, amount);
     }
@@ -999,6 +1016,10 @@ public class Game {
         return hookVars;
     }
 
+    public boolean isPvp(){
+        return pvp;
+    }
+
     public ArrayList <Player> getAllPlayers() {
         ArrayList <Player> all = new ArrayList < Player > ();
         all.addAll(activePlayers);
@@ -1050,6 +1071,30 @@ public class Game {
     public void msgArena(String string){
         for(Player p: getAllPlayers()){
             msg.sendMessage(string, p);
+        }
+    }
+
+    public void titleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFTitle(string, p, args);
+        }
+    }
+
+    public void titleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendTitle(string, p);
+        }
+    }
+
+    public void subTitleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFSubTitle(string, p, args);
+        }
+    }
+
+    public void subTitleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendSubTitle(string, p);
         }
     }
 }
