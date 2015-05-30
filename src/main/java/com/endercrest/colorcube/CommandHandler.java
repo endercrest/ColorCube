@@ -46,7 +46,7 @@ public class CommandHandler implements CommandExecutor {
         commands.put("createsign", new CreateSign());
         commands.put("deletesign", new DeleteSign());
 
-        commands.put("debug", new Debug());
+        commands.put("debug", new Debug(plugin));
     }
 
     private void loadHelpInfo(){
