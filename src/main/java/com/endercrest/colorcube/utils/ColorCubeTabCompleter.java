@@ -31,15 +31,17 @@ public class ColorCubeTabCompleter implements TabCompleter {
                         SubCommand subCommand = cmdH.getCommands().get(string);
                         if(subCommand.permission() != null){
                             if(player.hasPermission(subCommand.permission())){
-                                list.add(string);
+                                if(string.startsWith(args[0]) || args[0].isEmpty()) {
+                                    list.add(string);
+                                }
                             }
                         }else{
-                            list.add(string);
+                            if(string.startsWith(args[0]) || args[0].isEmpty()) {
+                                list.add(string);
+                            }
                         }
                     }
                     return list;
-                }else if(args.length > 1){
-
                 }
             }
         }
