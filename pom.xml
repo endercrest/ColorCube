@@ -6,7 +6,7 @@
 
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
-    <version>0.5.0-PRE-01</version>
+    <version>0.5.0-PRE-02</version>
     <developers>
         <developer>
             <id>endercrest</id>
@@ -16,9 +16,9 @@
     </developers>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.2</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.6-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
@@ -28,12 +28,8 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>spigot-repo</id>
-            <url>http://repo.md-5.net/</url>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
