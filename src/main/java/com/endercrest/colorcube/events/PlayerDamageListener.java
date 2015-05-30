@@ -17,7 +17,9 @@ public class PlayerDamageListener implements Listener {
                 if(cause.equals(EntityDamageEvent.DamageCause.FALL)){
                     event.setCancelled(true);
                 }else if(cause.equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)){
-                    event.setDamage(0);
+                    if(GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(player)).isPvp()) {
+                        event.setDamage(0);
+                    }
                 }
             }
         }

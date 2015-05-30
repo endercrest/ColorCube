@@ -47,6 +47,7 @@ public class Game {
     private int particleTaskID = 0;
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
+    private boolean pvp;
 
     private List<Player> voted = new ArrayList<Player>();
 
@@ -120,6 +121,13 @@ public class Game {
             lobby.loadSpawn(id);
             msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
         }
+
+        if(!system.isSet("arenas." + id + ".pvp")){
+            system.set("arenas." + id + ".pvp", false);
+            SettingsManager.getInstance().saveSystemConfig();
+        }
+
+        pvp = system.getBoolean("arenas." + id + ".pvp", false);
 
         loadspawns();
 
@@ -914,7 +922,7 @@ public class Game {
         loc.getBlock().setData(data);
     }
 
-    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
+    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
         increaseScore(teamincrease, amount);
         decreaseScore(teamdecrease, amount);
     }
@@ -1002,6 +1010,10 @@ public class Game {
 
     public HashMap<String, String> getHookvars() {
         return hookVars;
+    }
+
+    public boolean isPvp(){
+        return pvp;
     }
 
     public ArrayList <Player> getAllPlayers() {
