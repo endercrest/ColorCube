@@ -440,8 +440,17 @@ public class Game {
         getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() <= 1){
-            msgFArena("game.end", "reason-Not enough players");
-            endGame();
+            if(status.equals(Status.LOBBY)) {
+                msg.debugConsole("Player Left Arena " + id + " while waiting in lobby.");
+            }else if(status.equals(Status.STARTING)){
+                Bukkit.getScheduler().cancelTask(tid);
+                countdownRunning = false;
+                status = Status.LOBBY;
+                msgFArena("game.end", "reason-Player left the game.");
+            }else{
+                msgFArena("game.end", "reason-Not enough players");
+                endGame();
+            }
         }
         player.setScoreboard(manager.getNewScoreboard());
         for (Object in : spawns.keySet().toArray()) {
