@@ -48,6 +48,7 @@ public class Game {
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
     private boolean pvp;
+    private double reward;
 
     private List<Player> voted = new ArrayList<Player>();
 
@@ -123,6 +124,8 @@ public class Game {
         }
 
         pvp = system.getBoolean("arenas." + id + ".pvp", false);
+
+        reward = system.getDouble("arenas." + id + ".reward", 0.0);
 
         loadspawns();
 
@@ -530,7 +533,8 @@ public class Game {
             }else{
                 players = new HashSet<OfflinePlayer>();
             }
-            TeamWinEvent tw = new TeamWinEvent(players, team);
+            giveReward(players);
+            TeamWinEvent tw = new TeamWinEvent(players, team, reward);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -926,6 +930,14 @@ public class Game {
         loc.getBlock().setData(data);
     }
 
+    public void giveReward(Set<OfflinePlayer> players){
+        if(ColorCube.economy != null) {
+            for (OfflinePlayer player : players) {
+                ColorCube.economy.depositPlayer(player, reward);
+            }
+        }
+    }
+
     public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
         increaseScore(teamincrease, amount);
         decreaseScore(teamdecrease, amount);
@@ -1018,6 +1030,14 @@ public class Game {
 
     public boolean isPvp(){
         return pvp;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public void setReward(double reward) {
+        this.reward = reward;
     }
 
     public ArrayList <Player> getAllPlayers() {

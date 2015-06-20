@@ -77,7 +77,8 @@ messages:
         vote: 'Vote to start the game'
         spectate: 'Spectate a game in an arena'
         createsign: 'Creates a new lobby sign.'
-        deletesign: 'Delets the lobby sign you are looking at'
+        deletesign: 'Deletes the lobby sign you are looking at'
+        setreward: 'Sets the reward for the arena'
     color:
         red: 'red'
         green: 'green'

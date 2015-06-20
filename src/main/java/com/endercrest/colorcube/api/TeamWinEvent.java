@@ -12,10 +12,12 @@ public class TeamWinEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private Set<OfflinePlayer> players;
     private String teamName;
+    private double reward;
 
-    public TeamWinEvent(Set<OfflinePlayer> players, String teamName){
+    public TeamWinEvent(Set<OfflinePlayer> players, String teamName, double reward){
         this.players = players;
         this.teamName = teamName;
+        this.reward = reward;
     }
 
     /**
@@ -52,6 +54,10 @@ public class TeamWinEvent extends Event {
             }
         }
         return null;
+    }
+
+    public double getReward(){
+        return reward;
     }
 
     public String getTeamName(){
