@@ -56,6 +56,7 @@ messages:
         spawnset: '&6Spawn {$num} set in Arena {$arena}'
         lobbyspawn: '&6Lobby has been set.'
         setspawnusage: '&6Usage: /cc setspawn <id/next>'
+        setreward: '&6Reward has been set.'
     words:
         noarenas: 'No arenas'
         arenas: 'Arenas'

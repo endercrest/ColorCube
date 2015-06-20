@@ -23,6 +23,7 @@ public class SetReward implements SubCommand {
                 double amount = Integer.parseInt(args[1]);
                 if(GameManager.getInstance().getGame(id) != null) {
                     SettingsManager.getInstance().setReward(id, amount);
+                    MessageManager.getInstance().sendFMessage("info.setreward", p);
                 }else{
                     MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + args[0]);
                 }
