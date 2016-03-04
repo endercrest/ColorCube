@@ -21,7 +21,7 @@ import java.util.*;
 
 public class Game {
 
-    public static enum Status{
+    public enum Status{
         DISABLED, LOADING, IDLE, LOBBY,
         STARTING, INGAME, FINISHING, RESETING, ERROR
     }
@@ -558,6 +558,8 @@ public class Game {
             p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
             restoreInv(p);
         }
+        timeBar.setTitle(ChatColor.GOLD + "Arena " + id);
+        timeBar.setProgress(1);
         status = Status.FINISHING;
         LobbyManager.getInstance().update(getGameID());
         resetArena();

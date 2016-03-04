@@ -1,7 +1,8 @@
-package com.endercrest.colorcube.commands;
+package com.endercrest.colorcube.commands.admin;
 
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.commands.SubCommand;
 import org.bukkit.entity.Player;
 
 public class ResetSpawns implements SubCommand {

@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.commands;
 
 import com.endercrest.colorcube.*;
+import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.game.Powerup;
 import org.bukkit.Bukkit;

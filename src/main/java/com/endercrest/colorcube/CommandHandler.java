@@ -1,6 +1,12 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.commands.*;
+import com.endercrest.colorcube.commands.admin.*;
+import com.endercrest.colorcube.commands.Debug;
+import com.endercrest.colorcube.commands.player.*;
+import com.endercrest.colorcube.commands.staff.Disable;
+import com.endercrest.colorcube.commands.staff.Enable;
+import com.endercrest.colorcube.commands.staff.ForceStart;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
