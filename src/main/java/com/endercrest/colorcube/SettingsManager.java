@@ -289,10 +289,10 @@ public class SettingsManager {
     }
 
     /**
-     *
-     * @param gameid
-     * @param spawnid
-     * @param v
+     * Set Spawn of the Arena
+     * @param gameid The Game ID
+     * @param spawnid The SpawnID
+     * @param v The location
      */
     public void setSpawn(int gameid, int spawnid, Location v) {
         system.set("spawns." + gameid + "." + spawnid + ".x", v.getBlockX());
@@ -307,5 +307,16 @@ public class SettingsManager {
         saveSystemConfig();
         GameManager.getInstance().getGame(gameid).addSpawn();
 
+    }
+
+    /**
+     * Set the reward of the desired arena
+     * @param gameid The Game ID
+     * @param reward The reward amount
+     */
+    public void setReward(int gameid, double reward){
+        system.set("arenas." + gameid + ".reward", reward);
+        saveSystemConfig();
+        GameManager.getInstance().getGame(gameid).setReward(reward);
     }
 }

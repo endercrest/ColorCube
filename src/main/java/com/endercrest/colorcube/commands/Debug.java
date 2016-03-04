@@ -1,10 +1,7 @@
 package com.endercrest.colorcube.commands;
 
-import com.endercrest.colorcube.LobbyManager;
+import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.game.Game;
-import com.endercrest.colorcube.GameManager;
-import com.endercrest.colorcube.MessageManager;
-import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.game.Powerup;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,6 +21,12 @@ import org.bukkit.entity.Player;
  * () - Mandatory [] - Optional
  */
 public class Debug implements SubCommand {
+
+    private ColorCube plugin;
+
+    public Debug(ColorCube plugin){
+        this.plugin = plugin;
+    }
     @Override
     public boolean onCommand(Player p, String[] args) {
         if(SettingsManager.getInstance().getPluginConfig().getBoolean("debug", false)) {

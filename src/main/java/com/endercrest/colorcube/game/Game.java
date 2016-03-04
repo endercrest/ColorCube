@@ -47,6 +47,8 @@ public class Game {
     private int particleTaskID = 0;
     private HashMap<String, String> hookVars = new HashMap<String, String>();
     private MessageManager msg = MessageManager.getInstance();
+    private boolean pvp;
+    private double reward;
 
     private List<Player> voted = new ArrayList<Player>();
 
@@ -120,6 +122,10 @@ public class Game {
             lobby.loadSpawn(id);
             msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
         }
+
+        pvp = system.getBoolean("arenas." + id + ".pvp", false);
+
+        reward = system.getDouble("arenas." + id + ".reward", 0.0);
 
         loadspawns();
 
@@ -408,10 +414,12 @@ public class Game {
                 public void run() {
                     if (count > 0) {
                         if (count % 10 == 0) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            subTitleFArena("game.countdown", "t-"+count);
                         }
                         if (count < 6) {
-                            msgFArena("game.countdown","t-"+count);
+                            msgFArena("game.countdown", "t-"+count);
+                            titleArena("&6" + count);
                         }
                         count--;
                     } else {
@@ -438,8 +446,17 @@ public class Game {
         getTeam(player).removePlayer(player);
         msgFArena("game.playerleave", "player-" + player.getDisplayName());
         if(activePlayers.size() <= 1){
-            msgFArena("game.end", "reason-Not enough players");
-            endGame();
+            if(status.equals(Status.LOBBY)) {
+                msg.debugConsole("Player Left Arena " + id + " while waiting in lobby.");
+            }else if(status.equals(Status.STARTING)){
+                Bukkit.getScheduler().cancelTask(tid);
+                countdownRunning = false;
+                status = Status.LOBBY;
+                msgFArena("game.end", "reason-Player left the game.");
+            }else{
+                msgFArena("game.end", "reason-Not enough players");
+                endGame();
+            }
         }
         player.setScoreboard(manager.getNewScoreboard());
         for (Object in : spawns.keySet().toArray()) {
@@ -516,7 +533,8 @@ public class Game {
             }else{
                 players = new HashSet<OfflinePlayer>();
             }
-            TeamWinEvent tw = new TeamWinEvent(players, team);
+            giveReward(players);
+            TeamWinEvent tw = new TeamWinEvent(players, team, reward);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -912,7 +930,15 @@ public class Game {
         loc.getBlock().setData(data);
     }
 
-    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount){
+    public void giveReward(Set<OfflinePlayer> players){
+        if(ColorCube.economy != null) {
+            for (OfflinePlayer player : players) {
+                ColorCube.economy.depositPlayer(player, reward);
+            }
+        }
+    }
+
+    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
         increaseScore(teamincrease, amount);
         decreaseScore(teamdecrease, amount);
     }
@@ -1002,6 +1028,18 @@ public class Game {
         return hookVars;
     }
 
+    public boolean isPvp(){
+        return pvp;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public void setReward(double reward) {
+        this.reward = reward;
+    }
+
     public ArrayList <Player> getAllPlayers() {
         ArrayList <Player> all = new ArrayList < Player > ();
         all.addAll(activePlayers);
@@ -1053,6 +1091,30 @@ public class Game {
     public void msgArena(String string){
         for(Player p: getAllPlayers()){
             msg.sendMessage(string, p);
+        }
+    }
+
+    public void titleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFTitle(string, p, args);
+        }
+    }
+
+    public void titleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendTitle(string, p);
+        }
+    }
+
+    public void subTitleFArena(String string, String...args){
+        for(Player p: getAllPlayers()){
+            msg.sendFSubTitle(string, p, args);
+        }
+    }
+
+    public void subTitleArena(String string){
+        for(Player p: getAllPlayers()){
+            msg.sendSubTitle(string, p);
         }
     }
 }

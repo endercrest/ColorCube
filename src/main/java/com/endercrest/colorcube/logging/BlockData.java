@@ -4,9 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 
-/**
- * Created by Thomas on 11/23/2014.
- */
 public class BlockData implements Serializable {
     private static final long serialVersionUID = 1L;
     private String world;

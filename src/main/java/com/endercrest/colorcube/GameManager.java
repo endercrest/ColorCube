@@ -112,7 +112,9 @@ public class GameManager {
         system.set("arenas." + id + ".x2", pos2.getBlockX());
         system.set("arenas." + id + ".y2", pos2.getBlockY());
         system.set("arenas." + id + ".z2", pos2.getBlockZ());
+        system.set("arenas." + id + ".pvp", false);
         system.set("arenas." + id + ".enabled", true);
+        system.set("arenas." + id + ".reward", 0.0);
 
         settingsManager.saveSystemConfig();
         addArena(id);
