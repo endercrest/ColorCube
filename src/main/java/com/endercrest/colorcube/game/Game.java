@@ -6,9 +6,10 @@ import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
-import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -67,6 +68,8 @@ public class Game {
     private Scoreboard board;
     private Objective objective;
     private Score timerScore;
+
+    private BossBar timeBar;
 
     private ColorCube plugin;
 
@@ -150,6 +153,8 @@ public class Game {
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.setDisplayName(MessageManager.getInstance().colorize("&6Arena " + id));
         timerScore = objective.getScore("Time");
+
+        timeBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
 
         status = Status.LOBBY;
 
@@ -255,25 +260,28 @@ public class Game {
                 msg.sendFMessage("game.join", p, "arena-" + id);
                 PlayerJoinArenaEvent joinarena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinarena);
-                p.setGameMode(GameMode.SURVIVAL);
-                p.setFallDistance(0);
-                p.teleport(lobby.getSpawn());
-                Collection<PotionEffect> effects = p.getActivePotionEffects();
-                for(PotionEffect pe: effects){
-                    p.removePotionEffect(pe.getType());
-                }
-                saveInv(p);
-                clearInv(p);
-                p.setHealth(p.getMaxHealth());
-                p.setFoodLevel(20);
-                clearInv(p);
-                p.setScoreboard(board);
+                if(!joinarena.isCancelled()) {
+                    p.setGameMode(GameMode.SURVIVAL);
+                    p.setFallDistance(0);
+                    p.teleport(lobby.getSpawn());
+                    Collection<PotionEffect> effects = p.getActivePotionEffects();
+                    for (PotionEffect pe : effects) {
+                        p.removePotionEffect(pe.getType());
+                    }
+                    saveInv(p);
+                    clearInv(p);
+                    p.setHealth(p.getMaxHealth());
+                    p.setFoodLevel(20);
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1));
+                    clearInv(p);
+                    p.setScoreboard(board);
 
-                activePlayers.add(p);
-                addToTeam(p);
-                msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
-                if (spawnCount == activePlayers.size()) {
-                    countdown(5);
+                    activePlayers.add(p);
+                    addToTeam(p);
+                    msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
+                    if (spawnCount == activePlayers.size()) {
+                        countdown(5);
+                    }
                 }
             } else if (SettingsManager.getInstance().getSpawnCount(id) == 0) {
                 msg.sendFMessage("game.nospawns", p, "arena-" + id);
@@ -854,7 +862,9 @@ public class Game {
         public void run() {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
-                    ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), getAllPlayers());
+                    for(Player player: getAllPlayers()){
+                        player.spawnParticle(Particle.NOTE, pu.getLocation(), 10, 0.2F, 0.5F, 0.2F, 1);
+                    }
                 }
             }
         }

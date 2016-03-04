@@ -1,12 +1,9 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.utils.MessageUtil;
-import com.endercrest.colorcube.utils.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 public class MessageManager {
@@ -59,19 +56,13 @@ public class MessageManager {
     public void sendTitle(String msg, Player player){
         msg = MessageManager.getInstance().colorize(msg);
 
-        Title title = new Title("");
-        title.setTitle(msg);
-
-        title.send(player);
+        player.sendTitle(msg, "");
     }
 
     public void sendSubTitle(String msg, Player player){
         msg = MessageManager.getInstance().colorize(msg);
 
-        Title title = new Title("");
-        title.setSubtitle(msg);
-
-        title.send(player);
+        player.sendTitle("", msg);
     }
 
     /**
@@ -114,10 +105,7 @@ public class MessageManager {
             msg = MessageUtil.replaceVars(msg, args);
         msg = MessageManager.getInstance().colorize(msg);
 
-        Title title = new Title("");
-        title.setTitle(msg);
-
-        title.send(player);
+        player.sendTitle(msg, "");
     }
 
     public void sendFSubTitle(String path, Player player, String ...args){
@@ -126,10 +114,7 @@ public class MessageManager {
             msg = MessageUtil.replaceVars(msg, args);
         msg = MessageManager.getInstance().colorize(msg);
 
-        Title title = new Title("");
-        title.setSubtitle(msg);
-
-        title.send(player);
+        player.sendTitle("", msg);
     }
 
     public void debug(String msg, Player p){

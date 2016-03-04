@@ -19,7 +19,7 @@ public class CreateArena implements SubCommand {
 
     @Override
     public String helpInfo() {
-        return "cc createarena <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.createarena", "Create a new arena");
+        return "/cc createarena <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.createarena", "Create a new arena");
     }
 
     @Override
