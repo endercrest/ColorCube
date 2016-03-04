@@ -66,8 +66,6 @@ public class Game {
 
     private ScoreboardManager manager;
     private Scoreboard board;
-    private Objective objective;
-    private Score timerScore;
 
     private BossBar timeBar;
 
@@ -148,13 +146,7 @@ public class Game {
         green.setPrefix(ChatColor.GREEN + "");
         yellow.setPrefix(ChatColor.YELLOW + "");
 
-
-        objective = board.registerNewObjective("Arena" + id, "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName(MessageManager.getInstance().colorize("&6Arena " + id));
-        timerScore = objective.getScore("Time");
-
-        timeBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+        timeBar = Bukkit.createBossBar(ChatColor.GOLD + "Arena " + id, BarColor.WHITE, BarStyle.SOLID);
 
         status = Status.LOBBY;
 
@@ -276,8 +268,10 @@ public class Game {
                     clearInv(p);
                     p.setScoreboard(board);
 
+
                     activePlayers.add(p);
                     addToTeam(p);
+                    timeBar.addPlayer(p);
                     msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
                     if (spawnCount == activePlayers.size()) {
                         countdown(5);
@@ -444,6 +438,9 @@ public class Game {
     ///       Remove Player         ///
     ///////////////////////////////////
     public void removePlayer(Player player, boolean b){
+        PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
+        Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
+
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         Collection<PotionEffect> effects = player.getActivePotionEffects();
@@ -467,12 +464,11 @@ public class Game {
             }
         }
         player.setScoreboard(manager.getNewScoreboard());
+        timeBar.removePlayer(player);
         for (Object in : spawns.keySet().toArray()) {
             if (spawns.get(in) == player) spawns.remove(in);
         }
 
-
-        PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
         LobbyManager.getInstance().update(getGameID());
     }
 
@@ -805,14 +801,16 @@ public class Game {
     ///////////////////////////////////
 
     class GameTimer implements Runnable {
-        int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        double counter = (double)SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        double maxTime = counter;
         int powerupDefault = SettingsManager.getInstance().getPluginConfig().getInt("powerup-freq", 15);
         int powerup = powerupDefault;
         @Override
         public void run() {
             if(counter > 0){
                 --counter;
-                timerScore.setScore(counter);
+                timeBar.setTitle(ChatColor.GOLD + "Time: "+ ChatColor.WHITE + (int)(counter) + " seconds");
+                timeBar.setProgress(counter/maxTime);
             }else{
                 endGame();
             }
