@@ -2,8 +2,12 @@ package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.menu.Page;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,5 +82,16 @@ public class MenuManager {
 
     public int calcNumberOfPages(){
         return (int)Math.ceil(GameManager.getInstance().getGameCount()/27D);
+    }
+
+    public ItemStack getMenuItemStack(){
+        ItemStack itemStack = new ItemStack(Material.SLIME_BALL);
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        itemMeta.setDisplayName(ChatColor.GREEN+"Game Selector");
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.GRAY+"Click to open game selector.");
+        itemMeta.setLore(lore);
+        itemStack.setItemMeta(itemMeta);
+        return itemStack;
     }
 }

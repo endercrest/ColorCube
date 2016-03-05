@@ -6,7 +6,7 @@
 
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
-    <version>0.5.0-BETA</version>
+    <version>0.5.0-PRE-01</version>
     <developers>
         <developer>
             <id>endercrest</id>
@@ -46,7 +46,7 @@
         </repository>
     </repositories>
     <build>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
         <defaultGoal>clean package install</defaultGoal>
         <plugins>
             <plugin>
