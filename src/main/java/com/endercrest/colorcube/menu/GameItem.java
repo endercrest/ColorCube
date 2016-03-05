@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.menu;
 
+import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.game.Game;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,39 +41,42 @@ public class GameItem extends PageItem {
     public ItemStack getItemStack() {
         ItemStack itemStack = new ItemStack(Material.EMPTY_MAP);
         itemStack.setAmount(game.getSpawnCount()-game.getActivePlayers().size());
+        if(itemStack.getAmount() == 0){
+            itemStack.setType(Material.MAP);
+        }
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.GREEN+"Arena " + game.getId());
+        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.game.title", "arena-"+game.getId()));
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY+"Players: "+game.getActivePlayers().size()+"/"+game.getSpawnCount());
+        lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.players", "activeplayers-"+game.getActivePlayers().size(), "maxplayers-"+game.getSpawnCount()));
         lore.add("");
-        lore.add(ChatColor.GRAY+"Status: "+game.getStatus().toString());
+        lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.status", "status-"+game.getStatus().toString()));
         switch (game.getStatus()){
             case LOADING:
-                lore.add(ChatColor.GRAY+"Game loading, please wait for game to finish!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.loading"));
                 break;
             case IDLE:
-                lore.add(ChatColor.GRAY+"Click to join the game!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.idle"));
                 break;
             case LOBBY:
-                lore.add(ChatColor.GRAY+"Click to join the game!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.lobby"));
                 break;
             case DISABLED:
-                lore.add(ChatColor.RED+"Game Disabled! Can not join.");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.disabled"));
                 break;
             case STARTING:
-                lore.add(ChatColor.GRAY+"Click to join the game!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.starting"));
                 break;
             case INGAME:
-                lore.add(ChatColor.GRAY+"Click to spectate the game!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.ingame"));
                 break;
             case FINISHING:
-                lore.add(ChatColor.GRAY+"Game ending, please wait for game to finish!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.finishing"));
                 break;
             case RESETING:
-                lore.add(ChatColor.GRAY+"Game reseting, please wait.");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.resetting"));
                 break;
             case ERROR:
-                lore.add(ChatColor.RED+"ERROR!?!?!?!?!");
+                lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.error"));
                 break;
         }
 

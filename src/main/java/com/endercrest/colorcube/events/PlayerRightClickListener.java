@@ -30,11 +30,13 @@ public class PlayerRightClickListener implements Listener {
                 }catch(NullPointerException e){}
             }
 
-            if(event.getItem().equals(MenuManager.getInstance().getMenuItemStack())){
-                if(player.hasPermission("cc.lobby.menu")) {
-                    player.openInventory(MenuManager.getInstance().getPages().get(0).getInventory());
-                }else{
-                    MessageManager.getInstance().sendFMessage("error.nopermission", player);
+            if(event.getItem() != null) {
+                if (event.getItem().equals(MenuManager.getInstance().getMenuItemStack())) {
+                    if (player.hasPermission("cc.lobby.menu")) {
+                        player.openInventory(MenuManager.getInstance().getPages().get(0).getInventory());
+                    } else {
+                        MessageManager.getInstance().sendFMessage("error.nopermission", player);
+                    }
                 }
             }
         }

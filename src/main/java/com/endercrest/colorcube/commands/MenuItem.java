@@ -2,7 +2,6 @@ package com.endercrest.colorcube.commands;
 
 import com.endercrest.colorcube.MenuManager;
 import com.endercrest.colorcube.MessageManager;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class MenuItem implements SubCommand {
@@ -15,10 +14,10 @@ public class MenuItem implements SubCommand {
             return true;
         }
         if(p.getInventory().contains(MenuManager.getInstance().getMenuItemStack())){
-            MessageManager.getInstance().sendMessage(ChatColor.RED + "You already have a menu item!", p);
+            MessageManager.getInstance().sendFMessage("error.alreadyhave", p, "input-a menu item");
         }else {
             p.getInventory().addItem(MenuManager.getInstance().getMenuItemStack());
-            MessageManager.getInstance().sendMessage("Menu Item has been added to your inventory.", p);
+            MessageManager.getInstance().sendFMessage("menu.added", p);
         }
         return true;
     }

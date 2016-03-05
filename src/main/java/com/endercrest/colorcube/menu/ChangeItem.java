@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.menu;
 
 import com.endercrest.colorcube.MenuManager;
+import com.endercrest.colorcube.MessageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,9 +40,9 @@ public class ChangeItem extends PageItem {
         ItemStack itemStack = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)3);
         ItemMeta itemMeta = itemStack.getItemMeta();
         if(next){
-            itemMeta.setDisplayName(ChatColor.BLUE+"Next Page -->");
+            itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.next.title"));
         }else{
-            itemMeta.setDisplayName(ChatColor.BLUE+"<-- Back Page");
+            itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.last.title"));
         }
         itemStack.setItemMeta(itemMeta);
         return itemStack;

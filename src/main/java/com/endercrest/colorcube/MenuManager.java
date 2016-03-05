@@ -87,9 +87,9 @@ public class MenuManager {
     public ItemStack getMenuItemStack(){
         ItemStack itemStack = new ItemStack(Material.SLIME_BALL);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.GREEN+"Game Selector");
+        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.open.title"));
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY+"Click to open game selector.");
+        lore.add(MessageManager.getInstance().getFValue("menu.item.open.description"));
         itemMeta.setLore(lore);
         itemStack.setItemMeta(itemMeta);
         return itemStack;

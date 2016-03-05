@@ -1,6 +1,8 @@
 package com.endercrest.colorcube.menu;
 
 import com.endercrest.colorcube.GameManager;
+import com.endercrest.colorcube.MenuManager;
+import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,7 +38,7 @@ public class Page implements InventoryHolder {
 
     private void createPage(int pageNum, List<Game> gamesList, boolean last){
         int size = (int)Math.ceil(gamesList.size()/9D)*9;
-        inventory = Bukkit.createInventory(this, size+(2*9), ChatColor.YELLOW + "Game Selection (Page "+(pageNum+1)+"/"+((int)Math.ceil(GameManager.getInstance().getGameCount()/27D))+")");
+        inventory = Bukkit.createInventory(this, size+(2*9), MessageManager.getInstance().getFValue("menu.title", "page-"+(pageNum+1), "maxpage-"+ MenuManager.getInstance().calcNumberOfPages()));
 
 
         int index = 0;

@@ -26,6 +26,7 @@ messages:
         notsign: '&cThis block is not a sign.'
         nolobbysign: '&cThere is no lobby sign there!'
         alreadysign: '&cThat is already a lobby sign.'
+        alreadyhave: '&cYou already have {$input}!'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -49,6 +50,34 @@ messages:
     lobby:
         created: '&6Lobby sign created.'
         removed: '&6Lobby sign removed.'
+    menu:
+        title: '&eGame Selection (Page {$page}/{$maxpage})'
+        item:
+            open:
+                title: '&aGame Selector'
+                descrition: '&7Click to open game selector.'
+            next:
+                title: '&9Next Page -->'
+            last:
+                title: '&9<-- Back Page'
+            close:
+                title: '&cClose Menu'
+            game:
+                title: '&aArena {$arena}'
+                description:
+                    players: '&7Players: {$activeplayers}/{$maxplayers}'
+                    status: '&7Status: {$status}'
+                    message:
+                        loading: '&7Game loading, please wait for game to finish!'
+                        idle: '&7Click to join the game!'
+                        lobby: '&7Click to join the game!'
+                        disabled: '&7Game Disabled! Can not join.'
+                        starting: '&7Click to join the game!'
+                        ingame: '&7Click to spectate the game!'
+                        finishing: '&7Game ending, please wait for game to finish!'
+                        resetting: '&7Game reseting, please wait.'
+                        error: '&cERROR!?!?!?!?!'
+        added: 'Menu Item has been added to your inventory.'
     info:
         create: '&6Arena {$arena} has been created!'
         delete: '&6Arena {$arena} has been deleted!'
