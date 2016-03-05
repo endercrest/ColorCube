@@ -823,9 +823,13 @@ public class Game {
                     Location loc2 = loc.clone();
                     loc2.subtract(0, 1, 0);
                     if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
-                        if(loc.getBlock().getType() == Material.AIR) {
-                            createPowerup(loc2, true);
-                            finish = false;
+                        Location loc3 = loc.clone();
+                        loc3.add(0, 1, 0);
+                        if(loc3.getBlock().getType() == Material.AIR) {
+                            if (loc.getBlock().getType() == Material.AIR) {
+                                createPowerup(loc2, true);
+                                finish = false;
+                            }
                         }
                     }
 

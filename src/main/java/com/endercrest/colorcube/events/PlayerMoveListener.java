@@ -41,6 +41,7 @@ public class PlayerMoveListener implements Listener {
                 paintable.remove("AIR");
                 if(paintable.contains(loc.getBlock().getType().toString())){
                     if(loc.getBlock().getType().equals(Material.STAINED_CLAY)) {
+                        if()
                         if (loc.getBlock().getData() != (byte) 15) {
                             game.changeBlock(loc, teamID);
                         }

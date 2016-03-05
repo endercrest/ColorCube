@@ -52,7 +52,7 @@ public class MenuManager {
         if(pages != null && pages.size() > 0) {
             if(GameManager.getInstance().getGameCount() > 0) {
                 int gameIndex = GameManager.getInstance().getGames().indexOf(GameManager.getInstance().getGame(gameID));
-                int pageIndex = ((int) Math.ceil(gameIndex / 27D));
+                int pageIndex = ((int) Math.floor(gameIndex / 27D));
 
                 Page page = pages.get(pageIndex);
 
