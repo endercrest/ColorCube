@@ -18,7 +18,7 @@ public class ListArenas implements SubCommand {
             }
             arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.arenas", "Arenas")).append(": ");
             for(Game g: GameManager.getInstance().getGames()){
-                arenas.append(g.getGameID()).append(", ");
+                arenas.append(g.getId()).append(", ");
             }
             MessageManager.getInstance().sendMessage("&6" + arenas.toString(), p);
         }catch (Exception e){

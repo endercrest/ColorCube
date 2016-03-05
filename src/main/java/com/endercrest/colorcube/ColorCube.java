@@ -33,7 +33,7 @@ public class ColorCube extends JavaPlugin {
             try{
                 g.disable();
             }catch(Exception e){}
-            QueueManager.getInstance().rollback(g.getGameID(), true);
+            QueueManager.getInstance().rollback(g.getId(), true);
         }
         MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest disabled");
     }
@@ -85,6 +85,7 @@ public class ColorCube extends JavaPlugin {
             LobbyManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
+            MenuManager.getInstance().setup();
 
             pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(), p);

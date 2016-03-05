@@ -19,7 +19,7 @@ public class PlayerRespawnListener implements Listener {
             if(game.getStatus() == Game.Status.INGAME){
                 for(int id: game.getSpawns().keySet()){
                     if(game.getSpawns().get(id).getName().equals(p.getName())){
-                        event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getGameID(), id));
+                        event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getId(), id));
                     }
                 }
             }else if(game.getStatus() == Game.Status.LOBBY || game.getStatus() == Game.Status.STARTING){

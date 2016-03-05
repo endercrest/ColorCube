@@ -17,7 +17,7 @@ public class LobbySign {
     public LobbySign(Location loc, Game game, int signID){
         this.loc = loc;
         this.game = game;
-        this.signGameID = game.getGameID();
+        this.signGameID = game.getId();
         this.signID = signID;
     }
 
@@ -71,7 +71,7 @@ public class LobbySign {
         String[] vars = new String[5];
         vars[0] = "players-" + game.getActivePlayers().size();
         vars[1] = "maxplayers-" + game.getSpawnCount();
-        vars[2] = "arenaname-Arena " + game.getGameID();
+        vars[2] = "arenaname-Arena " + game.getId();
         vars[3] = "status-" + game.getStatus().toString();
         vars[4] = "spectators-" + game.getSpectators().size();
         return vars;

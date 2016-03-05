@@ -30,7 +30,7 @@ public class Reload implements SubCommand {
                 MessageManager.getInstance().sendMessage("Settings Reloaded", p);
             }else if(args[0].equalsIgnoreCase("games")){
                 for(Game game: GameManager.getInstance().getGames()){
-                    QueueManager.getInstance().rollback(game.getGameID(), true);
+                    QueueManager.getInstance().rollback(game.getId(), true);
                     game.disable();
                     game.enable();
                 }
