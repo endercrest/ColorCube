@@ -132,6 +132,13 @@ public class MessageManager {
         title.send(player);
     }
 
+    public String getFValue(String path, String ...args){
+        String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
+        if(args != null && args.length != 0)
+            msg = MessageUtil.replaceVars(msg, args);
+        return MessageManager.getInstance().colorize(msg);
+    }
+
     public void debug(String msg, Player p){
         if(plugin.getConfig().getBoolean("debug", false)) {
             sendMessage("[Debug]" +msg, p);

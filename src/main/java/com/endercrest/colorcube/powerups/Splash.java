@@ -18,7 +18,7 @@ public class Splash implements SubPowerup {
         splash(p, g, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0,1,0);
         splash(p, g, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 0,2,0);
 
-        MessageManager.getInstance().debugConsole("Splash Powerup Used in Arena " + g.getGameID());
+        MessageManager.getInstance().debugConsole("Splash Powerup Used in Arena " + g.getId());
     }
 
     @Override

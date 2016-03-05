@@ -46,6 +46,7 @@ public class CommandHandler implements CommandExecutor {
         commands.put("createsign", new CreateSign());
         commands.put("deletesign", new DeleteSign());
         commands.put("setreward", new SetReward());
+        commands.put("menuitem", new MenuItem());
 
         commands.put("debug", new Debug(plugin));
     }
@@ -68,6 +69,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("spectate", 1);
         helpinfo.put("createsign", 3);
         helpinfo.put("deletesign", 3);
+        helpinfo.put("menuitem", 1);
     }
 
     @Override

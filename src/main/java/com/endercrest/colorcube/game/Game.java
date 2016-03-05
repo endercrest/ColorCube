@@ -20,24 +20,24 @@ import java.util.*;
 
 public class Game {
 
-    public static enum Status{
+    public enum Status{
         DISABLED, LOADING, IDLE, LOBBY,
         STARTING, INGAME, FINISHING, RESETING, ERROR
     }
 
     private Status status = Status.DISABLED;
-    private List<Player> activePlayers = new ArrayList<Player>();
-    private List<Player> spectators = new ArrayList<Player>();
-    private ArrayList<Integer>tasks = new ArrayList<Integer>();
-    private List<Powerup> powerups = new ArrayList<Powerup>();
+    private List<Player> activePlayers = new ArrayList<>();
+    private List<Player> spectators = new ArrayList<>();
+    private ArrayList<Integer>tasks = new ArrayList<>();
+    private List<Powerup> powerups = new ArrayList<>();
 
     private Arena arena;
     private Lobby lobby;
     private Integer id;
     private FileConfiguration config;
     private FileConfiguration system;
-    private HashMap<Integer, Player> spawns = new HashMap<Integer, Player>();
-    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<Player, ItemStack[][]>();
+    private HashMap<Integer, Player> spawns = new HashMap<>();
+    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
     private int spawnCount = 0;
     private boolean disabled = false;
     private int endgameTaskID = 0;
@@ -45,12 +45,12 @@ public class Game {
     private boolean countdownRunning;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
-    private HashMap<String, String> hookVars = new HashMap<String, String>();
+    private HashMap<String, String> hookVars = new HashMap<>();
     private MessageManager msg = MessageManager.getInstance();
     private boolean pvp;
     private double reward;
 
-    private List<Player> voted = new ArrayList<Player>();
+    private List<Player> voted = new ArrayList<>();
 
     Team red;
     Team blue;
@@ -153,13 +153,13 @@ public class Game {
 
         status = Status.LOBBY;
 
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void addSpawn() {
         spawnCount++;
         spawns.put(spawnCount, null);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void loadspawns(){
@@ -168,10 +168,6 @@ public class Game {
             spawnCount = a;
             MessageManager.getInstance().debugConsole("Spawn:" + a + " loaded");
         }
-    }
-
-    public int getGameID(){
-        return id;
     }
 
     public void setLobby(Lobby lobby){
@@ -193,7 +189,7 @@ public class Game {
         status = Status.LOBBY;
         disabled = false;
         MessageManager.getInstance().debugConsole("Arena " + id + " enabled");
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -202,17 +198,15 @@ public class Game {
     public void disable(){
         disabled = true;
         spawns.clear();
-        ListIterator<Player> players = activePlayers.listIterator();
 
-        while(players.hasNext()){
-            Player p = players.next();
+        for (Player p : activePlayers) {
             //removePlayer(p, false);
             MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
         status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -288,7 +282,7 @@ public class Game {
                     countdown(20);
                 }
             }
-            LobbyManager.getInstance().update(getGameID());
+            updateGameItems();
             return true;
         }
         if(status == Status.INGAME)
@@ -363,7 +357,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void forceStartGame(){
@@ -390,7 +384,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -465,7 +459,7 @@ public class Game {
 
 
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -512,7 +506,7 @@ public class Game {
         board.resetScores("Time");
 
         status = Status.RESETING;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         endgameRunning = false;
         spawns.clear();
 
@@ -555,10 +549,10 @@ public class Game {
             restoreInv(p);
         }
         status = Status.FINISHING;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         resetArena();
         status = Status.LOBBY;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -613,7 +607,7 @@ public class Game {
             p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600) * 20, 1, true));
             spectators.add(p);
             //spectate.addPlayer(p);
-            LobbyManager.getInstance().update(getGameID());
+            updateGameItems();
             return true;
         }else if(status == Status.DISABLED){
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
@@ -639,7 +633,7 @@ public class Game {
         spectate.removePlayer(player);
         spectators.remove(player);
         //TODO Spectator API
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         return true;
     }
 
@@ -847,6 +841,14 @@ public class Game {
                 --powerup;
             }
         }
+    }
+
+    /**
+     * Method that is called whenever LobbySign needs to be updated, or if a game menu needs to be updated.
+     */
+    private void updateGameItems(){
+        LobbyManager.getInstance().update(getId());
+        MenuManager.getInstance().update(getId());
     }
 
     class ParticleTimer implements Runnable {

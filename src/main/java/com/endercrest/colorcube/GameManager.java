@@ -70,7 +70,7 @@ public class GameManager {
     public int getBlockGameId(Location v) {
         for (Game g: games) {
             if (g.isBlockInArena(v)) {
-                return g.getGameID();
+                return g.getId();
             }
         }
         return -1;
@@ -80,7 +80,7 @@ public class GameManager {
         for (Game g: games) {
             if(g.isLobbySet()) {
                 if (g.isBlockInLobby(v)) {
-                    return g.getGameID();
+                    return g.getId();
                 }
             }
         }
@@ -127,7 +127,7 @@ public class GameManager {
 
     public Game.Status getStatus(int a) {
         for (Game g: games) {
-            if (g.getGameID() == a) {
+            if (g.getId() == a) {
                 return g.getStatus();
             }
         }
@@ -141,6 +141,7 @@ public class GameManager {
     public void addArena(int id){
         Game game = new Game(id, plugin);
         games.add(game);
+        MenuManager.getInstance().addGame();
     }
 
     /**
@@ -149,8 +150,9 @@ public class GameManager {
      */
     public void removeArena(int id){
         for(Game game: games){
-            if(game.getGameID() == id){
+            if(game.getId() == id){
                 games.remove(game);
+                MenuManager.getInstance().removeGame();
                 return;
             }
         }
@@ -163,11 +165,20 @@ public class GameManager {
      */
     public Game getGame(int id){
         for(Game game: games){
-            if(game.getGameID() == id){
+            if(game.getId() == id){
                 return game;
             }
         }
         return null;
+    }
+
+    public int getIndexOfGame(int id){
+        for(int i = 0; i < games.size(); i++){
+            if(games.get(id).getId() == id){
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -181,7 +192,7 @@ public class GameManager {
     public int getActivePlayerGameID(Player p){
         for(Game game: games){
             if(game.isPlayerActive(p)){
-                return game.getGameID();
+                return game.getId();
             }
         }
         return -1;
@@ -190,7 +201,7 @@ public class GameManager {
     public int getSpectatePlayerId(Player p) {
         for (Game g: games) {
             if (g.isSpectator(p)) {
-                return g.getGameID();
+                return g.getId();
             }
         }
         return -1;
