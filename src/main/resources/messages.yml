@@ -55,7 +55,7 @@ messages:
         item:
             open:
                 title: '&aGame Selector'
-                descrition: '&7Click to open game selector.'
+                description: '&7Click to open game selector.'
             next:
                 title: '&9Next Page -->'
             last:
