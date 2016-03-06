@@ -21,7 +21,7 @@ public class PlayerRespawnListener implements Listener {
                     Player check = game.getSpawns().get(id);
                     if(check != null) {
                         if (check.getUniqueId().equals(p.getUniqueId())) {
-                            event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getGameID(), id));
+                            event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getId(), id));
                         }
                     }
                 }
