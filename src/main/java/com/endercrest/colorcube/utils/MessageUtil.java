@@ -27,7 +27,7 @@ public class MessageUtil {
         return msg;
     }
 
-    public static String replaceVars(String msg, String[] vars){
+    public static String replaceVars(String msg, String ...vars){
         for(String str: vars){
             String[] s = str.split("-");
             varcache.put(s[0], s[1]);
@@ -49,4 +49,5 @@ public class MessageUtil {
 
         return msg;
     }
+
 }

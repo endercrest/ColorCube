@@ -1,0 +1,131 @@
+messages:
+    error:
+        nopermission: '&cYou do not have the permissions to do this'
+        noselection: '&cYou must make a world edit selection first'
+        notspecified: '&c{$input} not specified!'
+        nosuchgame: '&cArena {$arena} does not exist!'
+        command: '&cThe command {$command} returned an error'
+        notanumber: '{$input} &cis not a number!'
+        nomainlobby: '&cNo Global Lobby has been set'
+        nolobbyspawn: '&cArena {$arena} has no lobby spawn.'
+        gamefull: '&cArena {$arena} is full!'
+        alreadyingame: '&cArena already ingame'
+        gamedisabled: '&cArena {$arena} is disabled!'
+        gameresetting: '&cArena is resetting'
+        joinfail: '&cCannot join game!'
+        notenoughplayers: '&cThere are not enough players.'
+        notinarena: '&cYou are not in a arena'
+        notinlobby: '&cYou are not in a lobby'
+        badinput: '&cInput must be "next" or a number'
+        between: '&cSpawn must be between 1 & {$num}.'
+        nolobby: '&cThat arena has no lobby'
+        gamenotexist: '&cGame doesnot exist'
+        nocommand: '&cThat command cannot be used in this arena.'
+        alreadyvoted: '&cYou have already voted!'
+        notingame: '&cThe game is not in-game'
+        notsign: '&cThis block is not a sign.'
+        nolobbysign: '&cThere is no lobby sign there!'
+        alreadysign: '&cThat is already a lobby sign.'
+        alreadyhave: '&cYou already have {$input}!'
+    game:
+        state: '&6Arena {$arena} has been {$state}!'
+        all: '&6All arenas have  been {$state}!'
+        joinmutliple: '&6You cant join multiple games!'
+        nospawns: '&6No spawns set for Arena {$arena}'
+        join: '&6Joining Arena {$arena}'
+        status: 'Arena {$state}'
+        playerjoingame: '&6{$player} joined the game! {$activeplayers}/{$maxplayers}'
+        countdown: '&6Game starting in {$t}'
+        goodluck: '&6Good Luck! Get as many blocks to you color'
+        playerleave: '&6{$player} left the game.'
+        end: '&6The Game has ended. {$reason}'
+        started: '&6Started game {$arena}.'
+        team: '&6{$player} is on team {$team}.'
+        time: '&6Game ends in {$time}'
+        powerup: '&6New power has spawned!'
+        pickup: '&6You have picked up a power up!'
+        freeze: '&6{$player} has frozen everyone for 5 seconds!'
+        playervote: '&6{$player} has voted to start the game.'
+        voteamount: '&6{$percent}% of players have voted to start the game'
+    lobby:
+        created: '&6Lobby sign created.'
+        removed: '&6Lobby sign removed.'
+    menu:
+        title: '&eGame Selection (Page {$page}/{$maxpage})'
+        item:
+            open:
+                title: '&aGame Selector'
+                description: '&7Click to open game selector.'
+            next:
+                title: '&9Next Page -->'
+            last:
+                title: '&9<-- Back Page'
+            close:
+                title: '&cClose Menu'
+            game:
+                title: '&aArena {$arena}'
+                description:
+                    players: '&7Players: {$activeplayers}/{$maxplayers}'
+                    status: '&7Status: {$status}'
+                    message:
+                        loading: '&7Game loading, please wait for game to finish!'
+                        idle: '&7Click to join the game!'
+                        lobby: '&7Click to join the game!'
+                        disabled: '&7Game Disabled! Can not join.'
+                        starting: '&7Click to join the game!'
+                        ingame: '&7Click to spectate the game!'
+                        finishing: '&7Game ending, please wait for game to finish!'
+                        resetting: '&7Game reseting, please wait.'
+                        error: '&cERROR!?!?!?!?!'
+        added: 'Menu Item has been added to your inventory.'
+    info:
+        create: '&6Arena {$arena} has been created!'
+        delete: '&6Arena {$arena} has been deleted!'
+        createlobby: '&6Lobby created for Arena {$arena}'
+        spawnset: '&6Spawn {$num} set in Arena {$arena}'
+        lobbyspawn: '&6Lobby has been set.'
+        setspawnusage: '&6Usage: /cc setspawn <id/next>'
+        setreward: '&6Reward has been set.'
+    words:
+        noarenas: 'No arenas'
+        arenas: 'Arenas'
+    help:
+        createarena: 'Create a new arena.'
+        deletearena: 'Delete an arena.'
+        disable: 'Disables arena'
+        enable: 'Re-enables arena'
+        createlobby: 'Create a lobby for a arena'
+        join: 'Join a game'
+        leave: 'Leave a game'
+        reload: 'Reloads ColorCube'
+        setlobbyspawn: 'Set lobby spawn for arena'
+        setgloballobbyspawn: 'Set global lobby spawn'
+        forcestart: 'Force start a game'
+        setspawn: 'Set the spawn in a arena'
+        resetspawns: 'Reset all the spawns in the arena.'
+        arenalist: 'List of arenas'
+        vote: 'Vote to start the game'
+        spectate: 'Spectate a game in an arena'
+        createsign: 'Creates a new lobby sign.'
+        deletesign: 'Deletes the lobby sign you are looking at'
+        setreward: 'Sets the reward for the arena'
+    color:
+        red: 'red'
+        green: 'green'
+        yellow: 'yellow'
+        blue: 'blue'
+    broadcast:
+        gameend: '&bArena {$arena} has ended!'
+        gameend_enabled: false
+        gamewaiting: '&bArena {$arena} is now waiting for players!'
+        gamewaiting_enabled: false
+        gamestarting: '&bArena {$arena} is starting in {$t} seconds!'
+        gamestarting_enabled: false
+        gamestarted: '&bArena {$arena} just started!'
+        gamestarted_enabled: false
+        gamedisabled: '&bArena {$arena} was disabled'
+        gamedisabled_enabled: false
+        gameenabled: '&bArena {$arena} was enabled'
+        gameenabled_enabled: false
+        gamewin: '&bTeam {$team} has won in arena {$arena}'
+        gamewin_enabled: true

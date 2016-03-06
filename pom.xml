@@ -47,7 +47,7 @@
     </repositories>
     <build>
         <finalName>${project.name}-${project.version}</finalName>
-        <defaultGoal>clean package install</defaultGoal>
+        <defaultGoal>clean package install test</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -70,4 +70,11 @@
             </resource>
         </resources>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
+    </distributionManagement>
 </project>
