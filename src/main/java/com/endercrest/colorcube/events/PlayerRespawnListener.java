@@ -18,8 +18,11 @@ public class PlayerRespawnListener implements Listener {
             Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
             if(game.getStatus() == Game.Status.INGAME){
                 for(int id: game.getSpawns().keySet()){
-                    if(game.getSpawns().get(id).getName().equals(p.getName())){
-                        event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getGameID(), id));
+                    Player check = game.getSpawns().get(id);
+                    if(check != null) {
+                        if (check.getUniqueId().equals(p.getUniqueId())) {
+                            event.setRespawnLocation(SettingsManager.getInstance().getSpawnPoint(game.getGameID(), id));
+                        }
                     }
                 }
             }else if(game.getStatus() == Game.Status.LOBBY || game.getStatus() == Game.Status.STARTING){
