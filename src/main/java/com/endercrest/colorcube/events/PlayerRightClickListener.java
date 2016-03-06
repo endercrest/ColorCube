@@ -1,10 +1,10 @@
 package com.endercrest.colorcube.events;
 
-import com.endercrest.colorcube.GameManager;
-import com.endercrest.colorcube.PowerupManager;
+import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.api.PlayerPowerupEvent;
 import com.endercrest.colorcube.powerups.SubPowerup;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +28,16 @@ public class PlayerRightClickListener implements Listener {
                     player.getInventory().setItem(player.getInventory().getHeldItemSlot(), null);
                     player.updateInventory();
                 }catch(NullPointerException e){}
+            }
+
+            if(event.getItem() != null) {
+                if (event.getItem().equals(MenuManager.getInstance().getMenuItemStack())) {
+                    if (player.hasPermission("cc.lobby.menu")) {
+                        player.openInventory(MenuManager.getInstance().getPages().get(0).getInventory());
+                    } else {
+                        MessageManager.getInstance().sendFMessage("error.nopermission", player);
+                    }
+                }
             }
         }
     }

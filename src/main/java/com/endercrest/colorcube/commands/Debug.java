@@ -1,6 +1,7 @@
 package com.endercrest.colorcube.commands;
 
 import com.endercrest.colorcube.*;
+import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.game.Powerup;
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
  * /cc debug forcevoteall (id) - Force all players in selected arena to vote
  * /cc debug forceremove (player) - Force remove a player from the arena
  * /cc debug forcespectate (player) (id) - Force a player to spectate a game
+ * /cc debug openMenu - Opens menu select menu.
  *
  * () - Mandatory [] - Optional
  */
@@ -32,6 +34,7 @@ public class Debug implements SubCommand {
         if(SettingsManager.getInstance().getPluginConfig().getBoolean("debug", false)) {
             if (!p.hasPermission(permission()) || !p.isOp()) {
                 MessageManager.getInstance().sendFMessage("error.nopermission", p);
+                return true;
             }
             if(args.length >= 1) {
                 if(args[0].equalsIgnoreCase("end")) {
@@ -94,7 +97,7 @@ public class Debug implements SubCommand {
                             Player player = Bukkit.getPlayer(args[1]);
                             Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
                             game.vote(player);
-                            MessageManager.getInstance().sendMessage("Forcing " + args[1] + " to vote in arena " + game.getGameID(), p);
+                            MessageManager.getInstance().sendMessage("Forcing " + args[1] + " to vote in arena " + game.getId(), p);
                         }catch (Exception e){}
                     }
                 }else if(args[0].equalsIgnoreCase("forcevoteall")){
@@ -129,6 +132,9 @@ public class Debug implements SubCommand {
                 }else if(args[0].equalsIgnoreCase("update")){
                     LobbyManager.getInstance().updateAll();
                     MessageManager.getInstance().sendMessage("Updating All Lobby Signs", p);
+                }else if(args[0].equalsIgnoreCase("openMenu")){
+                    p.openInventory(MenuManager.getInstance().getPages().get(0).getInventory());
+                    MessageManager.getInstance().sendMessage("Opening Menu", p);
                 }
             }
         }

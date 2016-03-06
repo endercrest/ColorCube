@@ -6,13 +6,19 @@ import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.utils.ColorCubeTabCompleter;
 import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ColorCube extends JavaPlugin {
 
     private static WorldEditPlugin worldEdit;
+    public Vault vault;
+
+    public static Economy economy = null;
 
     @Override
     public void onEnable(){
@@ -27,7 +33,7 @@ public class ColorCube extends JavaPlugin {
             try{
                 g.disable();
             }catch(Exception e){}
-            QueueManager.getInstance().rollback(g.getGameID(), true);
+            QueueManager.getInstance().rollback(g.getId(), true);
         }
         MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest disabled");
     }
@@ -40,6 +46,24 @@ public class ColorCube extends JavaPlugin {
             MessageManager.getInstance().log("&cWorldEdit not found! Disabling plugin.");
             Bukkit.getPluginManager().disablePlugin(this);
         }
+        vault = (Vault) getServer().getPluginManager().getPlugin("Vault");
+        if(vault != null){
+            MessageManager.getInstance().log("&eVault has been found");
+        }else{
+            MessageManager.getInstance().log("&cVault not found! Disabling Economy Support");
+        }
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return economy != null;
     }
 
     public WorldEditPlugin getWorldEdit(){
@@ -61,6 +85,7 @@ public class ColorCube extends JavaPlugin {
             LobbyManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
+            MenuManager.getInstance().setup();
 
             pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(), p);
@@ -78,6 +103,9 @@ public class ColorCube extends JavaPlugin {
             pm.registerEvents(new PlayerClickListener(), p);
 
             loadDependencies();
+            if(vault != null){
+                setupEconomy();
+            }
             getCommand("colorcube").setExecutor(new CommandHandler(p));
             getCommand("colorcube").setTabCompleter(new ColorCubeTabCompleter(p));
             MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest enabled");

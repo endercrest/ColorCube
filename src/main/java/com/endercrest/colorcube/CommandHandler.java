@@ -1,6 +1,12 @@
 package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.commands.*;
+import com.endercrest.colorcube.commands.admin.*;
+import com.endercrest.colorcube.commands.Debug;
+import com.endercrest.colorcube.commands.player.*;
+import com.endercrest.colorcube.commands.staff.Disable;
+import com.endercrest.colorcube.commands.staff.Enable;
+import com.endercrest.colorcube.commands.staff.ForceStart;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -45,6 +51,8 @@ public class CommandHandler implements CommandExecutor {
         commands.put("spectate", new Spectate());
         commands.put("createsign", new CreateSign());
         commands.put("deletesign", new DeleteSign());
+        commands.put("setreward", new SetReward());
+        commands.put("menuitem", new MenuItem());
 
         commands.put("debug", new Debug(plugin));
     }
@@ -67,6 +75,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("spectate", 1);
         helpinfo.put("createsign", 3);
         helpinfo.put("deletesign", 3);
+        helpinfo.put("menuitem", 1);
     }
 
     @Override

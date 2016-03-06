@@ -1,8 +1,9 @@
-package com.endercrest.colorcube.commands;
+package com.endercrest.colorcube.commands.player;
 
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
 import org.bukkit.entity.Player;
 
@@ -18,7 +19,7 @@ public class ListArenas implements SubCommand {
             }
             arenas.append(SettingsManager.getInstance().getMessagesConfig().getString("messages.words.arenas", "Arenas")).append(": ");
             for(Game g: GameManager.getInstance().getGames()){
-                arenas.append(g.getGameID()).append(", ");
+                arenas.append(g.getId()).append(", ");
             }
             MessageManager.getInstance().sendMessage("&6" + arenas.toString(), p);
         }catch (Exception e){

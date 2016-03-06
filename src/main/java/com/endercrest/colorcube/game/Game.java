@@ -6,9 +6,10 @@ import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
-import com.endercrest.colorcube.utils.ParticleEffect;
 import org.bukkit.*;
-import org.bukkit.block.Block;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,24 +21,24 @@ import java.util.*;
 
 public class Game {
 
-    public static enum Status{
+    public enum Status{
         DISABLED, LOADING, IDLE, LOBBY,
         STARTING, INGAME, FINISHING, RESETING, ERROR
     }
 
     private Status status = Status.DISABLED;
-    private List<Player> activePlayers = new ArrayList<Player>();
-    private List<Player> spectators = new ArrayList<Player>();
-    private ArrayList<Integer>tasks = new ArrayList<Integer>();
-    private List<Powerup> powerups = new ArrayList<Powerup>();
+    private List<Player> activePlayers = new ArrayList<>();
+    private List<Player> spectators = new ArrayList<>();
+    private ArrayList<Integer>tasks = new ArrayList<>();
+    private List<Powerup> powerups = new ArrayList<>();
 
     private Arena arena;
     private Lobby lobby;
     private Integer id;
     private FileConfiguration config;
     private FileConfiguration system;
-    private HashMap<Integer, Player> spawns = new HashMap<Integer, Player>();
-    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<Player, ItemStack[][]>();
+    private HashMap<Integer, Player> spawns = new HashMap<>();
+    private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
     private int spawnCount = 0;
     private boolean disabled = false;
     private int endgameTaskID = 0;
@@ -45,11 +46,12 @@ public class Game {
     private boolean countdownRunning;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
-    private HashMap<String, String> hookVars = new HashMap<String, String>();
+    private HashMap<String, String> hookVars = new HashMap<>();
     private MessageManager msg = MessageManager.getInstance();
     private boolean pvp;
+    private double reward;
 
-    private List<Player> voted = new ArrayList<Player>();
+    private List<Player> voted = new ArrayList<>();
 
     Team red;
     Team blue;
@@ -64,8 +66,8 @@ public class Game {
 
     private ScoreboardManager manager;
     private Scoreboard board;
-    private Objective objective;
-    private Score timerScore;
+
+    private BossBar timeBar;
 
     private ColorCube plugin;
 
@@ -124,6 +126,8 @@ public class Game {
 
         pvp = system.getBoolean("arenas." + id + ".pvp", false);
 
+        reward = system.getDouble("arenas." + id + ".reward", 0.0);
+
         loadspawns();
 
         hookVars.put("arena", id + "");
@@ -142,21 +146,17 @@ public class Game {
         green.setPrefix(ChatColor.GREEN + "");
         yellow.setPrefix(ChatColor.YELLOW + "");
 
-
-        objective = board.registerNewObjective("Arena" + id, "dummy");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName(MessageManager.getInstance().colorize("&6Arena " + id));
-        timerScore = objective.getScore("Time");
+        timeBar = Bukkit.createBossBar(ChatColor.GOLD + "Arena " + id, BarColor.WHITE, BarStyle.SOLID);
 
         status = Status.LOBBY;
 
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void addSpawn() {
         spawnCount++;
         spawns.put(spawnCount, null);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void loadspawns(){
@@ -165,10 +165,6 @@ public class Game {
             spawnCount = a;
             MessageManager.getInstance().debugConsole("Spawn:" + a + " loaded");
         }
-    }
-
-    public int getGameID(){
-        return id;
     }
 
     public void setLobby(Lobby lobby){
@@ -190,7 +186,7 @@ public class Game {
         status = Status.LOBBY;
         disabled = false;
         MessageManager.getInstance().debugConsole("Arena " + id + " enabled");
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -199,17 +195,15 @@ public class Game {
     public void disable(){
         disabled = true;
         spawns.clear();
-        ListIterator<Player> players = activePlayers.listIterator();
 
-        while(players.hasNext()){
-            Player p = players.next();
+        for (Player p : activePlayers) {
             //removePlayer(p, false);
             MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
         endGame();
         status = Status.DISABLED;
         MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -252,25 +246,30 @@ public class Game {
                 msg.sendFMessage("game.join", p, "arena-" + id);
                 PlayerJoinArenaEvent joinarena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinarena);
-                p.setGameMode(GameMode.SURVIVAL);
-                p.setFallDistance(0);
-                p.teleport(lobby.getSpawn());
-                Collection<PotionEffect> effects = p.getActivePotionEffects();
-                for(PotionEffect pe: effects){
-                    p.removePotionEffect(pe.getType());
-                }
-                saveInv(p);
-                clearInv(p);
-                p.setHealth(p.getMaxHealth());
-                p.setFoodLevel(20);
-                clearInv(p);
-                p.setScoreboard(board);
+                if(!joinarena.isCancelled()) {
+                    p.setGameMode(GameMode.SURVIVAL);
+                    p.setFallDistance(0);
+                    p.teleport(lobby.getSpawn());
+                    Collection<PotionEffect> effects = p.getActivePotionEffects();
+                    for (PotionEffect pe : effects) {
+                        p.removePotionEffect(pe.getType());
+                    }
+                    saveInv(p);
+                    clearInv(p);
+                    p.setHealth(p.getMaxHealth());
+                    p.setFoodLevel(20);
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1));
+                    clearInv(p);
+                    p.setScoreboard(board);
 
-                activePlayers.add(p);
-                addToTeam(p);
-                msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
-                if (spawnCount == activePlayers.size()) {
-                    countdown(5);
+
+                    activePlayers.add(p);
+                    addToTeam(p);
+                    timeBar.addPlayer(p);
+                    msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
+                    if (spawnCount == activePlayers.size()) {
+                        countdown(5);
+                    }
                 }
             } else if (SettingsManager.getInstance().getSpawnCount(id) == 0) {
                 msg.sendFMessage("game.nospawns", p, "arena-" + id);
@@ -285,7 +284,7 @@ public class Game {
                     countdown(20);
                 }
             }
-            LobbyManager.getInstance().update(getGameID());
+            updateGameItems();
             return true;
         }
         if(status == Status.INGAME)
@@ -360,7 +359,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     public void forceStartGame(){
@@ -387,7 +386,7 @@ public class Game {
         tasks.add(timerTaskID);
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -433,6 +432,9 @@ public class Game {
     ///       Remove Player         ///
     ///////////////////////////////////
     public void removePlayer(Player player, boolean b){
+        PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
+        Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
+
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         Collection<PotionEffect> effects = player.getActivePotionEffects();
@@ -456,13 +458,14 @@ public class Game {
             }
         }
         player.setScoreboard(manager.getNewScoreboard());
+        timeBar.removePlayer(player);
         for (Object in : spawns.keySet().toArray()) {
             if (spawns.get(in) == player) spawns.remove(in);
         }
 
 
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -509,7 +512,7 @@ public class Game {
         board.resetScores("Time");
 
         status = Status.RESETING;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         endgameRunning = false;
         spawns.clear();
 
@@ -530,7 +533,8 @@ public class Game {
             }else{
                 players = new HashSet<OfflinePlayer>();
             }
-            TeamWinEvent tw = new TeamWinEvent(players, team);
+            giveReward(players);
+            TeamWinEvent tw = new TeamWinEvent(players, team, reward);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -550,11 +554,13 @@ public class Game {
             p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
             restoreInv(p);
         }
+        timeBar.setTitle(ChatColor.GOLD + "Arena " + id);
+        timeBar.setProgress(1);
         status = Status.FINISHING;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         resetArena();
         status = Status.LOBBY;
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
     }
 
     ///////////////////////////////////
@@ -609,7 +615,7 @@ public class Game {
             p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600) * 20, 1, true));
             spectators.add(p);
             //spectate.addPlayer(p);
-            LobbyManager.getInstance().update(getGameID());
+            updateGameItems();
             return true;
         }else if(status == Status.DISABLED){
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
@@ -635,7 +641,7 @@ public class Game {
         spectate.removePlayer(player);
         spectators.remove(player);
         //TODO Spectator API
-        LobbyManager.getInstance().update(getGameID());
+        updateGameItems();
         return true;
     }
 
@@ -793,14 +799,16 @@ public class Game {
     ///////////////////////////////////
 
     class GameTimer implements Runnable {
-        int counter = SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        double counter = (double)SettingsManager.getInstance().getPluginConfig().getInt("game-length", 600);
+        double maxTime = counter;
         int powerupDefault = SettingsManager.getInstance().getPluginConfig().getInt("powerup-freq", 15);
         int powerup = powerupDefault;
         @Override
         public void run() {
             if(counter > 0){
                 --counter;
-                timerScore.setScore(counter);
+                timeBar.setTitle(ChatColor.GOLD + "Time: "+ ChatColor.WHITE + (int)(counter) + " seconds");
+                timeBar.setProgress(counter/maxTime);
             }else{
                 endGame();
             }
@@ -825,9 +833,13 @@ public class Game {
                     Location loc2 = loc.clone();
                     loc2.subtract(0, 1, 0);
                     if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
-                        if(loc.getBlock().getType() == Material.AIR) {
-                            createPowerup(loc2, true);
-                            finish = false;
+                        Location loc3 = loc.clone();
+                        loc3.add(0, 1, 0);
+                        if(loc3.getBlock().getType() == Material.AIR) {
+                            if (loc.getBlock().getType() == Material.AIR) {
+                                createPowerup(loc2, true);
+                                finish = false;
+                            }
                         }
                     }
 
@@ -845,12 +857,22 @@ public class Game {
         }
     }
 
+    /**
+     * Method that is called whenever LobbySign needs to be updated, or if a game menu needs to be updated.
+     */
+    private void updateGameItems(){
+        LobbyManager.getInstance().update(getId());
+        MenuManager.getInstance().update(getId());
+    }
+
     class ParticleTimer implements Runnable {
         @Override
         public void run() {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
-                    ParticleEffect.NOTE.display(0.2f, 0.5f, 0.2f, 1, 10, pu.getLocation(), getAllPlayers());
+                    for(Player player: getAllPlayers()){
+                        player.spawnParticle(Particle.NOTE, pu.getLocation(), 10, 0.2F, 0.5F, 0.2F, 1);
+                    }
                 }
             }
         }
@@ -924,6 +946,14 @@ public class Game {
         LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
         loc.getBlock().setType(Material.STAINED_CLAY);
         loc.getBlock().setData(data);
+    }
+
+    public void giveReward(Set<OfflinePlayer> players){
+        if(ColorCube.economy != null) {
+            for (OfflinePlayer player : players) {
+                ColorCube.economy.depositPlayer(player, reward);
+            }
+        }
     }
 
     public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
@@ -1018,6 +1048,14 @@ public class Game {
 
     public boolean isPvp(){
         return pvp;
+    }
+
+    public double getReward() {
+        return reward;
+    }
+
+    public void setReward(double reward) {
+        this.reward = reward;
     }
 
     public ArrayList <Player> getAllPlayers() {

@@ -49,15 +49,15 @@ public class LobbyManager {
 
         game.setLobby(new Lobby(pos1, pos2));
 
-        system.set("arenas." + game.getGameID() + ".lworld", pos1.getWorld().getName());
-        system.set("arenas." + game.getGameID() + ".lx1", pos1.getBlockX());
-        system.set("arenas." + game.getGameID() + ".ly1", pos1.getBlockY());
-        system.set("arenas." + game.getGameID() + ".lz1", pos1.getBlockZ());
-        system.set("arenas." + game.getGameID() + ".lx2", pos2.getBlockX());
-        system.set("arenas." + game.getGameID() + ".ly2", pos2.getBlockY());
-        system.set("arenas." + game.getGameID() + ".lz2", pos2.getBlockZ());
+        system.set("arenas." + game.getId() + ".lworld", pos1.getWorld().getName());
+        system.set("arenas." + game.getId() + ".lx1", pos1.getBlockX());
+        system.set("arenas." + game.getId() + ".ly1", pos1.getBlockY());
+        system.set("arenas." + game.getId() + ".lz1", pos1.getBlockZ());
+        system.set("arenas." + game.getId() + ".lx2", pos2.getBlockX());
+        system.set("arenas." + game.getId() + ".ly2", pos2.getBlockY());
+        system.set("arenas." + game.getId() + ".lz2", pos2.getBlockZ());
         SettingsManager.getInstance().saveSystemConfig();
-        MessageManager.getInstance().sendFMessage("info.createlobby", p, "arena-" + game.getGameID());
+        MessageManager.getInstance().sendFMessage("info.createlobby", p, "arena-" + game.getId());
     }
 
     public void setLobbySpawn(int id, Location loc){
@@ -91,7 +91,7 @@ public class LobbyManager {
         system.set("signs." + id + ".y", loc.getBlockY());
         system.set("signs." + id + ".z", loc.getBlockZ());
         system.set("signs." + id + ".world", loc.getWorld().getName());
-        system.set("signs." + id + ".gameID", game.getGameID());
+        system.set("signs." + id + ".gameID", game.getId());
         system.set("signs." + id + ".enabled", true);
         SettingsManager.getInstance().saveSystemConfig();
 

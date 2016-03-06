@@ -43,6 +43,7 @@ permissions:
             cc.lobby.setlobbyspawn: true
             cc.lobby.sign.create: true
             cc.lobby.sign.delete: true
+            cc.lobby.menu: true
     cc.arena.create:
         description: Grants you the arena create command
         default: op
@@ -81,6 +82,9 @@ permissions:
         default: op
     cc.lobby.sign.create:
         description: Grants you the createsign command
+        default: op
+    cc.lobby.menu:
+        description: Grants you the ability to open menu, and get the menu item via commnad
         default: op
     cc.*:
         description: Gives all permissions

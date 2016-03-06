@@ -1,11 +1,12 @@
-package com.endercrest.colorcube.commands;
+package com.endercrest.colorcube.commands.admin;
 
-import com.endercrest.colorcube.LobbyManager;
+import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
+import com.endercrest.colorcube.commands.SubCommand;
 import org.bukkit.entity.Player;
 
-public class DeleteSign implements SubCommand {
+public class CreateArena implements SubCommand {
 
     @Override
     public boolean onCommand(Player p, String[] args) {
@@ -13,18 +14,17 @@ public class DeleteSign implements SubCommand {
             MessageManager.getInstance().sendFMessage("error.nopermission", p);
             return true;
         }
-
-        LobbyManager.getInstance().removeLobbySign(p);
+        GameManager.getInstance().createArenaFromSelection(p);
         return true;
     }
 
     @Override
     public String helpInfo() {
-        return "/cc deletesign - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.deletesign");
+        return "/cc createarena <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.createarena", "Create a new arena");
     }
 
     @Override
     public String permission() {
-        return "cc.lobby.sign.delete";
+        return "cc.admin.arena.create";
     }
 }

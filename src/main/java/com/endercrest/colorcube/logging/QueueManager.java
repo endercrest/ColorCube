@@ -34,7 +34,7 @@ public class QueueManager {
                 baseDir.mkdirs();
             }
             for(Game g : GameManager.getInstance().getGames()){
-                ensureFile(g.getGameID());
+                ensureFile(g.getId());
             }
 
         }catch(Exception e){}
@@ -186,7 +186,7 @@ public class QueueManager {
                 while(a>=0 && (rb < pt|| shutdown)){
                     MessageManager.getInstance().debugConsole("Reseting " + a);
                     BlockData result = data.get(a);
-                    if(result.getGameId() == game.getGameID()){
+                    if(result.getGameId() == game.getId()){
 
                         data.remove(a);
                         Location l = new Location(Bukkit.getWorld(result.getWorld()), result.getX(), result.getY(), result.getZ());

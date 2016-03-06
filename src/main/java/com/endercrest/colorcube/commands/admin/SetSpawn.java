@@ -1,5 +1,6 @@
-package com.endercrest.colorcube.commands;
+package com.endercrest.colorcube.commands.admin;
 
+import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.MessageManager;
@@ -15,7 +16,7 @@ public class SetSpawn implements SubCommand {
 
     public void loadNextSpawn(){
         for(Game g: GameManager.getInstance().getGames().toArray(new Game[0])){ //Avoid Concurrency problems
-            next.put(g.getGameID(), SettingsManager.getInstance().getSpawnCount(g.getGameID())+1);
+            next.put(g.getId(), SettingsManager.getInstance().getSpawnCount(g.getId())+1);
         }
     }
 

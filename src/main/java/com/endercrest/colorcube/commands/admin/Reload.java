@@ -1,6 +1,7 @@
-package com.endercrest.colorcube.commands;
+package com.endercrest.colorcube.commands.admin;
 
 import com.endercrest.colorcube.*;
+import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.Bukkit;
@@ -30,7 +31,7 @@ public class Reload implements SubCommand {
                 MessageManager.getInstance().sendMessage("Settings Reloaded", p);
             }else if(args[0].equalsIgnoreCase("games")){
                 for(Game game: GameManager.getInstance().getGames()){
-                    QueueManager.getInstance().rollback(game.getGameID(), true);
+                    QueueManager.getInstance().rollback(game.getId(), true);
                     game.disable();
                     game.enable();
                 }
