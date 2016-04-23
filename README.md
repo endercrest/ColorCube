@@ -32,7 +32,7 @@ Next Compile the project.
 
 Installation/Setup
 ------
-ColorCube requires a working version of [Spigot](http://www.spigotmc.org/) or [Bukkit](https://bukkit.org/) to be installed and setup. Once a Spigot or Bukkit server is setup, drop ColorCube into the plugins folder of the server and restart the server. For details on how to use the plugin in-game, head over to the ColorCube resource page on [Bukkit](http://dev.bukkit.org/bukkit-plugins/colorcube/).
+ColorCube requires a working version of [Spigot](http://www.spigotmc.org/) or [Bukkit](https://bukkit.org/) to be installed and setup. Once a Spigot or Bukkit server is setup, drop ColorCube into the plugins folder of the server and restart the server. For details on how to use the plugin in-game, head over to the ColorCube resource page on [Spigot](https://www.spigotmc.org/resources/colorcube.20313/) or the [Wiki](https://github.com/endercrest/ColorCube/wiki).
 
 Reporting Issues
 ------
