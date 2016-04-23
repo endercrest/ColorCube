@@ -1,0 +1,72 @@
+version: 0
+arena_next_id: 2
+spawns:
+  '1':
+    '1':
+      x: 140
+      y: 57
+      z: 194
+      yaw: -180.69556
+      pitch: 3.1498427
+    count: 4
+    '2':
+      x: 140
+      y: 57
+      z: 194
+      yaw: -180.69556
+      pitch: 3.1498427
+    '3':
+      x: 140
+      y: 57
+      z: 194
+      yaw: -180.69556
+      pitch: 3.1498427
+    '4':
+      x: 140
+      y: 57
+      z: 194
+      yaw: -180.69556
+      pitch: 3.1498427
+arenas:
+  '1':
+    world: world
+    x1: 100
+    y1: 10
+    z1: 100
+    x2: 200
+    y2: 20
+    z2: 200
+    pvp: false
+    enabled: true
+    reward: 0.0
+    lworld: world
+    lx1: 50
+    ly1: 50
+    lz1: 50
+    lx2: 0
+    ly2: 40
+    lz2: 0
+sign_next_id: 1
+signs:
+  '1':
+    x: 137
+    y: 67
+    z: 242
+    world: world
+    gameID: 1
+    enabled: true
+lobby:
+  '1':
+    world: world
+    x: 139
+    y: 69
+    z: 153
+    yaw: 0.0
+    pitch: 0.0
+  global:
+    world: world
+    x: 139
+    y: 65
+    z: 245
+    yaw: -182.35559
+    pitch: 5.9999804
