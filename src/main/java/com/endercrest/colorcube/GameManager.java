@@ -46,9 +46,11 @@ public class GameManager {
         int arena = 1;
         for(int loaded = 0; loaded < arenaID; loaded++){
             if(system.isSet("arenas." + arena + ".x1")){
-                if(system.isSet("arenas." + arena + ".enabled")){
+                if(system.getBoolean("arenas." + arena + ".enabled")){
                     msg.debugConsole("Loading arena:" + arena);
                     games.add(new Game(arena, plugin));
+                }else {
+                    msg.debugConsole(String.format("Ignoring arena %s, it is disabled.", arena));
                 }
             }
             arena++;
