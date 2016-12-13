@@ -53,6 +53,7 @@ public class SettingsManager {
         }
         reloadMessages();
         reloadSystem();
+        reloadConfig();
         MessageManager.getInstance().debugConsole("&eSettings Manager Set up");
     }
 
@@ -123,6 +124,9 @@ public class SettingsManager {
 
     public void reloadConfig(){
         plugin.reloadConfig();
+
+        //Set the message prefix.
+        MessageManager.getInstance().setPrefix(getPluginConfig().getString("prefix", "&f[&6ColorCube&f]"));
     }
 
     /**
@@ -218,6 +222,9 @@ public class SettingsManager {
         }
         if(!plugin.getConfig().contains("sign.line4")){
             plugin.getConfig().addDefault("sign.line4", "{$status}");
+        }
+        if(!plugin.getConfig().contains("prefix")){
+            plugin.getConfig().addDefault("prefix", "&f[&6ColorCube&f]");
         }
         plugin.getConfig().options().copyDefaults(true);
         plugin.saveConfig();
