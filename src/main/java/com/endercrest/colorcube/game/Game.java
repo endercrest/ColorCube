@@ -192,7 +192,7 @@ public class Game {
     ///////////////////////////////////
     ///          Disable            ///
     ///////////////////////////////////
-    public void disable(){
+    public void disable(Boolean shutdown){
         disabled = true;
         spawns.clear();
 
@@ -200,10 +200,14 @@ public class Game {
             //removePlayer(p, false);
             MessageManager.getInstance().sendFMessage("game.status", p, "state-disabled");
         }
-        endGame();
+        endGame(shutdown);
         status = Status.DISABLED;
-        MessageManager.getInstance().debugConsole("Arena " + id + " disabled");
+        MessageManager.getInstance().debugConsole(String.format("Arena %s disabled", id));
         updateGameItems();
+    }
+
+    public void disable(){
+        disable(false);
     }
 
     ///////////////////////////////////
@@ -471,7 +475,7 @@ public class Game {
     ///////////////////////////////////
     ///        Reset Arena          ///
     ///////////////////////////////////
-    public void resetArena(){
+    public void resetArena(boolean shutdown){
         for(Integer i: tasks){
             Bukkit.getScheduler().cancelTask(i);
         }
@@ -519,7 +523,7 @@ public class Game {
         Bukkit.getScheduler().cancelTask(timerTaskID);
         Bukkit.getScheduler().cancelTask(endgameTaskID);
         Bukkit.getScheduler().cancelTask(particleTaskID);
-        QueueManager.getInstance().rollback(id, false);
+        QueueManager.getInstance().rollback(id, shutdown);
     }
     ///////////////////////////////////
     ///          Win Game           ///
@@ -543,26 +547,35 @@ public class Game {
     ///////////////////////////////////
     ///          End Game           ///
     ///////////////////////////////////
-    public void endGame() {
+    public void endGame(boolean shutdown) {
         winGame();
         for(Player p : activePlayers){
-            p.setScoreboard(manager.getNewScoreboard());
-            p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
-            restoreInv(p);
+            endGamePlayer(p);
         }
         for(Player p: spectators){
-            p.setScoreboard(manager.getNewScoreboard());
-            p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
-            restoreInv(p);
+            endGamePlayer(p);
         }
         timeBar.removeAll();
         timeBar.setTitle(ChatColor.GOLD + "Arena " + id);
         timeBar.setProgress(1);
         status = Status.FINISHING;
         updateGameItems();
-        resetArena();
+        resetArena(shutdown);
         status = Status.LOBBY;
         updateGameItems();
+    }
+
+    private void endGamePlayer(Player p){
+        for(PotionEffect pe: p.getActivePotionEffects()){
+            p.removePotionEffect(pe.getType());
+        }
+        p.setScoreboard(manager.getNewScoreboard());
+        p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
+        restoreInv(p);
+    }
+
+    public void endGame(){
+        endGame(false);
     }
 
     ///////////////////////////////////

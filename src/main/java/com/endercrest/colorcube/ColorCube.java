@@ -30,8 +30,7 @@ public class ColorCube extends JavaPlugin {
         SettingsManager.getInstance().saveSystemConfig();
         reloadConfig();
         for (Game g: GameManager.getInstance().getGames()) {
-            g.disable();
-            QueueManager.getInstance().rollback(g.getId(), true);
+            g.disable(true);
         }
         MessageManager.getInstance().log("&e" + getDescription().getVersion() + " by EnderCrest disabled");
     }
