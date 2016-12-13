@@ -150,7 +150,7 @@ public class Game {
 
         status = Status.LOBBY;
 
-        updateGameItems();
+        MenuManager.getInstance().addGame();
     }
 
     public void addSpawn() {

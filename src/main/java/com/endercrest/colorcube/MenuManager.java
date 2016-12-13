@@ -64,8 +64,10 @@ public class MenuManager {
 
     public void addGame(){
         List<HumanEntity> humanEntities = new ArrayList<>();
-        for(Page page: pages){
-            humanEntities.addAll(page.getInventory().getViewers());
+        if(pages != null) {
+            for (Page page : pages) {
+                humanEntities.addAll(page.getInventory().getViewers());
+            }
         }
         setup();
         Page page = pages.get(0);

@@ -76,6 +76,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("createsign", 3);
         helpinfo.put("deletesign", 3);
         helpinfo.put("menuitem", 1);
+        helpinfo.put("reward", 3);
     }
 
     @Override
