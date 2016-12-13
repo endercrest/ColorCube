@@ -535,6 +535,7 @@ public class Game {
             }
             giveReward(players);
             TeamWinEvent tw = new TeamWinEvent(players, team, reward);
+            Bukkit.getPluginManager().callEvent(tw);
             MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
         }
     }
@@ -554,6 +555,7 @@ public class Game {
             p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
             restoreInv(p);
         }
+        timeBar.removeAll();
         timeBar.setTitle(ChatColor.GOLD + "Arena " + id);
         timeBar.setProgress(1);
         status = Status.FINISHING;
