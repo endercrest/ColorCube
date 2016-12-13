@@ -3,6 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.migration.MigrationService;
 import com.endercrest.colorcube.utils.ColorCubeTabCompleter;
 import com.endercrest.colorcube.utils.Update;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -77,6 +78,16 @@ public class ColorCube extends JavaPlugin {
         public void run() {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
+
+            boolean migrationResult = new MigrationService(p).runMigration();
+
+            if(!migrationResult){
+                SettingsManager.getInstance().setup(p);
+                MessageManager.getInstance().log("&cA Migration has failed, disabling plugin.");
+                pm.disablePlugin(p);
+                return;
+            }
+
             SettingsManager.getInstance().setup(p);
             GameManager.getInstance().setup(p);
             LobbyManager.getInstance().setup(p);
