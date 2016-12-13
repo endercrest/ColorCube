@@ -4,15 +4,29 @@ ColorCube [![Build Status](https://drone.io/github.com/endercrest/ColorCube/stat
 =========
 ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](http://www.minecraftforum.net/forums/mapping-and-modding/maps/2112617-14w25b-color-cube-a-painting-minigame-by). The plugin was built to create a fully automated mini-game experience.
 
-* Completely Automated
-* Lobby Signs & Game Menu Selector
+* Completely automated
+* Powerups (Freeze, Swap, Splash)
+* Custom Lobby Signs
+* Configure Paintable Blocks
 * Spectating
-* Unlimited Arenas
-* Mutli-world Support
-* Arena Protection and more!
+* Vote to start games
+* Whitelisted Commands
+* Auto-Start with percentage.
+* Explosive Black Blocks(Black Stained Clay). Place them in your arenas and will start launching players.
+* Unlimited amount of arenas (That your system can handle)
+* Games running at the same time.
+* Easy Game setup
+* Per Arena Permissions
+* Auto-Start when arena is full.
+* Multiworld Support
+* Scoring Management
+* Arena Restoration
+* Arena Protection and much more!
+
 
 Requirements
 ------
+* Java 7+
 * Spigot MC 1.9+ (1.9-R0.1-SNAPSHOT or Higher)
 * WorldEdit
 
