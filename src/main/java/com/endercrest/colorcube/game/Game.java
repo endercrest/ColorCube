@@ -35,8 +35,6 @@ public class Game {
     private Arena arena;
     private Lobby lobby;
     private Integer id;
-    private FileConfiguration config;
-    private FileConfiguration system;
     private HashMap<Integer, Player> spawns = new HashMap<>();
     private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
     private int spawnCount = 0;
@@ -74,41 +72,41 @@ public class Game {
     public Game(Integer id, ColorCube plugin){
         this.id = id;
         this.plugin = plugin;
-        reloadConfig();
         setup();
-    }
-
-    public void reloadConfig(){
-        config = SettingsManager.getInstance().getPluginConfig();
-        system = SettingsManager.getInstance().getSystemConfig();
     }
 
     public void setup(){
         status = Status.LOADING;
 
-        int x = system.getInt("arenas." + id + ".x1");
-        int y = system.getInt("arenas." + id + ".y1");
-        int z = system.getInt("arenas." + id + ".z1");
+        FileConfiguration arenaConfig = SettingsManager.getInstance().getArenaConfig(id);
 
-        int x1 = system.getInt("arenas." + id + ".x2");
-        int y1 = system.getInt("arenas." + id + ".y2");
-        int z1 = system.getInt("arenas." + id + ".z2");
+        World world = Bukkit.getWorld(arenaConfig.getString("loc.world"));
 
-        Location pos1 = new Location(SettingsManager.getInstance().getGameWorld(id), Math.max(x, x1), Math.max(y, y1), Math.max(z, z1));//max
-        Location pos2 = new Location(SettingsManager.getInstance().getGameWorld(id), Math.min(x, x1), Math.min(y, y1), Math.min(z, z1));//min
+        int x = arenaConfig.getInt("loc.pos1.x");
+        int y = arenaConfig.getInt("loc.pos1.y");
+        int z = arenaConfig.getInt("loc.pos1.z");
+
+        int x1 = arenaConfig.getInt("loc.pos2.x");
+        int y1 = arenaConfig.getInt("loc.pos2.y");
+        int z1 = arenaConfig.getInt("loc.pos2.z");
+
+        Location pos1 = new Location(world, Math.max(x, x1), Math.max(y, y1), Math.max(z, z1));//max
+        Location pos2 = new Location(world, Math.min(x, x1), Math.min(y, y1), Math.min(z, z1));//min
 
         arena = new Arena(pos1, pos2);
 
-        int lx = system.getInt("arenas." + id + ".lx1");
-        int ly = system.getInt("arenas." + id + ".ly1");
-        int lz = system.getInt("arenas." + id + ".lz1");
+        World lobbyWorld = Bukkit.getWorld(arenaConfig.getString("lobby.world"));
 
-        int lx1 = system.getInt("arenas." + id + ".lx2");
-        int ly1 = system.getInt("arenas." + id + ".ly2");
-        int lz1 = system.getInt("arenas." + id + ".lz2");
+        int lx = arenaConfig.getInt("lobby.pos1.x");
+        int ly = arenaConfig.getInt("lobby.pos1.y");
+        int lz = arenaConfig.getInt("lobby.pos1.z");
 
-        Location lpos1 = new Location(SettingsManager.getInstance().getLobbyWorld(id), Math.max(lx, lx1), Math.max(ly, ly1), Math.max(lz, lz1));//max
-        Location lpos2 = new Location(SettingsManager.getInstance().getLobbyWorld(id), Math.min(lx, lx1), Math.min(ly, ly1), Math.min(lz, lz1));//min
+        int lx1 = arenaConfig.getInt("lobby.pos2.x");
+        int ly1 = arenaConfig.getInt("lobby.pos2.y");
+        int lz1 = arenaConfig.getInt("lobby.pos2.z");
+
+        Location lpos1 = new Location(lobbyWorld, Math.max(lx, lx1), Math.max(ly, ly1), Math.max(lz, lz1));//max
+        Location lpos2 = new Location(lobbyWorld, Math.min(lx, lx1), Math.min(ly, ly1), Math.min(lz, lz1));//min
 
         if(lx != 0 && ly != 0 && lz != 0) {
             lobby = new Lobby(lpos1, lpos2);
@@ -124,9 +122,9 @@ public class Game {
             msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
         }
 
-        pvp = system.getBoolean("arenas." + id + ".pvp", false);
+        pvp = arenaConfig.getBoolean("options.pvp", false);
 
-        reward = system.getDouble("arenas." + id + ".reward", 0.0);
+        reward = arenaConfig.getDouble("options.reward", 0.0);
 
         loadspawns();
 
@@ -323,7 +321,7 @@ public class Game {
         msgFArena("game.playervote", "player-" + p.getDisplayName());
         msgFArena("game.voteamount", "percent-" + Math.round(((voted.size()+0.0)/(activePlayers.size()+0.0))*100));
 
-        if((voted.size()/activePlayers.size()) >= config.getDouble("vote-start") && activePlayers.size() > 1){
+        if((voted.size()/activePlayers.size()) >= SettingsManager.getInstance().getPluginConfig().getDouble("vote-start") && activePlayers.size() > 1){
             countdown(20);
         }
     }
@@ -1019,14 +1017,6 @@ public class Game {
 
     public Integer getId() {
         return id;
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public FileConfiguration getSystem() {
-        return system;
     }
 
     public HashMap<Integer, Player> getSpawns() {

@@ -28,8 +28,6 @@ public class ColorCube extends JavaPlugin {
 
     @Override
     public void onDisable(){
-        SettingsManager.getInstance().saveSystemConfig();
-        reloadConfig();
         for (Game g: GameManager.getInstance().getGames()) {
             g.disable(true);
         }

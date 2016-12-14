@@ -8,7 +8,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SettingsManager {
@@ -17,15 +20,28 @@ public class SettingsManager {
 
     private ColorCube plugin = null;
     private FileConfiguration messages;
-    private FileConfiguration system;
 
     private static final int MESSAGE_VERSION = 0;
-    private static final int SYSTEM_VERSION = 0;
 
-    //Systems file
-    private File file1;
-    //Messages file
-    private File file2;
+    private File messageFile;
+
+    //folders
+    private File arenaFolder;
+    private File signFolder;
+    private File arenaArchiveFolder;
+    private File signArchiveFolder;
+
+    private HashMap<Integer, File> arenaFiles;
+    private HashMap<Integer, YamlConfiguration> arenaConfigs;
+    private File arenaGlobalFile;
+    private YamlConfiguration arenaGlobalConfig;
+
+    private HashMap<Integer, File> signFiles;
+    private HashMap<Integer, YamlConfiguration> signConfigs;
+    private File signGlobalFile;
+    private YamlConfiguration signGlobalConfig;
+
+
 
     public static SettingsManager getInstance(){
         return instance;
@@ -40,82 +56,322 @@ public class SettingsManager {
 
         loadPluginDefaults();
 
-        file1 = new File(plugin.getDataFolder(), "system.yml");
-        file2 = new File(plugin.getDataFolder(), "messages.yml");
+        messageFile = new File(plugin.getDataFolder(), "messages.yml");
+
+        arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        signFolder = new File(plugin.getDataFolder(), "Sign");
+        arenaArchiveFolder = new File(arenaFolder, "Archive");
+        signArchiveFolder = new File(signFolder, "Archive");
+
+        arenaFolder.mkdirs();
+        signFolder.mkdirs();
+        arenaArchiveFolder.mkdirs();
+        signArchiveFolder.mkdirs();
+
+        loadArenaConfigs();
+        loadSignConfigs();
 
         try {
-            if (!file1.exists())
-                file1.createNewFile();
-            if (!file2.exists())
+            if (!messageFile.exists())
                 plugin.saveResource("messages.yml", false);
         }catch(Exception e){
             e.printStackTrace();
         }
         reloadMessages();
-        reloadSystem();
+
         reloadConfig();
         MessageManager.getInstance().debugConsole("&eSettings Manager Set up");
     }
 
-    public World getGameWorld(int game) {
-        if (SettingsManager.getInstance().getSystemConfig().getString("arenas." + game + ".world") == null) {
-            //LobbyManager.getInstance().error(true);
-            return null;
-
+    /**
+     * Loads the arena configs for the first time.
+     */
+    private void loadArenaConfigs(){
+        MessageManager.getInstance().debugConsole("Loading Arena Configs");
+        if(arenaFolder != null && arenaFolder.listFiles() != null) {
+            arenaFiles = new HashMap<>();
+            arenaConfigs = new HashMap<>();
+            for (File file : arenaFolder.listFiles()) {
+                if (file.isFile()) {
+                    if (file.getName().equals("global.yml")) {
+                        arenaGlobalFile = file;
+                        arenaGlobalConfig = YamlConfiguration.loadConfiguration(file);
+                        continue;
+                    }
+                    int id = Integer.parseInt(file.getName().replace(".yml", "").replace("arena", ""));
+                    arenaFiles.put(id, file);
+                    arenaConfigs.put(id, YamlConfiguration.loadConfiguration(file));
+                }
+            }
         }
-        return plugin.getServer().getWorld(SettingsManager.getInstance().getSystemConfig().getString("arenas." + game + ".world"));
-    }
-
-    public World getLobbyWorld(int game){
-        if(getSystemConfig().getString("arenas." + game + ".lworld") == null){
-            return null;
-        }
-        return plugin.getServer().getWorld(getSystemConfig().getString("arenas." + game + ".lworld"));
-    }
-
-    public int getSpawnCount(int game){
-        return getSystemConfig().getInt("spawns." + game + ".count", 0);
-
+        MessageManager.getInstance().debugConsole("Successfully Loaded Arena Configs");
     }
 
     /**
-     * Reloads System Config
+     * Reload all arena configs
      */
-    public void reloadSystem() {
-        system = YamlConfiguration.loadConfiguration(file1);
-        if(system.getInt("version", 0) != SYSTEM_VERSION){
-            moveFile(file1);
-            reloadSystem();
+    public void reloadArenaConfigs(){
+        MessageManager.getInstance().debugConsole("Reloading Arena Configs");
+        for(int key: arenaFiles.keySet()){
+            File aFile = arenaFiles.get(key);
+            arenaConfigs.put(key, YamlConfiguration.loadConfiguration(aFile));
         }
-        system.set("version", SYSTEM_VERSION);
-        saveSystemConfig();
+        reloadArenaGlobalConfig();
+        saveArenaConfigs();
     }
 
     /**
-     * Saves system config
+     * Save all arena configs.
      */
-    public void saveSystemConfig() {
-        if(getPluginConfig().getBoolean("debug", false)) {
-            MessageManager.getInstance().log("&eSaving System Config!");
+    public void saveArenaConfigs(){
+        MessageManager.getInstance().debugConsole("Saving Arena Configs");
+
+        for(int key: arenaConfigs.keySet()){
+            try {
+                arenaConfigs.get(key).save(arenaFiles.get(key));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        saveArenaGlobalConfig();
+    }
+
+    /**
+     * Get the global arena config contains global lobby information as well as next game id.
+     * @return {@link YamlConfiguration}
+     */
+    public YamlConfiguration getArenaGlobalConfig(){
+        return arenaGlobalConfig;
+    }
+
+    /**
+     * Reload the global arena configuration file.
+     */
+    public void reloadArenaGlobalConfig(){
+        MessageManager.getInstance().debugConsole("Reloading global arena config.");
+        arenaGlobalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+        saveArenaGlobalConfig();
+    }
+
+    /**
+     * Save the global arena configuration file.
+     */
+    public void saveArenaGlobalConfig(){
+        MessageManager.getInstance().debugConsole("Saving global arena config.");
+
         try {
-            system.save(file1);
+            arenaGlobalConfig.save(arenaGlobalFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public FileConfiguration getSystemConfig() {
-        return system;
+    /**
+     * Save the specific arena config.
+     * @param id The arena id.
+     */
+    public void saveArenaConfig(int id){
+        MessageManager.getInstance().debugConsole(String.format("Saving arena %s config", id));
+
+        YamlConfiguration config = getArenaConfig(id);
+        if(config != null){
+            try {
+                config.save(arenaFiles.get(id));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Get a specific arena configuration that contains all the arena information.
+     * @param id The id of the arena.
+     * @return {@link YamlConfiguration}
+     */
+    public YamlConfiguration getArenaConfig(int id){
+        return arenaConfigs.get(id);
+    }
+
+    public HashMap<Integer, YamlConfiguration> getArenaConfigs(){
+        return arenaConfigs;
+    }
+
+    /**
+     * Creates a new arena configuration file.
+     * @param id The id of the new arena.
+     * @return Returns the YamlConfiguration or returns null if it already exists.
+     */
+    public YamlConfiguration createArenaConfig(int id, Location pos1, Location pos2){
+        File file = new File(arenaFolder, "arena"+id+".yml");
+
+        if(arenaFiles.get(id) == null && file.exists()){
+            return null;
+        }
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        arenaFiles.put(id, file);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        config.set("spawns", null);
+        config.set("lobby", null);
+        config.set("loc.world", pos1.getWorld().getName());
+        config.set("loc.pos1.x", pos1.getX());
+        config.set("loc.pos1.y", pos1.getY());
+        config.set("loc.pos1.z", pos1.getZ());
+        config.set("loc.pos2.x", pos2.getX());
+        config.set("loc.pos2.y", pos2.getY());
+        config.set("loc.pos2.z", pos2.getZ());
+        config.set("options.pvp", false);
+        config.set("enabled", true);
+        config.set("options.reward", 0.0);
+
+
+        arenaConfigs.put(id, config);
+
+        saveArenaConfig(id);
+        return config;
+    }
+
+    /**
+     * Removes arena file and moves to the archive folder.
+     * @param id The id.
+     */
+    public boolean archiveArena(int id){
+        File file = arenaFiles.get(id);
+        try {
+            Files.move(file.toPath(), new File(arenaArchiveFolder, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            MessageManager.getInstance().log(String.format("&cFailed to archive arena %s.", id));
+            MessageManager.getInstance().log(String.format("&cMigration 13/12/2016: Error: %s", e.getLocalizedMessage()));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Load the sign configs for the first time.
+     */
+    private void loadSignConfigs(){
+        MessageManager.getInstance().debugConsole("Loading Sign Configs");
+        if(signFolder != null && signFolder.listFiles() != null) {
+            signFiles = new HashMap<>();
+            signConfigs = new HashMap<>();
+            for (File file : signFolder.listFiles()) {
+                if (file.isFile()) {
+                    if (file.getName().equals("global.yml")) {
+                        signGlobalFile = file;
+                        signGlobalConfig = YamlConfiguration.loadConfiguration(file);
+                        continue;
+                    }
+                    int id = Integer.parseInt(file.getName().replace(".yml", "").replace("sign", ""));
+                    signFiles.put(id, file);
+                    signConfigs.put(id, YamlConfiguration.loadConfiguration(file));
+                }
+            }
+        }
+    }
+
+    /**
+     * Reload all sign configurations.
+     */
+    public void reloadSignConfigs(){
+        MessageManager.getInstance().debugConsole("Reloading Sign Configs");
+        for(int key: signFiles.keySet()){
+            File aFile = signFiles.get(key);
+            signConfigs.put(key, YamlConfiguration.loadConfiguration(aFile));
+        }
+        reloadArenaGlobalConfig();
+        saveSignConfigs();
+    }
+
+    /**
+     * Save all sign configurations
+     */
+    public void saveSignConfigs(){
+        MessageManager.getInstance().debugConsole("Saving Sign Configs");
+
+        for(int key: signConfigs.keySet()){
+            try {
+                signConfigs.get(key).save(signFiles.get(key));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        saveSignGlobalConfig();
+    }
+
+    /**
+     * Ge the global sign config that contains the next game id.
+     * @return {@link YamlConfiguration}
+     */
+    public YamlConfiguration getSignGlobalConfig(){
+        return signGlobalConfig;
+    }
+
+    /**
+     * Reload the global arena configuration file.
+     */
+    public void reloadSignGlobalConfig(){
+        MessageManager.getInstance().debugConsole("Reloading global sign config.");
+        signGlobalConfig = YamlConfiguration.loadConfiguration(signGlobalFile);
+        saveSignGlobalConfig();
+    }
+
+    /**
+     * Save the global arena configuration file.
+     */
+    public void saveSignGlobalConfig(){
+        MessageManager.getInstance().debugConsole("Saving global sign config.");
+
+        try {
+            signGlobalConfig.save(signGlobalFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Save the specific sign config.
+     * @param id The sign id.
+     */
+    public void saveSignConfig(int id){
+        MessageManager.getInstance().debugConsole(String.format("Saving sign %s config", id));
+
+        YamlConfiguration config = getSignConfig(id);
+        if(config != null){
+            try {
+                config.save(signFiles.get(id));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public HashMap<Integer, YamlConfiguration> getSignConfigs(){
+        return signConfigs;
+    }
+
+    /**
+     * Get a specific sign configuration that contains all the sign information.
+     * @param id The id of the sign.
+     * @return {@link YamlConfiguration}
+     */
+    public YamlConfiguration getSignConfig(int id){
+        return signConfigs.get(id);
     }
 
     /**
      * Reload message config
      */
     public void reloadMessages() {
-        messages = YamlConfiguration.loadConfiguration(file2);
+        messages = YamlConfiguration.loadConfiguration(messageFile);
         if(messages.getInt("version", 0) != MESSAGE_VERSION){
-            moveFile(file2);
+            moveFile(messageFile);
             plugin.saveResource("messages.yml", true);
         }
         messages.set("version", MESSAGE_VERSION);
@@ -137,7 +393,7 @@ public class SettingsManager {
             MessageManager.getInstance().log("&eSaving Message Config!");
         }
         try {
-            messages.save(file2);
+            messages.save(messageFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -231,11 +487,19 @@ public class SettingsManager {
     }
 
     public int getNextArenaID(){
-        return getSystemConfig().getInt("arena_next_id", 0);
+        return getArenaGlobalConfig().getInt("nextId", 0);
+    }
+
+    public void incrementNextArenaId(){
+        getArenaGlobalConfig().set("nextId", getNextArenaID() + 1);
     }
 
     public int getNextSignID(){
-        return getSystemConfig().getInt("sign_next_id", 0);
+        return getArenaGlobalConfig().getInt("nextId", 0);
+    }
+
+    public void incrementNextSignId(){
+        getSignGlobalConfig().set("nextId", getNextSignID() + 1);
     }
 
     public FileConfiguration getPluginConfig(){
@@ -256,12 +520,14 @@ public class SettingsManager {
      * @return location of point
      */
     public Location getSpawnPoint(int gameid, int spawnid) {
+        YamlConfiguration arenaConfig =  getArenaConfig(gameid);
+
         return new Location(getGameWorld(gameid),
-                system.getInt("spawns." + gameid + "." + spawnid + ".x"),
-                system.getInt("spawns." + gameid + "." + spawnid + ".y"),
-                system.getInt("spawns." + gameid + "." + spawnid + ".z"),
-                (float)system.getDouble("spawns." + gameid + "." + spawnid + ".yaw"),
-                (float)system.getDouble("spawns." + gameid + "." + spawnid + ".pitch")).add(0.5, 0, 0.5);
+                arenaConfig.getDouble("spawns." + spawnid + ".x"),
+                arenaConfig.getDouble("spawns." + spawnid + ".y"),
+                arenaConfig.getDouble("spawns." + spawnid + ".z"),
+                (float)arenaConfig.getDouble("spawns." + spawnid + ".yaw"),
+                (float)arenaConfig.getDouble("spawns." + spawnid + ".pitch"));
     }
 
     /**
@@ -270,12 +536,12 @@ public class SettingsManager {
      */
     public Location getGlobalLobbySpawn() {
         try{
-            return new Location(Bukkit.getWorld(system.getString("lobby.global.world")),
-                    system.getInt("lobby.global.x"),
-                    system.getInt("lobby.global.y"),
-                    system.getInt("lobby.global.z"),
-                    system.getInt("lobby.global.yaw"),
-                    system.getInt("lobby.global.pitch")).add(0.5, 0, 0.5);
+            return new Location(Bukkit.getWorld(getArenaGlobalConfig().getString("lobby.world")),
+                    getArenaGlobalConfig().getDouble("lobby.x"),
+                    getArenaGlobalConfig().getDouble("lobby.y"),
+                    getArenaGlobalConfig().getDouble("lobby.z"),
+                    (float) getArenaGlobalConfig().getDouble("lobby.yaw"),
+                    (float) getArenaGlobalConfig().getDouble("lobby.pitch"));
         }catch(Exception e){
             return null;
         }
@@ -286,13 +552,13 @@ public class SettingsManager {
      * @param l The Location
      */
     public void setGlobalLobbySpawn(Location l) {
-        system.set("lobby.global.world", l.getWorld().getName());
-        system.set("lobby.global.x", l.getBlockX());
-        system.set("lobby.global.y", l.getBlockY());
-        system.set("lobby.global.z", l.getBlockZ());
-        system.set("lobby.global.yaw", l.getYaw());
-        system.set("lobby.global.pitch", l.getPitch());
-
+        getArenaGlobalConfig().set("lobby.world", l.getWorld().getName());
+        getArenaGlobalConfig().set("lobby.x", l.getX());
+        getArenaGlobalConfig().set("lobby.y", l.getY());
+        getArenaGlobalConfig().set("lobby.z", l.getZ());
+        getArenaGlobalConfig().set("lobby.yaw", l.getYaw());
+        getArenaGlobalConfig().set("lobby.pitch", l.getPitch());
+        saveArenaGlobalConfig();
     }
 
     /**
@@ -302,18 +568,16 @@ public class SettingsManager {
      * @param v The location
      */
     public void setSpawn(int gameid, int spawnid, Location v) {
-        system.set("spawns." + gameid + "." + spawnid + ".x", v.getBlockX());
-        system.set("spawns." + gameid + "." + spawnid + ".y", v.getBlockY());
-        system.set("spawns." + gameid + "." + spawnid + ".z", v.getBlockZ());
-        system.set("spawns." + gameid + "." + spawnid + ".yaw", v.getYaw());
-        system.set("spawns." + gameid + "." + spawnid + ".pitch", v.getPitch());
+        YamlConfiguration arenaConfig = getArenaConfig(gameid);
 
-        if (spawnid > system.getInt("spawns." + gameid + ".count")) {
-            system.set("spawns." + gameid + ".count", spawnid);
-        }
-        saveSystemConfig();
+        arenaConfig.set("spawns." + spawnid + ".x", v.getX());
+        arenaConfig.set("spawns." + spawnid + ".y", v.getY());
+        arenaConfig.set("spawns." + spawnid + ".z", v.getZ());
+        arenaConfig.set("spawns." + spawnid + ".yaw", v.getYaw());
+        arenaConfig.set("spawns." + spawnid + ".pitch", v.getPitch());
+
+        saveArenaConfig(gameid);
         GameManager.getInstance().getGame(gameid).addSpawn();
-
     }
 
     /**
@@ -322,8 +586,30 @@ public class SettingsManager {
      * @param reward The reward amount
      */
     public void setReward(int gameid, double reward){
-        system.set("arenas." + gameid + ".reward", reward);
-        saveSystemConfig();
+        YamlConfiguration arenaConfig = getArenaConfig(gameid);
+        arenaConfig.set("options.reward", reward);
+        saveArenaConfig(gameid);
         GameManager.getInstance().getGame(gameid).setReward(reward);
+    }
+
+    public World getGameWorld(int game) {
+        YamlConfiguration arenaConfig = getArenaConfig(game);
+        if (arenaConfig.isSet("loc.world")) {
+            return null;
+        }
+        return plugin.getServer().getWorld(arenaConfig.getString("loc.world"));
+    }
+
+    public World getLobbyWorld(int game){
+        YamlConfiguration arenaConfig = getArenaConfig(game);
+        if(arenaConfig.isSet("lobby.world")){
+            return null;
+        }
+        return plugin.getServer().getWorld(arenaConfig.getString("lobby.world"));
+    }
+
+    public int getSpawnCount(int game){
+        YamlConfiguration arenaConfig = getArenaConfig(game);
+        return arenaConfig.getConfigurationSection("spawns").getKeys(false).size();
     }
 }

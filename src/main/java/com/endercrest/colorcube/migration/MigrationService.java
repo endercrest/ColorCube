@@ -54,7 +54,7 @@ public class MigrationService {
         ConfigurationSection arenaSection = config.getConfigurationSection("arenas");
         if(arenaSection != null) {
             for (String id : arenaSection.getKeys(false)) {
-                String fileName = "Arena" + id + ".yml";
+                String fileName = "arena" + id + ".yml";
                 File arenaFile;
                 if (arenaSection.getBoolean(id + ".enabled"))
                     arenaFile = new File(arenaFolder, fileName);
@@ -78,6 +78,8 @@ public class MigrationService {
                 MessageManager.getInstance().debugConsole(String.format("Migration 13/12/2016: Transferring arena %s data", id));
                 arenaConfig.set("version", 0);
 
+                //ID
+                arenaConfig.set("id", id);
                 //Arena Positional Data
                 arenaConfig.set("loc.world", arenaSection.getString(id + ".world"));
                 arenaConfig.set("loc.pos1.x", arenaSection.getInt(id + ".x1"));
@@ -100,18 +102,21 @@ public class MigrationService {
                 arenaConfig.set("lobby.pos2.z", arenaSection.getInt(id + ".lz2"));
                 //Arena Lobby Spawn Point
                 arenaConfig.set("lobby.spawn.world", config.getString("lobby." + id + ".world"));
-                arenaConfig.set("lobby.spawn.x", config.getDouble("lobby." + id + ".x"));
+                arenaConfig.set("lobby.spawn.x", config.getDouble("lobby." + id + ".x")+0.5);
                 arenaConfig.set("lobby.spawn.y", config.getDouble("lobby." + id + ".y"));
-                arenaConfig.set("lobby.spawn.z", config.getDouble("lobby." + id + ".z"));
+                arenaConfig.set("lobby.spawn.z", config.getDouble("lobby." + id + ".z")+0.5);
                 arenaConfig.set("lobby.spawn.yaw", config.getDouble("lobby." + id + ".yaw"));
                 arenaConfig.set("lobby.spawn.pitch", config.getDouble("lobby." + id + ".pitch"));
                 //Arena Spawn Points.
                 ConfigurationSection spawnSection = config.getConfigurationSection("spawns." + id);
                 if (spawnSection != null) {
                     for (String spawnId : spawnSection.getKeys(false)) {
-                        arenaConfig.set("spawns." + spawnId + ".x", spawnSection.getInt(spawnId + ".x"));
-                        arenaConfig.set("spawns." + spawnId + ".y", spawnSection.getInt(spawnId + ".y"));
-                        arenaConfig.set("spawns." + spawnId + ".z", spawnSection.getInt(spawnId + ".z"));
+                        if(spawnId.equalsIgnoreCase("count"))
+                            continue;
+
+                        arenaConfig.set("spawns." + spawnId + ".x", spawnSection.getDouble(spawnId + ".x")+0.5);
+                        arenaConfig.set("spawns." + spawnId + ".y", spawnSection.getDouble(spawnId + ".y"));
+                        arenaConfig.set("spawns." + spawnId + ".z", spawnSection.getDouble(spawnId + ".z")+0.5);
                         arenaConfig.set("spawns." + spawnId + ".yaw", spawnSection.getDouble(spawnId + ".yaw"));
                         arenaConfig.set("spawns." + spawnId + ".pitch", spawnSection.getDouble(spawnId + ".pitch"));
                     }
@@ -168,8 +173,6 @@ public class MigrationService {
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Skipping global arena file, it already exists.");
         }
 
-
-        //TODO Sign Migration
         File signFolder = new File(plugin.getDataFolder(), "Sign");
         if(signFolder.mkdirs())
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Creating sign folder.");
@@ -182,7 +185,7 @@ public class MigrationService {
         ConfigurationSection signSection = config.getConfigurationSection("signs");
         if(signSection != null){
             for(String signId: signSection.getKeys(false)){
-                String fileName = "Sign" + signId + ".yml";
+                String fileName = "sign" + signId + ".yml";
                 File signFile;
                 if (signSection.getBoolean(signId + ".enabled"))
                     signFile = new File(signFolder, fileName);
@@ -205,10 +208,13 @@ public class MigrationService {
                 FileConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
                 signConfig.set("version", 0);
 
+                signConfig.set("id", signId);
+                //Location Info
                 signConfig.set("loc.world", signSection.getString(signId+".world"));
                 signConfig.set("loc.x", signSection.getInt(signId+".x"));
                 signConfig.set("loc.y", signSection.getInt(signId+".y"));
                 signConfig.set("loc.z", signSection.getInt(signId+".z"));
+                //Other information
                 signConfig.set("gameId", signSection.getInt(signId+".gameID"));
                 signConfig.set("enabled", signSection.getBoolean(signId+".enabled"));
 
