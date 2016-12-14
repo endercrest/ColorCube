@@ -17,13 +17,15 @@ public class ResetSpawns implements SubCommand {
             return true;
         }
         try{
-            SettingsManager.getInstance().getSystemConfig().set("spawns." + Integer.parseInt(args[0]),null);
+            SettingsManager.getInstance().getArenaConfig(Integer.parseInt(args[0])).set("spawns", null);
+            SettingsManager.getInstance().saveArenaConfig(Integer.parseInt(args[0]));
         }catch(NumberFormatException e){
             MessageManager.getInstance().sendFMessage("error.notanumber", p, "input-" + args[0]);
         }catch(NullPointerException e){
             MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + args[0]);
         }
-        return false;
+        MessageManager.getInstance().sendFMessage("error.resetspawns", p);
+        return true;
     }
 
     @Override

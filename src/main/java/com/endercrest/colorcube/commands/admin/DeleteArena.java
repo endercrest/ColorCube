@@ -13,29 +13,33 @@ public class DeleteArena implements SubCommand {
     public boolean onCommand(Player p, String[] args) {
         if(!p.hasPermission(permission())){
             MessageManager.getInstance().sendFMessage("error.nopermission", p);
-            return true;
+            return false;
         }
         if(args.length != 1){
             MessageManager.getInstance().sendFMessage("error.notspecified", p, "input-Arena");
-            return true;
+            return false;
         }
 
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
-        int arena = Integer.parseInt(args[0]);
-        Game game = GameManager.getInstance().getGame(arena);
+        int arenaId = Integer.parseInt(args[0]);
+        Game game = GameManager.getInstance().getGame(arenaId);
 
         if(game == null){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + arena);
-            return true;
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + arenaId);
+            return false;
         }
 
         game.disable();
-        system.set("arenas." + arena + ".enabled", false);
-        system.set("arena_next_id",system.getInt("arena_next_id") + 1);
-        MessageManager.getInstance().sendFMessage("info.delete", p, "arena-" + arena);
-        SettingsManager.getInstance().saveSystemConfig();
-        GameManager.getInstance().removeArena(arena);
-        return false;
+
+        SettingsManager.getInstance().getArenaConfig(arenaId).set("enabled", false);
+        SettingsManager.getInstance().saveArenaConfig(arenaId);
+
+        if(!SettingsManager.getInstance().archiveArena(arenaId)){
+            MessageManager.getInstance().sendFMessage("error.archive", p, "file-arena"+arenaId+".yml");
+            return false;
+        }
+        MessageManager.getInstance().sendFMessage("info.delete", p, "arena-" + arenaId);
+        GameManager.getInstance().removeArena(arenaId);
+        return true;
     }
 
     @Override

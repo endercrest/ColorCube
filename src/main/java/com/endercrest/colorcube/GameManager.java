@@ -3,11 +3,14 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.game.Game;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GameManager {
@@ -40,20 +43,22 @@ public class GameManager {
      * Load all games into the system
      */
     private void loadGames(){
-        FileConfiguration system = settingsManager.getSystemConfig();
         games.clear();
-        int arenaID = settingsManager.getNextArenaID();
-        int arena = 1;
-        for(int loaded = 0; loaded < arenaID; loaded++){
-            if(system.isSet("arenas." + arena + ".x1")){
-                if(system.getBoolean("arenas." + arena + ".enabled")){
-                    msg.debugConsole("Loading arena:" + arena);
-                    games.add(new Game(arena, plugin));
-                }else {
-                    msg.debugConsole(String.format("Ignoring arena %s, it is disabled.", arena));
+        HashMap<Integer, YamlConfiguration> configs = SettingsManager.getInstance().getArenaConfigs();
+
+        for(int id: configs.keySet()) {
+            YamlConfiguration config = configs.get(id);
+
+            if (Bukkit.getWorld(config.getString("loc.world")) != null) {
+                if (config.getBoolean("enabled")) {
+                    msg.debugConsole(String.format("Loading Arena %s", id));
+                    games.add(new Game(id, plugin));
+                } else {
+                    msg.debugConsole(String.format("Ignoring arena %s, it is disabled.", id));
                 }
+            } else {
+                msg.debugConsole(String.format("Arena %s is in a world that is not loaded. Skipping ", id));
             }
-            arena++;
         }
     }
 
@@ -90,7 +95,6 @@ public class GameManager {
     }
 
     public void createArenaFromSelection(Player p){
-        FileConfiguration system = settingsManager.getSystemConfig();
         WorldEditPlugin we = plugin.getWorldEdit();
         Selection selection = we.getSelection(p);
 
@@ -101,24 +105,14 @@ public class GameManager {
         Location pos1 = selection.getMaximumPoint();
         Location pos2 = selection.getMinimumPoint();
 
-        int id = settingsManager.getNextArenaID() + 1;
-        system.set("arena_next_id", id);
-        if(games.size() == 0 || games.isEmpty()){
-            id = 1;
+        int id = settingsManager.getNextArenaID();
+        YamlConfiguration config = SettingsManager.getInstance().createArenaConfig(id, pos1, pos2);
+        if(config == null){
+            MessageManager.getInstance().sendFMessage("error.nextid", p,
+                    "type-"+MessageManager.getInstance().getFValue("words.arena"));
+            return;
         }
-        system.set(("spawns." + id), null);
-        system.set("arenas." + id + ".world", pos1.getWorld().getName());
-        system.set("arenas." + id + ".x1", pos1.getBlockX());
-        system.set("arenas." + id + ".y1", pos1.getBlockY());
-        system.set("arenas." + id + ".z1", pos1.getBlockZ());
-        system.set("arenas." + id + ".x2", pos2.getBlockX());
-        system.set("arenas." + id + ".y2", pos2.getBlockY());
-        system.set("arenas." + id + ".z2", pos2.getBlockZ());
-        system.set("arenas." + id + ".pvp", false);
-        system.set("arenas." + id + ".enabled", true);
-        system.set("arenas." + id + ".reward", 0.0);
-
-        settingsManager.saveSystemConfig();
+        SettingsManager.getInstance().incrementNextArenaId();
         addArena(id);
         msg.sendFMessage("info.create", p, "arena-" + id);
     }
