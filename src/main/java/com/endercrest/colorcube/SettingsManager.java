@@ -648,7 +648,7 @@ public class SettingsManager {
 
     public World getGameWorld(int game) {
         YamlConfiguration arenaConfig = getArenaConfig(game);
-        if (arenaConfig.isSet("loc.world")) {
+        if (!arenaConfig.isSet("loc.world")) {
             return null;
         }
         return plugin.getServer().getWorld(arenaConfig.getString("loc.world"));
