@@ -50,22 +50,22 @@ public class Lobby {
      */
     public void loadSpawn(int id){
         YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(id);
-        spawn = new Location(Bukkit.getWorld(config.getString("lobby.world")),
-                config.getDouble("lobby.x"),
-                config.getDouble("lobby.y"),
-                config.getDouble("lobby.z"),
-                (float) config.getDouble("lobby.yaw"),
-                (float) config.getDouble("lobby.pitch"));
+        spawn = new Location(Bukkit.getWorld(config.getString("lobby.spawn.world")),
+                config.getDouble("lobby.spawn.x"),
+                config.getDouble("lobby.spawn.y"),
+                config.getDouble("lobby.spawn.z"),
+                (float) config.getDouble("lobby.spawn.yaw"),
+                (float) config.getDouble("lobby.spawn.pitch"));
     }
 
     public void setSpawn(int id, Location location){
         YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(id);
-        config.set("lobby." + id + ".world", location.getWorld().getName());
-        config.set("lobby." + id + ".x", location.getX());
-        config.set("lobby." + id + ".y", location.getY());
-        config.set("lobby." + id + ".z", location.getZ());
-        config.set("lobby." + id + ".yaw", location.getYaw());
-        config.set("lobby." + id + ".pitch", location.getPitch());
+        config.set("lobby.spawn.world", location.getWorld().getName());
+        config.set("lobby.spawn.x", location.getX());
+        config.set("lobby.spawn.y", location.getY());
+        config.set("lobby.spawn.z", location.getZ());
+        config.set("lobby.spawn.yaw", location.getYaw());
+        config.set("lobby.spawn.pitch", location.getPitch());
         SettingsManager.getInstance().saveArenaConfig(id);
         spawn = location;
     }

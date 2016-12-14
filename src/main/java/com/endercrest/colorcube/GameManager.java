@@ -55,10 +55,9 @@ public class GameManager {
                     games.add(new Game(id, plugin));
                 } else {
                     msg.debugConsole(String.format("Ignoring arena %s, it is disabled.", id));
-                    //TODO Move disabled arena to archive folder.
                 }
             } else {
-                msg.debugConsole(String.format("Arena %s is in a world that is not loaded.", id));
+                msg.debugConsole(String.format("Arena %s is in a world that is not loaded. Skipping ", id));
             }
         }
     }

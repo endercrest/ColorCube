@@ -79,7 +79,7 @@ public class MigrationService {
                 arenaConfig.set("version", 0);
 
                 //ID
-                arenaConfig.set("id", id);
+                arenaConfig.set("id", Integer.parseInt(id));
                 //Arena Positional Data
                 arenaConfig.set("loc.world", arenaSection.getString(id + ".world"));
                 arenaConfig.set("loc.pos1.x", arenaSection.getInt(id + ".x1"));
@@ -208,7 +208,7 @@ public class MigrationService {
                 FileConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
                 signConfig.set("version", 0);
 
-                signConfig.set("id", signId);
+                signConfig.set("id", Integer.parseInt(signId));
                 //Location Info
                 signConfig.set("loc.world", signSection.getString(signId+".world"));
                 signConfig.set("loc.x", signSection.getInt(signId+".x"));
@@ -260,8 +260,9 @@ public class MigrationService {
         }
 
         //TODO Remove Commenting for deleting system.yml once all other systems are reading the new format.
-        //if(file.delete())
-        //    MessageManager.getInstance().debugConsole("Migration 13/12/2016: Deleted the system.yml file.");
+        if(file.renameTo(new File(plugin.getDataFolder(), "system_archive.yml")))
+            MessageManager.getInstance().debugConsole("Migration 13/12/2016: Renamed system.yml to system_archive.yml.");
+            //if(file.delete())
 
         MessageManager.getInstance().log("Migration 13/12/2016: Migration Completed.");
         return true;

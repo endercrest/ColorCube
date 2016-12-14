@@ -92,6 +92,7 @@ messages:
         noarenas: 'No arenas'
         arenas: 'Arenas'
         arena: 'Arena'
+        sign: 'Sign'
     help:
         createarena: 'Create a new arena.'
         deletearena: 'Delete an arena.'

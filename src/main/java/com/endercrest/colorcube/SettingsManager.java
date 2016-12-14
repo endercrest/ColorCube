@@ -98,9 +98,10 @@ public class SettingsManager {
                         arenaGlobalConfig = YamlConfiguration.loadConfiguration(file);
                         continue;
                     }
-                    int id = Integer.parseInt(file.getName().replace(".yml", "").replace("arena", ""));
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                    int id = config.getInt("id");
                     arenaFiles.put(id, file);
-                    arenaConfigs.put(id, YamlConfiguration.loadConfiguration(file));
+                    arenaConfigs.put(id, config);
                 }
             }
         }
@@ -268,9 +269,10 @@ public class SettingsManager {
                         signGlobalConfig = YamlConfiguration.loadConfiguration(file);
                         continue;
                     }
-                    int id = Integer.parseInt(file.getName().replace(".yml", "").replace("sign", ""));
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                    int id = config.getInt("id");
                     signFiles.put(id, file);
-                    signConfigs.put(id, YamlConfiguration.loadConfiguration(file));
+                    signConfigs.put(id, config);
                 }
             }
         }
@@ -363,6 +365,58 @@ public class SettingsManager {
      */
     public YamlConfiguration getSignConfig(int id){
         return signConfigs.get(id);
+    }
+
+    /**
+     * Create a new sign config.
+     * @param id The id of the new sign
+     * @param loc The location of the sign.
+     * @return
+     */
+    public YamlConfiguration createSignConfig(int id, int gameId, Location loc){
+        File file = new File(signFolder, "sign"+id+".yml");
+
+        if(signFiles.get(id) == null && file.exists()){
+            return null;
+        }
+
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        signFiles.put(id, file);
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        config.set("id", id);
+        config.set("loc.x", loc.getBlockX());
+        config.set("loc.y", loc.getBlockY());
+        config.set("loc.z", loc.getBlockZ());
+        config.set("loc.world", loc.getWorld().getName());
+        config.set("gameId", gameId);
+        config.set("enabled", true);
+
+        signConfigs.put(id, config);
+
+        saveSignConfig(id);
+        return config;
+    }
+
+    /**
+     * Removes sign file and moves to the archive folder.
+     * @param id The id.
+     */
+    public boolean archiveSign(int id){
+        File file = signFiles.get(id);
+        try {
+            Files.move(file.toPath(), new File(signArchiveFolder, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            MessageManager.getInstance().log(String.format("&cFailed to archive sign %s.", id));
+            MessageManager.getInstance().log(String.format("&cMigration 13/12/2016: Error: %s", e.getLocalizedMessage()));
+            return false;
+        }
+        return true;
     }
 
     /**
