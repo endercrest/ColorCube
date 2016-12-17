@@ -143,4 +143,8 @@ public class MessageManager {
             log("[Debug]"+msg);
         }
     }
+
+    public void debugConsole(String msg, Object... args){
+        debugConsole(String.format(msg, args));
+    }
 }

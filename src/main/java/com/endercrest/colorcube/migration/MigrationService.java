@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * Created by Thomas Cordua-von Specht on 12/12/2016.
@@ -21,7 +22,7 @@ public class MigrationService {
     }
 
     public boolean runMigration(){
-        return migrate20161213();
+        return migrate20161213() && migrate20161215();
     }
 
     /**
@@ -29,6 +30,9 @@ public class MigrationService {
      *
      * This migration converts system.yml into its separate file systems.
      * Will convert arenas section into the new individual files and the same for signs.
+     *
+     * Creates arena<id>.yml with the version 0
+     *
      * @return The result of the migration Successful or Unsuccessful. Will also return true
      * if it has already been completed.
      */
@@ -268,5 +272,103 @@ public class MigrationService {
         return true;
     }
 
+    /**
+     * Run the migration of 2016 December 15th
+     *
+     * This migration updates the spawns in each arena to follow the format of the new team based spawns.
+     * The first 4 spawns will be assigned to the teams, then the rest of the spawns will be removed.
+     *
+     * This will check for arena configs of version 0 and upgrade it to version 1.
+     *
+     * @return The result of the migration and whether it was Successful or Unsuccessful. True is also
+     * returned if it has already been completed.
+     */
+    private boolean migrate20161215(){
+        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
 
+        if(arenaFolder != null && arenaFolder.listFiles().length > 0){
+            for(File file: arenaFolder.listFiles()){
+                if(file.isFile()) {
+                    if(file.getName().equalsIgnoreCase("global.yml")){
+                        continue;
+                    }
+                    YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                    if (config.getInt("version") == 0) {
+                        config.set("spawns_old", config.get("spawns"));
+                        config.set("spawns", null);
+
+                        ConfigurationSection spawns = config.getConfigurationSection("spawns_old");
+                        Set<String> keys = spawns.getKeys(false);
+                        if (keys != null && keys.size() > 0) {
+                            MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Upgrading %s", file.getName()));
+
+                            int originalSpawnCount = keys.size();
+                            int teamCount = Math.min(4, originalSpawnCount);
+                            int slotsPerTeam = teamCount != 0 ? (int) (Math.ceil(originalSpawnCount / teamCount)) : 1;
+
+                            //TODO SlotsPerTeam will ensure there is always a balance. Also currently putting it in the arena options.
+                            //TODO Revisit this and make a final decision later.
+                            config.set("options.perteam", slotsPerTeam);
+
+                            String[] keyArray = keys.toArray(new String[]{});
+                            if (teamCount < originalSpawnCount) {
+                                MessageManager.getInstance().log(String.format("Migration 15/12/2016: Please note that some spawns have been removed from %s", file.getName()));
+                            }
+                            for (int i = 0; i < teamCount; i++) {
+                                String key = keyArray[i];
+
+                                String team;
+                                switch (i) {
+                                    case 0:
+                                        team = "red";
+                                        break;
+                                    case 1:
+                                        team = "blue";
+                                        break;
+                                    case 2:
+                                        team = "green";
+                                        break;
+                                    case 3:
+                                        team = "yellow";
+                                        break;
+                                    default:
+                                        team = "red";
+                                        break;
+                                }
+
+                                config.set("spawns." + team + ".x", config.getDouble("spawns_old." + key + ".x"));
+                                config.set("spawns." + team + ".y", config.getDouble("spawns_old." + key + ".y"));
+                                config.set("spawns." + team + ".z", config.getDouble("spawns_old." + key + ".z"));
+                                config.set("spawns." + team + ".yaw", config.getDouble("spawns_old." + key + ".yaw"));
+                                config.set("spawns." + team + ".pitch", config.getDouble("spawns_old." + key + ".pitch"));
+
+                            }
+
+                            config.set("spawns_old", null);
+                            config.set("version", 1);
+
+                            try {
+                                MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Saving %s", file.getName()));
+                                config.save(file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
 }
+
+
+
+
+
+
+
+
+
