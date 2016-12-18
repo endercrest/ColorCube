@@ -66,7 +66,7 @@ messages:
             close:
                 title: '&cClose Menu'
             game:
-                title: '&aArena {$arena}'
+                title: '&a{$name}'
                 description:
                     players: '&7Players: {$activeplayers}/{$maxplayers}'
                     status: '&7Status: {$status}'

@@ -50,21 +50,29 @@ public class Options implements SubCommand {
 
                 HashMap<String, Method> methods = setupMethods(game);
 
+                String s = "";
+                for(int i = 2; i < args.length; i++){
+                    if(i != 2){
+                        s += " ";
+                    }
+                    s += args[i];
+                }
+
                 Method method = methods.get(args[1].toLowerCase());
 
                 if(method != null) {
                     try {
                         Type type = method.getParameterTypes()[0];
                         if (type == String.class) {
-                            method.invoke(game, args[2]);
+                            method.invoke(game, s);
                         } else if (type == Integer.class) {
-                            method.invoke(game, Integer.parseInt(args[2]));
+                            method.invoke(game, Integer.parseInt(s));
                         } else if (type == Double.class) {
-                            method.invoke(game, Double.parseDouble(args[2]));
+                            method.invoke(game, Double.parseDouble(s));
                         }else if(type == Boolean.class){
-                            method.invoke(game, Boolean.parseBoolean(args[2]));
+                            method.invoke(game, Boolean.parseBoolean(s));
                         }else{
-                            method.invoke(game, args[2]);
+                            method.invoke(game, s);
                         }
                         MessageManager.getInstance().sendFMessage("info.optionset", p, "option-" + args[1], "arena-" + id);
                     } catch (IllegalAccessException | InvocationTargetException e) {
@@ -86,6 +94,7 @@ public class Options implements SubCommand {
             methods.put("perteam", game.getClass().getMethod("setPerTeam", Integer.class));
             methods.put("reward", game.getClass().getMethod("setReward", Double.class));
             methods.put("pvp", game.getClass().getMethod("setPvp", Boolean.class));
+            methods.put("name", game.getClass().getMethod("setName", String.class));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

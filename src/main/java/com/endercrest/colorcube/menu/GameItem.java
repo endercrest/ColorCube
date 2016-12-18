@@ -45,7 +45,7 @@ public class GameItem extends PageItem {
             itemStack.setType(Material.MAP);
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.game.title", "arena-"+game.getId()));
+        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.game.title", "arena-"+game.getId(), "name-"+game.getName()));
         List<String> lore = new ArrayList<>();
         lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.players", "activeplayers-"+game.getActivePlayers().size(), "maxplayers-"+game.getTotalSlots()));
         lore.add("");

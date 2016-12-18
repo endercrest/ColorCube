@@ -76,6 +76,7 @@ public class Game {
     private boolean pvp;
     private double reward;
     private int perTeam;
+    private String name;
 
     private List<Player> voted = new ArrayList<>();
 
@@ -150,6 +151,7 @@ public class Game {
         pvp = arenaConfig.getBoolean("options.pvp", false);
         reward = arenaConfig.getDouble("options.reward", 0.0);
         perTeam = arenaConfig.getInt("options.perteam", 1);
+        name = arenaConfig.getString("options.name", "Arena " + id);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -1131,6 +1133,17 @@ public class Game {
         this.perTeam = perTeam;
         updateGameItems();
         SettingsManager.getInstance().getArenaConfig(id).set("options.perteam", perTeam);
+        SettingsManager.getInstance().saveArenaConfig(id);
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+        updateGameItems();
+        SettingsManager.getInstance().getArenaConfig(id).set("options.name", name);
         SettingsManager.getInstance().saveArenaConfig(id);
     }
 
