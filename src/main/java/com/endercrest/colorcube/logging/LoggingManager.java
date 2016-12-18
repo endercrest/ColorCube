@@ -34,7 +34,7 @@ public class LoggingManager {
     }
 
 
-    public void logBlockDestoryed(Block b){
+    public void logBlockDestroyed(Block b){
         if(GameManager.getInstance().getBlockGameId(b.getLocation()) == -1)
             return;
         if( GameManager.getInstance().getStatus(GameManager.getInstance().getBlockGameId(b.getLocation())) == Game.Status.DISABLED)

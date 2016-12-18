@@ -4,9 +4,7 @@ import com.endercrest.colorcube.commands.*;
 import com.endercrest.colorcube.commands.admin.*;
 import com.endercrest.colorcube.commands.Debug;
 import com.endercrest.colorcube.commands.player.*;
-import com.endercrest.colorcube.commands.staff.Disable;
-import com.endercrest.colorcube.commands.staff.Enable;
-import com.endercrest.colorcube.commands.staff.ForceStart;
+import com.endercrest.colorcube.commands.staff.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,13 +24,13 @@ public class CommandHandler implements CommandExecutor {
 
     public CommandHandler(ColorCube plugin){
         this.plugin = plugin;
-        commands = new HashMap<String, SubCommand>();
-        helpinfo = new HashMap<String, Integer>();
+        commands = new HashMap<>();
+        helpinfo = new HashMap<>();
         loadCommands();
         loadHelpInfo();
     }
 
-    public void loadCommands(){
+    private void loadCommands(){
         commands.put("createarena", new CreateArena());
         commands.put("deletearena", new DeleteArena());
         commands.put("disable", new Disable());
@@ -42,17 +40,17 @@ public class CommandHandler implements CommandExecutor {
         commands.put("reload", new Reload());
         commands.put("leave", new Leave());
         commands.put("setspawn", new SetSpawn());
+        commands.put("removespawn", new RemoveSpawn());
         commands.put("setlobbyspawn", new SetLobbySpawn());
         commands.put("setgloballobbyspawn", new SetGlobalLobbySpawn());
         commands.put("forcestart", new ForceStart());
-        commands.put("resetspawns", new ResetSpawns());
         commands.put("arenalist", new ListArenas());
         commands.put("vote", new Vote());
         commands.put("spectate", new Spectate());
         commands.put("createsign", new CreateSign());
         commands.put("deletesign", new DeleteSign());
-        commands.put("setreward", new SetReward());
         commands.put("menuitem", new MenuItem());
+        commands.put("options", new Options());
 
         commands.put("debug", new Debug(plugin));
     }
@@ -67,6 +65,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("reload", 3);
         helpinfo.put("leave", 1);
         helpinfo.put("setspawn", 3);
+        helpinfo.put("removespawn", 3);
         helpinfo.put("setlobbyspawn", 3);
         helpinfo.put("setgloballobbyspawn", 3);
         helpinfo.put("forcestart", 2);
@@ -76,7 +75,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("createsign", 3);
         helpinfo.put("deletesign", 3);
         helpinfo.put("menuitem", 1);
-        helpinfo.put("reward", 3);
+        helpinfo.put("options", 3);
     }
 
     @Override
@@ -115,10 +114,10 @@ public class CommandHandler implements CommandExecutor {
                 return true;
             }
             String sub = args[0].toLowerCase();
-            Vector< String > l = new Vector < String > ();
+            Vector< String > l = new Vector <> ();
             l.addAll(Arrays.asList(args));
             l.remove(0);
-            args = (String[]) l.toArray(new String[0]);
+            args = l.toArray(new String[0]);
             if (!commands.containsKey(sub)) {
                 msg.sendMessage("&cCommand doesn't exist.", player);
                 msg.sendMessage("&cType /cc help for command information", player);
@@ -151,7 +150,7 @@ public class CommandHandler implements CommandExecutor {
                 if (helpinfo.get(command) == page) {
                     MessageManager.getInstance().sendMessage(commands.get(command).helpInfo(), p);
                 }
-            }catch(Exception e){}
+            }catch(Exception ignored){}
         }
     }
 

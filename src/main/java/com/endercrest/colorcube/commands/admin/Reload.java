@@ -22,12 +22,10 @@ public class Reload implements SubCommand {
             MessageManager.getInstance().sendMessage("All will attempt to reload the entire plugin", p);
         }else{
             if(args[0].equalsIgnoreCase("settings")){
-                SettingsManager.getInstance().reloadSystem();
+                SettingsManager.getInstance().reloadArenaConfigs();
+                SettingsManager.getInstance().reloadSignConfigs();
                 SettingsManager.getInstance().reloadMessages();
                 SettingsManager.getInstance().reloadConfig();
-                for(Game game: GameManager.getInstance().getGames()){
-                    game.reloadConfig();
-                }
                 MessageManager.getInstance().sendMessage("Settings Reloaded", p);
             }else if(args[0].equalsIgnoreCase("games")){
                 for(Game game: GameManager.getInstance().getGames()){

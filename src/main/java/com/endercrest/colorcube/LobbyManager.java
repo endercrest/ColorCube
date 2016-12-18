@@ -11,9 +11,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +24,7 @@ public class LobbyManager {
     public static LobbyManager instance = new LobbyManager();
 
     private ColorCube plugin;
-    private List<LobbySign> lobbySigns = new ArrayList<LobbySign>();
+    private List<LobbySign> lobbySigns;
 
     public static LobbyManager getInstance(){
         return instance;
@@ -30,13 +32,13 @@ public class LobbyManager {
 
     public void setup(ColorCube plugin){
         this.plugin = plugin;
+        lobbySigns = new ArrayList<>();
         loadSigns();
         updateAll();
         MessageManager.getInstance().debugConsole("&eLobby Manager Set up");
     }
 
     public void createLobbyFromSelection(Player p, Game game){
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
         WorldEditPlugin worldEdit = plugin.getWorldEdit();
         Selection selection = worldEdit.getSelection(p);
 
@@ -49,14 +51,16 @@ public class LobbyManager {
 
         game.setLobby(new Lobby(pos1, pos2));
 
-        system.set("arenas." + game.getId() + ".lworld", pos1.getWorld().getName());
-        system.set("arenas." + game.getId() + ".lx1", pos1.getBlockX());
-        system.set("arenas." + game.getId() + ".ly1", pos1.getBlockY());
-        system.set("arenas." + game.getId() + ".lz1", pos1.getBlockZ());
-        system.set("arenas." + game.getId() + ".lx2", pos2.getBlockX());
-        system.set("arenas." + game.getId() + ".ly2", pos2.getBlockY());
-        system.set("arenas." + game.getId() + ".lz2", pos2.getBlockZ());
-        SettingsManager.getInstance().saveSystemConfig();
+        YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(game.getId());
+
+        config.set("lobby.world", pos1.getWorld().getName());
+        config.set("lobby.pos1.x", pos1.getBlockX());
+        config.set("lobby.pos1.y", pos1.getBlockY());
+        config.set("lobby.pos1.z", pos1.getBlockZ());
+        config.set("lobby.pos2.x", pos2.getBlockX());
+        config.set("lobby.pos2.y", pos2.getBlockY());
+        config.set("lobby.pos2.z", pos2.getBlockZ());
+        SettingsManager.getInstance().saveArenaConfig(game.getId());
         MessageManager.getInstance().sendFMessage("info.createlobby", p, "arena-" + game.getId());
     }
 
@@ -77,23 +81,16 @@ public class LobbyManager {
             }
         }
 
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
+        int id = SettingsManager.getInstance().getNextSignID();
+        SettingsManager.getInstance().incrementNextSignId();
 
-        int id = SettingsManager.getInstance().getNextSignID() + 1;
-        system.set("sign_next_id", id);
-        if(id == 0 || lobbySigns.isEmpty()){
-            id = 1;
-        }
         Location loc = p.getTargetBlock((Set)null, 10).getLocation();
 
-        system.set("signs." + id, null);
-        system.set("signs." + id + ".x", loc.getBlockX());
-        system.set("signs." + id + ".y", loc.getBlockY());
-        system.set("signs." + id + ".z", loc.getBlockZ());
-        system.set("signs." + id + ".world", loc.getWorld().getName());
-        system.set("signs." + id + ".gameID", game.getId());
-        system.set("signs." + id + ".enabled", true);
-        SettingsManager.getInstance().saveSystemConfig();
+        if(SettingsManager.getInstance().createSignConfig(id, game.getId(), loc) == null){
+            MessageManager.getInstance().sendFMessage("error.nextid", p,
+                    "type-"+MessageManager.getInstance().getFValue("words.sign"));
+            return;
+        }
 
         LobbySign sign = new LobbySign(loc, game, id);
         lobbySigns.add(sign);
@@ -109,9 +106,9 @@ public class LobbyManager {
         }
         LobbySign lobbySign = getLobbySign(p.getTargetBlock((Set)null, 10).getLocation());
         if(lobbySign != null) {
-            //SettingsManager.getInstance().getSystemConfig().set("sign_next_id", SettingsManager.getInstance().getSystemConfig().getInt("sign_next_id") + 1);
-            SettingsManager.getInstance().getSystemConfig().set("signs." + lobbySign.getSignID() + ".enabled", false);
-            SettingsManager.getInstance().saveSystemConfig();
+            SettingsManager.getInstance().getSignConfig(lobbySign.getSignID()).set("enabled", false);
+            SettingsManager.getInstance().saveSignConfig(lobbySign.getSignID());
+            SettingsManager.getInstance().archiveSign(lobbySign.getSignID());
             lobbySigns.remove(lobbySign);
             lobbySign.clear();
             MessageManager.getInstance().debugConsole("Deleting Sign:" + lobbySign.getSignID());
@@ -122,42 +119,44 @@ public class LobbyManager {
     }
 
     private void loadSigns(){
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
         lobbySigns.clear();
-        for(String key: system.getConfigurationSection("signs").getKeys(false)){
-            if(isConfigured(key)){
-                if(system.getBoolean("signs."+key+".enabled", false)){
-                    MessageManager.getInstance().debugConsole("Loading Sign: " + key);
-                    int x = system.getInt("signs."+key+".x");
-                    int y = system.getInt("signs."+key+".y");
-                    int z = system.getInt("signs."+key+".z");
-                    World world = Bukkit.getWorld(system.getString("signs."+key+".world"));
-                    int gameId = system.getInt("signs."+key+".gameID");
+        HashMap<Integer, YamlConfiguration> signConfigs = SettingsManager.getInstance().getSignConfigs();
+
+        for(int id: signConfigs.keySet()){
+            YamlConfiguration config = signConfigs.get(id);
+            if(isConfigured(config)){
+                if(config.getBoolean("enabled", false)){
+                    MessageManager.getInstance().debugConsole("Loading Sign: " + id);
+                    int x = config.getInt("loc.x");
+                    int y = config.getInt("loc.y");
+                    int z = config.getInt("loc.z");
+                    World world = Bukkit.getWorld(config.getString("loc.world"));
+                    int gameId = config.getInt("gameId");
                     Game game = GameManager.getInstance().getGame(gameId);
-                    Location loc = new Location(world, x, y, z);
-                    if(loc.getBlock().getType().equals(Material.WALL_SIGN) || loc.getBlock().getType().equals(Material.SIGN_POST)){
-                        try {
-                            lobbySigns.add(new LobbySign(loc, game, Integer.parseInt(key)));
-                        }catch (NumberFormatException ex){
-                            MessageManager.getInstance().debugConsole(String.format("&cExpected an integer id for \"%s\" but found a different type!", key));
+                    if(game != null) {
+                        Location loc = new Location(world, x, y, z);
+                        if (loc.getBlock().getType().equals(Material.WALL_SIGN) || loc.getBlock().getType().equals(Material.SIGN_POST)) {
+                            LobbySign lobbySign = new LobbySign(loc, game, id);
+                            lobbySigns.add(lobbySign);
+                        } else {
+                            MessageManager.getInstance().debugConsole(String.format("No sign at set location. Aborting loading of sign %s", id));
+                            return;
                         }
                     }else{
-                        MessageManager.getInstance().debugConsole(String.format("No sign at set location. Aborting loading of sign %s", key));
-                        return;
+                        MessageManager.getInstance().debugConsole(String.format("Invalid game id set for sign %s.", id));
                     }
                 }else{
-                    MessageManager.getInstance().debugConsole(String.format("Sign %s disabled, ignoring it.", key));
+                    MessageManager.getInstance().debugConsole(String.format("Sign %s disabled, ignoring it.", id));
                 }
             }else{
-                MessageManager.getInstance().debugConsole(String.format("Sign %s is not configured correctly, skipping this sign.", key));
+                MessageManager.getInstance().debugConsole(String.format("Sign %s is not configured correctly, skipping this sign.", id));
             }
         }
     }
 
-    private boolean isConfigured(String key){
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
-        return system.isSet("signs."+key+".x") && system.isSet("signs."+key+".y") && system.isSet("signs."+key+".z") &&
-                system.isSet("signs."+key+".world") && system.isSet("signs."+key+".gameID") && system.isSet("signs."+key+".enabled");
+    private boolean isConfigured(YamlConfiguration config){
+        return config.isSet("id") && config.isSet("loc.x") && config.isSet("loc.y") && config.isSet("loc.z") &&
+                config.isSet("loc.world") && config.isSet("gameId") && config.isSet("enabled");
     }
 
     public LobbySign getLobbySign(Location loc){
@@ -176,9 +175,11 @@ public class LobbyManager {
     }
 
     public void update(int id){
-        for(LobbySign sign: lobbySigns){
-            if(sign.getSignGameID() == id){
-                sign.update();
+        if(lobbySigns != null) {
+            for (LobbySign sign : lobbySigns) {
+                if (sign.getSignGameID() == id) {
+                    sign.update();
+                }
             }
         }
     }
