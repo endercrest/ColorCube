@@ -3,6 +3,7 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.game.Game;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sun.org.apache.regexp.internal.RE;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -168,6 +169,20 @@ public class GameManager {
         return null;
     }
 
+    /**
+     * Get game by name. Since names are not unique, it will return the first game found.
+     * @param name The name of the arena
+     * @return {@link Game}
+     */
+    public Game getGame(String name){
+        for(Game game: games){
+            if(game.getName().equalsIgnoreCase(name)){
+                return game;
+            }
+        }
+        return null;
+    }
+
     public int getIndexOfGame(int id){
         for(int i = 0; i < games.size(); i++){
             if(games.get(id).getId() == id){
@@ -221,19 +236,45 @@ public class GameManager {
         return false;
     }
 
-    public void addPlayer(Player p, int id){
+    public boolean addPlayer(Player p, int id){
         Game game = getGame(id);
         if(game == null){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + id);
-            return;
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-Arena " + id);
+            return false;
         }
         game.addPlayer(p);
+        return true;
+    }
+
+    /**
+     * Add a player to an arena with an arena name. Since names are not unique, it will add the player to the first
+     * arena found with the given name.
+     * @param p The player to be added to the game.
+     * @param name The name of the arena.
+     */
+    public boolean addPlayer(Player p, String name){
+        Game game = getGame(name);
+        if(game == null){
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + name);
+            return false;
+        }
+        game.addPlayer(p);
+        return true;
     }
 
     public void addSpectator(Player p, int id){
         Game game = getGame(id);
         if(game == null){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + id);
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-Arena " + id);
+            return;
+        }
+        game.addSpectator(p);
+    }
+
+    public void addSpectator(Player p, String name){
+        Game game = getGame(name);
+        if(game == null){
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + name);
             return;
         }
         game.addSpectator(p);

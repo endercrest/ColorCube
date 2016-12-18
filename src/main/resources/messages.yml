@@ -3,7 +3,7 @@ messages:
         nopermission: '&cYou do not have the permissions to do this'
         noselection: '&cYou must make a world edit selection first'
         notspecified: '&c{$input} not specified!'
-        nosuchgame: '&cArena {$arena} does not exist!'
+        nosuchgame: '&c{$arena} does not exist!'
         command: '&cThe command {$command} returned an error'
         notanumber: '{$input} &cis not a number!'
         nomainlobby: '&cNo Global Lobby has been set'
@@ -35,7 +35,7 @@ messages:
         all: '&6All arenas have  been {$state}!'
         joinmutliple: '&6You cant join multiple games!'
         nospawns: '&6No spawns set for Arena {$arena}'
-        join: '&6Joining Arena {$arena}'
+        join: '&6Joining {$arena}'
         status: 'Arena {$state}'
         playerjoingame: '&6{$player} joined the game! {$activeplayers}/{$maxplayers}'
         countdown: '&6Game starting in {$t}'
@@ -66,7 +66,7 @@ messages:
             close:
                 title: '&cClose Menu'
             game:
-                title: '&aArena {$arena}'
+                title: '&a{$name}'
                 description:
                     players: '&7Players: {$activeplayers}/{$maxplayers}'
                     status: '&7Status: {$status}'

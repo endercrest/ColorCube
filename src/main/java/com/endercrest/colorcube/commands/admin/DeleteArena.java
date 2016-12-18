@@ -24,7 +24,7 @@ public class DeleteArena implements SubCommand {
         Game game = GameManager.getInstance().getGame(arenaId);
 
         if(game == null){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + arenaId);
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-Arena" + arenaId);
             return false;
         }
 

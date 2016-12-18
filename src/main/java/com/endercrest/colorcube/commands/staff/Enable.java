@@ -33,7 +33,7 @@ public class Enable implements SubCommand {
         }catch(NumberFormatException e){
             MessageManager.getInstance().sendFMessage("error.notanumber", p, "input-arena");
         }catch(NullPointerException e){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + args[0]);
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-Arena " + args[0]);
         }
         return true;
     }
