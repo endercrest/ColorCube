@@ -270,4 +270,13 @@ public class GameManager {
         }
         game.addSpectator(p);
     }
+
+    public void addSpectator(Player p, String name){
+        Game game = getGame(name);
+        if(game == null){
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + name);
+            return;
+        }
+        game.addSpectator(p);
+    }
 }
