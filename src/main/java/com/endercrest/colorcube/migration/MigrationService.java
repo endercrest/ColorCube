@@ -263,10 +263,8 @@ public class MigrationService {
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Skipping global arena file, it already exists.");
         }
 
-        //TODO Remove Commenting for deleting system.yml once all other systems are reading the new format.
         if(file.renameTo(new File(plugin.getDataFolder(), "system_archive.yml")))
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Renamed system.yml to system_archive.yml.");
-            //if(file.delete())
 
         MessageManager.getInstance().log("Migration 13/12/2016: Migration Completed.");
         return true;
@@ -306,8 +304,6 @@ public class MigrationService {
                             int teamCount = Math.min(4, originalSpawnCount);
                             int slotsPerTeam = teamCount != 0 ? (int) (Math.ceil(originalSpawnCount / teamCount)) : 1;
 
-                            //TODO SlotsPerTeam will ensure there is always a balance. Also currently putting it in the arena options.
-                            //TODO Revisit this and make a final decision later.
                             config.set("options.perteam", slotsPerTeam);
 
                             String[] keyArray = keys.toArray(new String[]{});

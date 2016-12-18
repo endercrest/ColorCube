@@ -1,5 +1,6 @@
 package com.endercrest.colorcube;
 
+import com.endercrest.colorcube.game.Game;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -568,23 +569,6 @@ public class SettingsManager {
     }
 
     /**
-     * Get Spawn Point for Arena
-     * @param gameid The Game ID
-     * @param spawnid The Spawn ID
-     * @return location of point
-     */
-    public Location getSpawnPoint(int gameid, int spawnid) {
-        YamlConfiguration arenaConfig =  getArenaConfig(gameid);
-
-        return new Location(getGameWorld(gameid),
-                arenaConfig.getDouble("spawns." + spawnid + ".x"),
-                arenaConfig.getDouble("spawns." + spawnid + ".y"),
-                arenaConfig.getDouble("spawns." + spawnid + ".z"),
-                (float)arenaConfig.getDouble("spawns." + spawnid + ".yaw"),
-                (float)arenaConfig.getDouble("spawns." + spawnid + ".pitch"));
-    }
-
-    /**
      * Get Main Lobby Spawn
      * @return Location of main spawn
      */
@@ -618,20 +602,20 @@ public class SettingsManager {
     /**
      * Set Spawn of the Arena
      * @param gameid The Game ID
-     * @param spawnid The SpawnID
-     * @param v The location
+     * @param team The team the spawn is being set for.
+     * @param loc The location
      */
-    public void setSpawn(int gameid, int spawnid, Location v) {
+    public void setSpawn(int gameid, Game.CCTeam team, Location loc) {
         YamlConfiguration arenaConfig = getArenaConfig(gameid);
 
-        arenaConfig.set("spawns." + spawnid + ".x", v.getX());
-        arenaConfig.set("spawns." + spawnid + ".y", v.getY());
-        arenaConfig.set("spawns." + spawnid + ".z", v.getZ());
-        arenaConfig.set("spawns." + spawnid + ".yaw", v.getYaw());
-        arenaConfig.set("spawns." + spawnid + ".pitch", v.getPitch());
+        arenaConfig.set("spawns." + team.name().toLowerCase() + ".x", loc.getX());
+        arenaConfig.set("spawns." + team.name().toLowerCase() + ".y", loc.getY());
+        arenaConfig.set("spawns." + team.name().toLowerCase() + ".z", loc.getZ());
+        arenaConfig.set("spawns." + team.name().toLowerCase() + ".yaw", loc.getYaw());
+        arenaConfig.set("spawns." + team.name().toLowerCase() + ".pitch", loc.getPitch());
 
         saveArenaConfig(gameid);
-        GameManager.getInstance().getGame(gameid).addSpawn();
+        GameManager.getInstance().getGame(gameid).addSpawn(team);
     }
 
     /**
@@ -660,10 +644,5 @@ public class SettingsManager {
             return null;
         }
         return plugin.getServer().getWorld(arenaConfig.getString("lobby.world"));
-    }
-
-    public int getSpawnCount(int game){
-        YamlConfiguration arenaConfig = getArenaConfig(game);
-        return arenaConfig.getConfigurationSection("spawns").getKeys(false).size();
     }
 }

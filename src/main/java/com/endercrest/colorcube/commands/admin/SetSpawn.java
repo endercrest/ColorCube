@@ -12,50 +12,28 @@ import java.util.HashMap;
 
 public class SetSpawn implements SubCommand {
 
-    HashMap<Integer, Integer> next = new HashMap<Integer, Integer>();
-
-    public void loadNextSpawn(){
-        for(Game g: GameManager.getInstance().getGames().toArray(new Game[0])){ //Avoid Concurrency problems
-            next.put(g.getId(), SettingsManager.getInstance().getSpawnCount(g.getId())+1);
-        }
-    }
-
     @Override
     public boolean onCommand(Player p, String[] args) {
         if(!p.hasPermission(permission())){
             MessageManager.getInstance().sendFMessage("error.nopermission", p);
             return true;
         }
-        loadNextSpawn();
-        MessageManager.getInstance().debugConsole("Loading spawns");
+
         Location loc = p.getLocation();
-        int id = GameManager.getInstance().getBlockGameId(loc);
-        if(id == -1){
+        int gameId = GameManager.getInstance().getBlockGameId(loc);
+        if(gameId == -1){
             MessageManager.getInstance().sendFMessage("error.notinarena", p);
             return true;
         }
-        if(args.length == 1) {
-            int i = 0;
-            if (args[0].equalsIgnoreCase("next")) {
-                i = next.get(id);
-                next.put(id, next.get(id));
-            } else {
-                try {
-                    i = Integer.parseInt(args[0]);
-                    if (i > next.get(id) + 1 || i < 1) {
-                        MessageManager.getInstance().sendFMessage("error.between", p, "num-" + next.get(id));
-                        return true;
-                    }
-                    if (i == next.get(id)) {
-                        next.put(id, next.get(id) + 1);
-                    }
-                } catch (Exception e) {
-                    MessageManager.getInstance().sendFMessage("error.badinput", p);
-                    return true;
-                }
+
+        if(args.length == 1){
+            try{
+                Game.CCTeam team = Game.CCTeam.valueOf(args[0].toUpperCase());
+                SettingsManager.getInstance().setSpawn(gameId, team, loc);
+                MessageManager.getInstance().sendFMessage("info.spawnset", p, "team-" + Game.getTeamNameLocalized(team), "arena-" + gameId);
+            }catch (IllegalArgumentException ex){
+                MessageManager.getInstance().sendFMessage("error.badinput", p);
             }
-            SettingsManager.getInstance().setSpawn(id, i, loc);
-            MessageManager.getInstance().sendFMessage("info.spawnset", p, "num-" + i, "arena-" + id);
         }else{
             MessageManager.getInstance().sendFMessage("info.setspawnusage", p);
         }

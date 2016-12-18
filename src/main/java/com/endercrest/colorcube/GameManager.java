@@ -238,13 +238,4 @@ public class GameManager {
         }
         game.addSpectator(p);
     }
-
-    public int getPlayerTeamID(Player player){
-        for(Game game: games){
-            if(game.isPlayerActive(player)){
-                return game.getTeamID(player);
-            }
-        }
-        return -1;
-    }
 }

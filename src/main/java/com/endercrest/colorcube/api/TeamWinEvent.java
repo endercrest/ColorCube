@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.api;
 
+import com.endercrest.colorcube.game.Game;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -11,12 +12,12 @@ public class TeamWinEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private Set<OfflinePlayer> players;
-    private String teamName;
+    private Game.CCTeam team;
     private double reward;
 
-    public TeamWinEvent(Set<OfflinePlayer> players, String teamName, double reward){
+    public TeamWinEvent(Set<OfflinePlayer> players, Game.CCTeam team, double reward){
         this.players = players;
-        this.teamName = teamName;
+        this.team = team;
         this.reward = reward;
     }
 
@@ -60,8 +61,8 @@ public class TeamWinEvent extends Event {
         return reward;
     }
 
-    public String getTeamName(){
-        return teamName;
+    public Game.CCTeam getTeam(){
+        return team;
     }
 
     @Override

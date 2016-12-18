@@ -33,8 +33,9 @@ public class Swap implements SubPowerup {
                 if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
                     if(loc.getBlock().getType() == Material.AIR) {
                         if (loc2.getBlock().getData() != (byte) 15) {
-                            if (loc2.getBlock().getData() != g.getTeamBlockByte(g.getTeamID(p))) {
-                                g.changeBlock(loc2, g.getTeamID(p));
+                            Game.CCTeam team = g.getCCTeam(p);
+                            if (loc2.getBlock().getData() != team.getBlockData()) {
+                                g.changeBlock(loc2, team);
                                 finish = true;
                             }
                         }

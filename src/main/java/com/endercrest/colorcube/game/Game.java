@@ -7,18 +7,23 @@ import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.*;
+import sun.security.krb5.Config;
 
 import java.util.*;
 
+@SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
 public class Game {
 
     public enum Status{
@@ -26,41 +31,60 @@ public class Game {
         STARTING, INGAME, FINISHING, RESETING, ERROR
     }
 
+    public enum CCTeam{
+        RED(ChatColor.RED, 14),
+        BLUE(ChatColor.BLUE, 3),
+        GREEN(ChatColor.GREEN, 5),
+        YELLOW(ChatColor.YELLOW, 4);
+
+        private ChatColor color;
+        private int blockData;
+
+        CCTeam(ChatColor color, int blockData){
+            this.color = color;
+            this.blockData = blockData;
+        }
+
+        public ChatColor getColor(){
+            return color;
+        }
+
+        public int getBlockData(){
+            return blockData;
+        }
+
+    }
+
     private Status status = Status.DISABLED;
     private List<Player> activePlayers = new ArrayList<>();
-    private List<Player> spectators = new ArrayList<>();
     private ArrayList<Integer>tasks = new ArrayList<>();
     private List<Powerup> powerups = new ArrayList<>();
 
     private Arena arena;
     private Lobby lobby;
     private Integer id;
-    private HashMap<Integer, Player> spawns = new HashMap<>();
     private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
-    private int spawnCount = 0;
     private boolean disabled = false;
     private int endgameTaskID = 0;
     private boolean endgameRunning = false;
     private boolean countdownRunning;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
-    private HashMap<String, String> hookVars = new HashMap<>();
     private MessageManager msg = MessageManager.getInstance();
+
+    //Options
     private boolean pvp;
     private double reward;
+    private int perTeam;
 
     private List<Player> voted = new ArrayList<>();
 
-    Team red;
-    Team blue;
-    Team green;
-    Team yellow;
-    Team spectate;
+    private HashMap<CCTeam, Team> teams;
+    private HashMap<CCTeam, Location> teamSpawns;
+    private HashMap<CCTeam, Integer> teamScores;
 
-    private int redScore = 0;
-    private int blueScore = 0;
-    private int greenScore = 0;
-    private int yellowScore = 0;
+    private List<Player> spectators = new ArrayList<>();
+    private Team spectatorsTeam;
 
     private ScoreboardManager manager;
     private Scoreboard board;
@@ -122,27 +146,26 @@ public class Game {
             msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
         }
 
+        //Load Options
         pvp = arenaConfig.getBoolean("options.pvp", false);
-
         reward = arenaConfig.getDouble("options.reward", 0.0);
-
-        loadspawns();
-
-        hookVars.put("arena", id + "");
-        hookVars.put("maxplayers", spawnCount + "");
-        hookVars.put("activeplayers", "0");
+        perTeam = arenaConfig.getInt("options.perteam", 1);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
-        red = board.registerNewTeam("red" + id);
-        blue = board.registerNewTeam("blue" + id);
-        green = board.registerNewTeam("green" + id);
-        yellow = board.registerNewTeam("yellow" + id);
-        spectate = board.registerNewTeam("spectate" + id);
-        red.setPrefix(ChatColor.RED + "");
-        blue.setPrefix(ChatColor.AQUA + "");
-        green.setPrefix(ChatColor.GREEN + "");
-        yellow.setPrefix(ChatColor.YELLOW + "");
+
+        //Setup Spawns & Team Information
+        teams = new HashMap<>();
+        teamScores = new HashMap<>();
+        teamSpawns = new HashMap<>();
+
+        ConfigurationSection spawnsSection = arenaConfig.getConfigurationSection("spawns");
+        for(String team: spawnsSection.getKeys(false)){
+            addTeam(team);
+        }
+
+        //Setup Spectators Teams
+        spectatorsTeam = board.registerNewTeam("spectatorArena"+id);
 
         timeBar = Bukkit.createBossBar(ChatColor.GOLD + "Arena " + id, BarColor.WHITE, BarStyle.SOLID);
 
@@ -151,18 +174,22 @@ public class Game {
         MenuManager.getInstance().addGame();
     }
 
-    public void addSpawn() {
-        spawnCount++;
-        spawns.put(spawnCount, null);
-        updateGameItems();
-    }
+    private void addTeam(String team){
+        CCTeam ccTeam = CCTeam.valueOf(team.toUpperCase());
+        YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(getId());
+        ConfigurationSection spawnsSection = config.getConfigurationSection("spawns");
 
-    public void loadspawns(){
-        for(int a = 1; a <= SettingsManager.getInstance().getSpawnCount(id); a++){
-            spawns.put(a, null);
-            spawnCount = a;
-            MessageManager.getInstance().debugConsole("Spawn:" + a + " loaded");
-        }
+        Team boardTeam = board.registerNewTeam(team + "Arena" +id);
+        boardTeam.setPrefix(ccTeam.getColor() + "");
+
+        teams.put(ccTeam, boardTeam);
+        teamScores.put(ccTeam, 0);
+
+        Location teamSpawn = new Location(getArena().getPos1().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
+                spawnsSection.getDouble(team+".z"), (float) spawnsSection.getDouble(team+".yaw"),
+                (float) spawnsSection.getDouble(team+".pitch"));
+        teamSpawns.put(ccTeam, teamSpawn);
+        updateGameItems();
     }
 
     public void setLobby(Lobby lobby){
@@ -192,7 +219,6 @@ public class Game {
     ///////////////////////////////////
     public void disable(Boolean shutdown){
         disabled = true;
-        spawns.clear();
 
         for (Player p : activePlayers) {
             //removePlayer(p, false);
@@ -244,11 +270,11 @@ public class Game {
             removeSpectator(p, false);
 
         if(status == Status.LOBBY || status == Status.STARTING) {
-            if (activePlayers.size() < SettingsManager.getInstance().getSpawnCount(id)) {
+            if (activePlayers.size() < getTotalSlots()) {
                 msg.sendFMessage("game.join", p, "arena-" + id);
-                PlayerJoinArenaEvent joinarena = new PlayerJoinArenaEvent(p, this);
-                Bukkit.getServer().getPluginManager().callEvent(joinarena);
-                if(!joinarena.isCancelled()) {
+                PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
+                Bukkit.getServer().getPluginManager().callEvent(joinArena);
+                if(!joinArena.isCancelled()) {
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setFallDistance(0);
                     p.teleport(lobby.getSpawn());
@@ -258,7 +284,7 @@ public class Game {
                     }
                     saveInv(p);
                     clearInv(p);
-                    p.setHealth(p.getMaxHealth());
+                    p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     p.setFoodLevel(20);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1));
                     clearInv(p);
@@ -268,20 +294,22 @@ public class Game {
                     activePlayers.add(p);
                     addToTeam(p);
                     timeBar.addPlayer(p);
-                    msgFArena("game.team", "team-" + getTeamName(p), "player-" + p.getDisplayName());
-                    if (spawnCount == activePlayers.size()) {
+                    msgFArena("game.team", "team-" + getTeamNameLocalized(p), "player-" + p.getDisplayName());
+                    if (getTotalSlots() == activePlayers.size()) {
                         countdown(5);
                     }
                 }
-            } else if (SettingsManager.getInstance().getSpawnCount(id) == 0) {
+            } else if (getTotalSlots() == 0) {
                 msg.sendFMessage("game.nospawns", p, "arena-" + id);
+                return false;
             } else {
                 msg.sendFMessage("error.gamefull", p, "arena-" + id);
+                return false;
             }
-            msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + spawnCount);
+            msgFArena("game.playerjoingame", "player-" + p.getName(), "activeplayers-" + activePlayers.size(), "maxplayers-" + getTotalSlots());
             if(!countdownRunning){
                 float startMin = (float)SettingsManager.getInstance().getPluginConfig().getDouble("auto-start", 0.75);
-                float start = (float) activePlayers.size()/SettingsManager.getInstance().getSpawnCount(id);
+                float start = (float) activePlayers.size()/getTotalSlots();
                 if(start >= startMin){
                     countdown(20);
                 }
@@ -326,6 +354,36 @@ public class Game {
         }
     }
 
+    /**
+     * Returns the total number of player slots allowed in this game.
+     * @return Total of teams * perTeam option value.
+     */
+    public int getTotalSlots(){
+        return perTeam * teams.size();
+    }
+
+    /**
+     * Get the number of open slots still available.
+     * @return total slots subtracted by player count.
+     */
+    public int getOpenSlots(){
+        return getTotalSlots() - getPlayerCount();
+    }
+
+    /**
+     * Get the count of players in the arena.
+     * @return Counts the players on each team.
+     */
+    @SuppressWarnings("deprecation")
+    public int getPlayerCount(){
+        int playerCount = 0;
+        for(CCTeam ccTeam: teams.keySet()){
+            Team team = teams.get(ccTeam);
+            playerCount += team.getPlayers().size();
+        }
+        return playerCount;
+    }
+
     ///////////////////////////////////
     ///         Start Game          ///
     ///////////////////////////////////
@@ -338,22 +396,7 @@ public class Game {
             status = Status.LOBBY;
             return;
         }else{
-            for(Player p: activePlayers){
-                for(int i = 1; i <= spawnCount; i++){
-                    if(spawns.get(i) == null){
-                        spawns.put(i, p);
-                        if(!p.isDead()) {
-                            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
-                            clearInv(p);
-                        }
-                        p.setGameMode(GameMode.SURVIVAL);
-                        p.setHealth(p.getMaxHealth());
-                        p.setFoodLevel(20);
-                        msg.sendFMessage("game.goodluck", p);
-                        break;
-                    }
-                }
-            }
+            setupPlayers();
         }
         status = Status.INGAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
@@ -368,20 +411,8 @@ public class Game {
         if(status == Status.INGAME){
             return;
         }
-        for(Player p: activePlayers){
-            for(int i = 1; i <= spawnCount; i++){
-                if(spawns.get(i) == null){
-                    spawns.put(i, p);
-                    p.teleport(SettingsManager.getInstance().getSpawnPoint(id, i));
-                    clearInv(p);
-                    p.setGameMode(GameMode.SURVIVAL);
-                    p.setHealth(p.getMaxHealth());
-                    p.setFoodLevel(20);
-                    msg.sendFMessage("game.goodluck", p);
-                    break;
-                }
-            }
-        }
+
+        setupPlayers();
         status = Status.INGAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
         particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
@@ -389,6 +420,56 @@ public class Game {
         tasks.add(particleTaskID);
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarted", "arena-" + id);
         updateGameItems();
+    }
+
+    /**
+     * Setup all the players by teleporting them and setting their gamemodes and all other needed attributes.
+     */
+    @SuppressWarnings("deprecation")
+    private void setupPlayers(){
+        for(CCTeam ccTeam: teamSpawns.keySet()){
+            Team team = getTeam(ccTeam);
+            for(OfflinePlayer p: team.getPlayers()){
+                Player player = p.getPlayer();
+                if(!player.isDead()) {
+                    player.teleport(getSpawn(ccTeam));
+                    clearInv(player);
+                }
+                player.setGameMode(GameMode.SURVIVAL);
+                player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                msg.sendFMessage("game.goodluck", player);
+            }
+        }
+    }
+
+    /**
+     * Get the spawn for the specified team.
+     * @param team The team of the spawn wanted.
+     * @return Returns a location if found, or will return null if no spawn is found.
+     */
+    public Location getSpawn(CCTeam team){
+        return teamSpawns.get(team);
+    }
+
+    /**
+     * Gets the players team spawn.
+     * @param player The player.
+     * @return Returns a location if found or returns null if no spawn is found.
+     */
+    public Location getSpawn(Player player){
+        CCTeam team = getCCTeam(player);
+        return getSpawn(team);
+    }
+
+    public void addSpawn(CCTeam team){
+        addTeam(team.name().toLowerCase());
+    }
+
+    public void removeSpawn(CCTeam team){
+        teamSpawns.remove(team);
+        teams.get(team).unregister();
+        teams.remove(team);
+        teamScores.remove(team);
     }
 
     ///////////////////////////////////
@@ -433,6 +514,7 @@ public class Game {
     ///////////////////////////////////
     ///       Remove Player         ///
     ///////////////////////////////////
+    @SuppressWarnings("deprecation")
     public void removePlayer(Player player, boolean b){
         PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
         Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
@@ -461,12 +543,9 @@ public class Game {
         }
         player.setScoreboard(manager.getNewScoreboard());
         timeBar.removePlayer(player);
-        for (Object in : spawns.keySet().toArray()) {
-            if (spawns.get(in) == player) spawns.remove(in);
-        }
-
 
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
+        Bukkit.getPluginManager().callEvent(pl);
         updateGameItems();
     }
 
@@ -478,67 +557,75 @@ public class Game {
             Bukkit.getScheduler().cancelTask(i);
         }
         tasks.clear();
-
         powerups.clear();
-
         voted.clear();
 
         MessageManager.getInstance().debugConsole("Resetting Player information in arena " + id);
         activePlayers.clear();
         spectators.clear();
-        Set<OfflinePlayer> redPlayers = red.getPlayers();
-        for(OfflinePlayer player: redPlayers){
-            red.removePlayer(player);
-        }
-        Set<OfflinePlayer> bluePlayers = blue.getPlayers();
-        for(OfflinePlayer player: bluePlayers){
-            blue.removePlayer(player);
-        }
-        Set<OfflinePlayer> greenPlayers = green.getPlayers();
-        for(OfflinePlayer player: greenPlayers){
-            green.removePlayer(player);
-        }
-        Set<OfflinePlayer> yellowPlayers = yellow.getPlayers();
-        for(OfflinePlayer player: yellowPlayers){
-            yellow.removePlayer(player);
-        }
-        Set<OfflinePlayer> spectatePlayers = spectate.getPlayers();
-        for(OfflinePlayer player: spectatePlayers){
-            spectate.removePlayer(player);
-        }
-        redScore = 0;
-        blueScore = 0;
-        yellowScore = 0;
-        greenScore = 0;
+        clearTeams();
+        clearSpectatorTeam();
+        resetScores();
 
         board.resetScores("Time");
 
         status = Status.RESETING;
         updateGameItems();
         endgameRunning = false;
-        spawns.clear();
 
         Bukkit.getScheduler().cancelTask(timerTaskID);
         Bukkit.getScheduler().cancelTask(endgameTaskID);
         Bukkit.getScheduler().cancelTask(particleTaskID);
         QueueManager.getInstance().rollback(id, shutdown);
     }
+
+    @SuppressWarnings("deprecation")
+    private void clearSpectatorTeam(){
+        for(OfflinePlayer player: spectatorsTeam.getPlayers()){
+            spectatorsTeam.removePlayer(player);
+        }
+    }
+
+    /**
+     * Empty all the teams. (RED, BLUE, GREEN, YELLOW). This does not include spectators.
+     */
+    @SuppressWarnings("deprecation")
+    private void clearTeams(){
+        for(CCTeam ccTeam: teams.keySet()){
+            Team team = teams.get(ccTeam);
+            for(OfflinePlayer player: team.getPlayers()){
+                team.removePlayer(player);
+            }
+        }
+    }
+
+    /**
+     * Reset all team scores back to zero.
+     */
+    public void resetScores(){
+        for(CCTeam team: teamScores.keySet()){
+            teamScores.put(team, 0);
+        }
+    }
+
     ///////////////////////////////////
     ///          Win Game           ///
     ///////////////////////////////////
+    @SuppressWarnings("deprecation")
     public void winGame(){
         if(status == Status.INGAME) {
-            String team = scoreResults();
             Set<OfflinePlayer> players;
-            if(!team.equals("None")) {
-                players = getTeam(team).getPlayers();
+            CCTeam winningTeam = getWinningTeam();
+            if(winningTeam != null) {
+                players = getTeam(winningTeam).getPlayers();
             }else{
-                players = new HashSet<OfflinePlayer>();
+                players = new HashSet<>();
             }
             giveReward(players);
-            TeamWinEvent tw = new TeamWinEvent(players, team, reward);
+            giveReward(players);
+            TeamWinEvent tw = new TeamWinEvent(players, winningTeam, reward);
             Bukkit.getPluginManager().callEvent(tw);
-            MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + team, "arena-" + id);
+            MessageManager.getInstance().broadcastFMessage("broadcast.gamewin", "team-" + getTeamNameLocalized(winningTeam), "arena-" + id);
         }
     }
 
@@ -617,10 +704,10 @@ public class Game {
             msg.sendFMessage("game.join", p, "arena-" + id);
             //TODO Spectate API
             p.setGameMode(GameMode.CREATIVE);
-            p.teleport(SettingsManager.getInstance().getSpawnPoint(id, 1));
+            p.teleport(teamSpawns.values().iterator().next());
             saveInv(p);
             clearInv(p);
-            p.setHealth(p.getMaxHealth());
+            p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             p.setFoodLevel(20);
             clearInv(p);
             p.setScoreboard(board);
@@ -645,146 +732,102 @@ public class Game {
     ///////////////////////////////////
     ///       Remove Spectator      ///
     ///////////////////////////////////
+    @SuppressWarnings("deprecation")
     public boolean removeSpectator(Player player, boolean logout){
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());
 
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
-        spectate.removePlayer(player);
+        spectatorsTeam.removePlayer(player);
         spectators.remove(player);
         //TODO Spectator API
         updateGameItems();
         return true;
     }
 
+    public int getTeamScore(CCTeam team){
+        return teamScores.get(team);
+    }
+
+    public int setTeamScore(CCTeam team, int score){
+        return teamScores.put(team, score);
+    }
+
+    @SuppressWarnings("deprecation")
     public void addToTeam(Player player){
-        if(red.getSize() <= blue.getSize() && red.getSize() <= green.getSize() && red.getSize() <= yellow.getSize()){
-            red.addPlayer(player);
-            return;
+        CCTeam teamToSet = null;
+
+        for(CCTeam team: teams.keySet()){
+            if(teamToSet == null){
+                teamToSet = team;
+                continue;
+            }
+
+            if(teams.get(team).getSize() < teams.get(teamToSet).getSize()){
+                teamToSet = team;
+            }
         }
-        if(blue.getSize() <= green.getSize() && blue.getSize() <= yellow.getSize()){
-            blue.addPlayer(player);
-            return;
-        }
-        if(green.getSize() <= yellow.getSize()){
-            green.addPlayer(player);
-            return;
-        }
-        yellow.addPlayer(player);
+
+        teams.get(teamToSet).addPlayer(player);
     }
 
+    @SuppressWarnings("deprecation")
     public Team getTeam(Player player){
-        if(red.getPlayers().contains(player)){
-            return red;
-        }
-        if(blue.getPlayers().contains(player)){
-            return blue;
-        }
-        if(green.getPlayers().contains(player)){
-            return green;
-        }
-        if(yellow.getPlayers().contains(player)){
-            return yellow;
+        for(CCTeam ccTeam: teams.keySet()){
+            Team t = teams.get(ccTeam);
+            if(t.getPlayers().contains(player)){
+                return t;
+            }
         }
         return null;
     }
 
-    public Team getTeam(String teamName){
-        if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red").equalsIgnoreCase(teamName)){
-            return red;
-        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue").equalsIgnoreCase(teamName)){
-            return blue;
-        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green").equalsIgnoreCase(teamName)){
-            return green;
-        }else if(SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow").equalsIgnoreCase(teamName)){
-            return yellow;
+    public Team getTeam(CCTeam team){
+        for(CCTeam ccTeam: teams.keySet()){
+            if(ccTeam.equals(team)){
+                return teams.get(ccTeam);
+            }
         }
         return null;
     }
 
-    public String getTeamName(Player player){
-        if(red.getPlayers().contains(player)){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red");
+    public String getTeamNameLocalized(Player player){
+        CCTeam team = getCCTeam(player);
+        if(team == null){
+            return null;
         }
-        if(blue.getPlayers().contains(player)){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue");
-        }
-        if(green.getPlayers().contains(player)){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green");
-        }
-        if(yellow.getPlayers().contains(player)){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow");
+        return SettingsManager.getInstance().getMessagesConfig().getString(String.format("messages.color.%s", team.name().toLowerCase()));
+    }
+
+    /**
+     * Retrieves the CCTeam the player is on.
+     * @param player The player that the team is trying to be retrieved from.
+     * @return The team the player is on, but may return null if the player is not on any of the teams.
+     */
+    @SuppressWarnings("deprecation")
+    public CCTeam getCCTeam(Player player){
+        for(CCTeam team: teams.keySet()){
+            if(teams.get(team).getPlayers().contains(player)){
+                return team;
+            }
         }
         return null;
     }
 
-    public int getTeamID(Player player){
-        if(red.getPlayers().contains(player)){
-            return 0;
-        }
-        if(blue.getPlayers().contains(player)){
-            return 1;
-        }
-        if(green.getPlayers().contains(player)){
-            return 2;
-        }
-        if(yellow.getPlayers().contains(player)){
-            return 3;
-        }
-        return -1;
-    }
-
-    public void increaseScore(int team, int amount){
-        if(team == 0){
-            redScore += amount;
-        }else if(team == 1){
-            blueScore += amount;
-        }else if(team == 2){
-            greenScore += amount;
-        }else if(team == 3){
-            yellowScore += amount;
+    public void increaseScore(CCTeam team, int amount){
+        for(CCTeam ccTeam: teamScores.keySet()){
+            if(ccTeam.equals(team)){
+                setTeamScore(team, getTeamScore(team)+amount);
+            }
         }
     }
 
-    public void decreaseScore(int team, int amount){
-        if(team == 0){
-            redScore -= amount;
-        }else if(team == 1){
-            blueScore -= amount;
-        }else if(team == 2){
-            greenScore -= amount;
-        }else if(team == 3){
-            yellowScore -= amount;
-        }
-    }
-
-    public String scoreResults(){
-        if(redScore > blueScore && redScore > greenScore && redScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.red", "Red");
-        }else if(blueScore > redScore && blueScore > greenScore && blueScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.blue", "Blue");
-        }else if(greenScore > redScore && greenScore > blueScore && greenScore > yellowScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.green", "Green");
-        }else if(yellowScore > redScore && yellowScore > blueScore && yellowScore > greenScore){
-            return SettingsManager.getInstance().getMessagesConfig().getString("messages.color.yellow", "Yellow");
-        }else{
-           return "None";
-        }
-    }
-
-    public byte getTeamBlockByte(int teamId){
-        switch(teamId){
-            case 0:
-                return 14;
-            case 1:
-                return 3;
-            case 2:
-                return 5;
-            case 3:
-                return 4;
-            default:
-                return 0;
+    public void decreaseScore(CCTeam team, int amount){
+        for(CCTeam ccTeam: teamScores.keySet()){
+            if(ccTeam.equals(team)){
+                setTeamScore(team, getTeamScore(team)-amount);
+            }
         }
     }
 
@@ -793,11 +836,7 @@ public class Game {
     }
 
     public boolean isBlockInLobby(Location v) {
-        if(lobby != null) {
-            return lobby.containsBlock(v);
-        }else{
-            return false;
-        }
+        return lobby != null && lobby.containsBlock(v);
     }
 
     public void resetCallback() {
@@ -916,49 +955,57 @@ public class Game {
         return pu;
     }
 
-    public void changeBlock(Location loc, int team) {
-        byte data;
-        switch (team) {
-            case 0://Red Team
-                data = 14;
-                break;
-            case 1://Blue Team
-                data = 3;
-                break;
-            case 2://Green Team
-                data = 5;
-                break;
-            case 3://Yellow Team
-                data = 4;
-                break;
-            default:
-                data = 0;
-                break;
+    /**
+     * Calculates the winning team.
+     * @return This will return the {@link CCTeam} but will return null if there is no winner.
+     */
+    public CCTeam getWinningTeam(){
+        for(CCTeam team: teamScores.keySet()){
+            boolean isLeader = true;
+            for(CCTeam teamCheck: teamScores.keySet()){
+                if(!teamCheck.equals(team)){
+                    if(getTeamScore(teamCheck) > getTeamScore(team)) {
+                        isLeader = false;
+                        break;
+                    }
+                }
+            }
+
+            if(isLeader)
+                return team;
         }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void changeBlock(Location loc, CCTeam team) {
         if(loc.getBlock().getType().equals(Material.STAINED_CLAY)){
-            if(loc.getBlock().getData() != data){
+            if(loc.getBlock().getData() != team.getBlockData()){
                 switch (loc.getBlock().getData()) {
                     case 14:
-                        scoreManagement(id, team, 0, 1);
+                        scoreManagement(team, CCTeam.RED, 1);
                         break;
                     case 3:
-                        scoreManagement(id, team, 1, 1);
+                        scoreManagement(team, CCTeam.BLUE, 1);
                         break;
                     case 5:
-                        scoreManagement(id, team, 2, 1);
+                        scoreManagement(team, CCTeam.GREEN, 1);
                         break;
                     case 4:
-                        scoreManagement(id, team, 3, 1);
+                        scoreManagement(team, CCTeam.YELLOW, 1);
                         break;
                     case 0:
-                        scoreManagement(id, team, -1, 1);
+                        scoreManagement(team, null, 1);
                         break;
                 }
             }
         }
-        LoggingManager.getInstance().logBlockDestoryed(loc.getBlock());
+        LoggingManager.getInstance().logBlockDestroyed(loc.getBlock());
         loc.getBlock().setType(Material.STAINED_CLAY);
-        loc.getBlock().setData(data);
+        if(team == null)
+            loc.getBlock().setData((byte) 0);
+        else
+            loc.getBlock().setData((byte) team.getBlockData());
     }
 
     public void giveReward(Set<OfflinePlayer> players){
@@ -969,9 +1016,9 @@ public class Game {
         }
     }
 
-    public void scoreManagement(int id, int teamincrease, int teamdecrease, int amount) {
-        increaseScore(teamincrease, amount);
-        decreaseScore(teamdecrease, amount);
+    public void scoreManagement(CCTeam teamIncrease, CCTeam teamDecrease, int amount) {
+        increaseScore(teamIncrease, amount);
+        decreaseScore(teamDecrease, amount);
     }
 
     public List<Powerup> getPowerups() {
@@ -1019,16 +1066,8 @@ public class Game {
         return id;
     }
 
-    public HashMap<Integer, Player> getSpawns() {
-        return spawns;
-    }
-
     public HashMap<Player, ItemStack[][]> getInventory_store() {
         return inventory_store;
-    }
-
-    public int getSpawnCount() {
-        return spawnCount;
     }
 
     public boolean isDisabled() {
@@ -1047,10 +1086,6 @@ public class Game {
         return countdownRunning;
     }
 
-    public HashMap<String, String> getHookvars() {
-        return hookVars;
-    }
-
     public boolean isPvp(){
         return pvp;
     }
@@ -1064,7 +1099,7 @@ public class Game {
     }
 
     public ArrayList <Player> getAllPlayers() {
-        ArrayList <Player> all = new ArrayList < Player > ();
+        ArrayList <Player> all = new ArrayList <> ();
         all.addAll(activePlayers);
         all.addAll(spectators);
         return all;
@@ -1139,5 +1174,9 @@ public class Game {
         for(Player p: getAllPlayers()){
             msg.sendSubTitle(string, p);
         }
+    }
+
+    public static String getTeamNameLocalized(CCTeam team){
+        return SettingsManager.getInstance().getMessagesConfig().getString(String.format("messages.color.%s", team.name().toLowerCase()));
     }
 }
