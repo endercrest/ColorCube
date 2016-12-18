@@ -60,6 +60,9 @@ permissions:
     cc.arena.setspawn:
         description: Grants you the arena setspawn command
         default: op
+    cc.arena.removespawn:
+        description: Grants you the arena removespawn command
+        default: op
     cc.arena.join:
         description: Grants you the arena join command
         default: op

@@ -33,7 +33,7 @@ public class Game {
 
     public enum CCTeam{
         RED(ChatColor.RED, 14),
-        BLUE(ChatColor.BLUE, 3),
+        BLUE(ChatColor.BLUE, 11),
         GREEN(ChatColor.GREEN, 5),
         YELLOW(ChatColor.YELLOW, 4);
 
@@ -174,16 +174,22 @@ public class Game {
         MenuManager.getInstance().addGame();
     }
 
+    /**
+     * Add a team to the arena or updates the teams spawn point.
+     * @param team The team to be added or updated.
+     */
     private void addTeam(String team){
         CCTeam ccTeam = CCTeam.valueOf(team.toUpperCase());
         YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(getId());
         ConfigurationSection spawnsSection = config.getConfigurationSection("spawns");
 
-        Team boardTeam = board.registerNewTeam(team + "Arena" +id);
-        boardTeam.setPrefix(ccTeam.getColor() + "");
+        if(teams.get(ccTeam) == null) {
+            Team boardTeam = board.registerNewTeam(team + "Arena" + id);
+            boardTeam.setPrefix(ccTeam.getColor() + "");
 
-        teams.put(ccTeam, boardTeam);
-        teamScores.put(ccTeam, 0);
+            teams.put(ccTeam, boardTeam);
+            teamScores.put(ccTeam, 0);
+        }
 
         Location teamSpawn = new Location(getArena().getPos1().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
                 spawnsSection.getDouble(team+".z"), (float) spawnsSection.getDouble(team+".yaw"),
@@ -461,15 +467,26 @@ public class Game {
         return getSpawn(team);
     }
 
+    /**
+     * Add a spawmn point for the given team by either adding the team or updating the spawn point.
+     * @param team The team the spawn point is being added for.
+     */
     public void addSpawn(CCTeam team){
         addTeam(team.name().toLowerCase());
     }
 
+    /**
+     * Removes the spawn point for the given team, thus also removing the team form the arena.
+     * @param team The team to be removed.
+     */
     public void removeSpawn(CCTeam team){
-        teamSpawns.remove(team);
-        teams.get(team).unregister();
-        teams.remove(team);
-        teamScores.remove(team);
+        if(teams.get(team) != null) {
+            teamSpawns.remove(team);
+            teams.get(team).unregister();
+            teams.remove(team);
+            teamScores.remove(team);
+            updateGameItems();
+        }
     }
 
     ///////////////////////////////////
@@ -1176,6 +1193,11 @@ public class Game {
         }
     }
 
+    /**
+     * Get the team name that is also localized.
+     * @param team The team to get the name for.
+     * @return Will return the value set in the message.yml for the team colours.
+     */
     public static String getTeamNameLocalized(CCTeam team){
         return SettingsManager.getInstance().getMessagesConfig().getString(String.format("messages.color.%s", team.name().toLowerCase()));
     }

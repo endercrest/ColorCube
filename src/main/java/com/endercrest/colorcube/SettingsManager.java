@@ -619,6 +619,21 @@ public class SettingsManager {
     }
 
     /**
+     * Remove the spawn for the specified team for the given game.
+     * This will also remove the team from the arena.
+     * @param gameId The game id.
+     * @param team The team to be removed.
+     */
+    public void removeSpawn(int gameId, Game.CCTeam team){
+        YamlConfiguration arenaConfig = getArenaConfig(gameId);
+
+        arenaConfig.set("spawns."+team.name().toLowerCase(), null);
+
+        saveArenaConfig(gameId);
+        GameManager.getInstance().getGame(gameId).removeSpawn(team);
+    }
+
+    /**
      * Set the reward of the desired arena
      * @param gameid The Game ID
      * @param reward The reward amount

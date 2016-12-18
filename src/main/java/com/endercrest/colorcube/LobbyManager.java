@@ -175,9 +175,11 @@ public class LobbyManager {
     }
 
     public void update(int id){
-        for(LobbySign sign: lobbySigns){
-            if(sign.getSignGameID() == id){
-                sign.update();
+        if(lobbySigns != null) {
+            for (LobbySign sign : lobbySigns) {
+                if (sign.getSignGameID() == id) {
+                    sign.update();
+                }
             }
         }
     }
