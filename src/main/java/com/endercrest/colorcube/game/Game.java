@@ -1107,12 +1107,31 @@ public class Game {
         return pvp;
     }
 
+    public void setPvp(Boolean pvp){
+        this.pvp = pvp;
+        SettingsManager.getInstance().getArenaConfig(id).set("options.pvp", pvp);
+        SettingsManager.getInstance().saveArenaConfig(id);
+    }
+
     public double getReward() {
         return reward;
     }
 
-    public void setReward(double reward) {
+    public void setReward(Double reward) {
         this.reward = reward;
+        SettingsManager.getInstance().getArenaConfig(id).set("options.reward", reward);
+        SettingsManager.getInstance().saveArenaConfig(id);
+    }
+
+    public int getPerTeam(){
+        return perTeam;
+    }
+
+    public void setPerTeam(Integer perTeam){
+        this.perTeam = perTeam;
+        updateGameItems();
+        SettingsManager.getInstance().getArenaConfig(id).set("options.perteam", perTeam);
+        SettingsManager.getInstance().saveArenaConfig(id);
     }
 
     public ArrayList <Player> getAllPlayers() {

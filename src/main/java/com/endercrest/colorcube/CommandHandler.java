@@ -24,13 +24,13 @@ public class CommandHandler implements CommandExecutor {
 
     public CommandHandler(ColorCube plugin){
         this.plugin = plugin;
-        commands = new HashMap<String, SubCommand>();
-        helpinfo = new HashMap<String, Integer>();
+        commands = new HashMap<>();
+        helpinfo = new HashMap<>();
         loadCommands();
         loadHelpInfo();
     }
 
-    public void loadCommands(){
+    private void loadCommands(){
         commands.put("createarena", new CreateArena());
         commands.put("deletearena", new DeleteArena());
         commands.put("disable", new Disable());
@@ -49,8 +49,8 @@ public class CommandHandler implements CommandExecutor {
         commands.put("spectate", new Spectate());
         commands.put("createsign", new CreateSign());
         commands.put("deletesign", new DeleteSign());
-        commands.put("setreward", new SetReward());
         commands.put("menuitem", new MenuItem());
+        commands.put("options", new Options());
 
         commands.put("debug", new Debug(plugin));
     }
@@ -75,7 +75,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("createsign", 3);
         helpinfo.put("deletesign", 3);
         helpinfo.put("menuitem", 1);
-        helpinfo.put("reward", 3);
+        helpinfo.put("options", 3);
     }
 
     @Override
@@ -114,10 +114,10 @@ public class CommandHandler implements CommandExecutor {
                 return true;
             }
             String sub = args[0].toLowerCase();
-            Vector< String > l = new Vector < String > ();
+            Vector< String > l = new Vector <> ();
             l.addAll(Arrays.asList(args));
             l.remove(0);
-            args = (String[]) l.toArray(new String[0]);
+            args = l.toArray(new String[0]);
             if (!commands.containsKey(sub)) {
                 msg.sendMessage("&cCommand doesn't exist.", player);
                 msg.sendMessage("&cType /cc help for command information", player);
@@ -150,7 +150,7 @@ public class CommandHandler implements CommandExecutor {
                 if (helpinfo.get(command) == page) {
                     MessageManager.getInstance().sendMessage(commands.get(command).helpInfo(), p);
                 }
-            }catch(Exception e){}
+            }catch(Exception ignored){}
         }
     }
 

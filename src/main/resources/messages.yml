@@ -29,6 +29,7 @@ messages:
         alreadyhave: '&cYou already have {$input}!'
         nextid: "&c{$type} next id is incorrectly set, can't create {$type}"
         archive: '&cFailed to archive {$file}'
+        notoption: '&c{$option} is not a valid option.'
     game:
         state: '&6Arena {$arena} has been {$state}!'
         all: '&6All arenas have  been {$state}!'
@@ -86,9 +87,11 @@ messages:
         createlobby: '&6Lobby created for Arena {$arena}'
         spawnset: '&6{$team} team spawn has been set in Arena {$arena}'
         spawnremove: '&6{$team} team spawn has been removed in Arena {$arena}'
+        optionset: '&6{$option} has been set for arena {$arena}.'
         lobbyspawn: '&6Lobby has been set.'
         setspawnusage: '&6Usage: /cc setspawn <red/blue/green/yellow>'
         removespawnusage: '&6Usage: /cc removespawn <red/blue/green/yellow> [id]'
+        optionsusage: '&6Usage /cc options <id> <option> <value>'
         setreward: '&6Reward has been set.'
     words:
         noarenas: 'No arenas'
@@ -115,6 +118,7 @@ messages:
         createsign: 'Creates a new lobby sign.'
         deletesign: 'Deletes the lobby sign you are looking at'
         setreward: 'Sets the reward for the arena'
+        options: 'Sets options in an arena.'
     color:
         red: 'red'
         green: 'green'
