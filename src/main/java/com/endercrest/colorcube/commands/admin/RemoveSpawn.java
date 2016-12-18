@@ -41,7 +41,7 @@ public class RemoveSpawn implements SubCommand {
                 int id = Integer.parseInt(args[1]);
                 Game game = GameManager.getInstance().getGame(id);
                 if(game == null){
-                    MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-" + id);
+                    MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "arena-Arena " + id);
                     return true;
                 }
 

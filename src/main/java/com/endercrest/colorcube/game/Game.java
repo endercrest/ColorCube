@@ -279,7 +279,7 @@ public class Game {
 
         if(status == Status.LOBBY || status == Status.STARTING) {
             if (activePlayers.size() < getTotalSlots()) {
-                msg.sendFMessage("game.join", p, "arena-" + id);
+                msg.sendFMessage("game.join", p, "arena-" + name);
                 PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {

@@ -23,7 +23,7 @@ public class CreateLobby implements SubCommand {
         }catch(NumberFormatException e){
             MessageManager.getInstance().sendFMessage("error.notanumber", p, "input-" + args[0]);
         }catch(NullPointerException e){
-            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "input-" + args[0]);
+            MessageManager.getInstance().sendFMessage("error.nosuchgame", p, "input-Arena " + args[0]);
         }
         return true;
     }
