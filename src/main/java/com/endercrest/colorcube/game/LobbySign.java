@@ -70,7 +70,7 @@ public class LobbySign {
     public String[] getVars(){
         String[] vars = new String[5];
         vars[0] = "players-" + game.getActivePlayers().size();
-        vars[1] = "maxplayers-" + game.getSpawnCount();
+        vars[1] = "maxplayers-" + game.getTotalSlots();
         vars[2] = "arenaname-Arena " + game.getId();
         vars[3] = "status-" + game.getStatus().toString();
         vars[4] = "spectators-" + game.getSpectators().size();

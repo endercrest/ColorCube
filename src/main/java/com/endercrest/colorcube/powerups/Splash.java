@@ -41,32 +41,21 @@ public class Splash implements SubPowerup {
                 loc1.subtract(0,1,0);
                 loc2.subtract(0,1,0);
                 loc3.subtract(0,1,0);
-                if(g.isBlockInArena(loc)) {
-                    if (loc.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
-                            g.changeBlock(loc, g.getTeamID(p));
-                        }
-                }
-                if(g.isBlockInArena(loc1)){
-                    if (loc1.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc1.getBlock().getType().toString())) {
-                            g.changeBlock(loc1, g.getTeamID(p));
-                        }
-                }
-                if(g.isBlockInArena(loc2)){
-                    if (loc2.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())) {
-                            g.changeBlock(loc2, g.getTeamID(p));
-                        }
-                }
-                if(g.isBlockInArena(loc3)){
-                    if (loc3.getBlock().getData() != (byte) 15)
-                        if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc3.getBlock().getType().toString())) {
-                            g.changeBlock(loc3, g.getTeamID(p));
-                        }
-                }
+                setBlock(g, p, loc);
+                setBlock(g, p, loc1);
+                setBlock(g, p, loc2);
+                setBlock(g, p, loc3);
 
             }
+        }
+    }
+
+    private void setBlock(Game game, Player player, Location loc){
+        if(game.isBlockInArena(loc)){
+            if (loc.getBlock().getData() != (byte) 15)
+                if (SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc.getBlock().getType().toString())) {
+                    game.changeBlock(loc, game.getCCTeam(player));
+                }
         }
     }
 }
