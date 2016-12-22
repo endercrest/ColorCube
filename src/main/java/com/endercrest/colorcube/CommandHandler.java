@@ -51,6 +51,7 @@ public class CommandHandler implements CommandExecutor {
         commands.put("deletesign", new DeleteSign());
         commands.put("menuitem", new MenuItem());
         commands.put("options", new Options());
+        commands.put("goto", new GoTo());
 
         commands.put("debug", new Debug(plugin));
     }
@@ -76,6 +77,7 @@ public class CommandHandler implements CommandExecutor {
         helpinfo.put("deletesign", 3);
         helpinfo.put("menuitem", 1);
         helpinfo.put("options", 3);
+        helpinfo.put("goto", 3);
     }
 
     @Override

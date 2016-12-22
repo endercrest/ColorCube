@@ -15,6 +15,9 @@ import java.util.HashMap;
 
 /**
  * Created by Thomas Cordua-von Specht on 12/17/2016.
+ *
+ * Options command class that handles the permissions, helpinfo and onCommand execution.
+ * The options command is meant to set specific options for each arenas.
  */
 public class Options implements SubCommand {
 
