@@ -93,6 +93,7 @@ messages:
         removespawnusage: '&6Usage: /cc removespawn <red/blue/green/yellow> [id]'
         optionsusage: '&6Usage /cc options <id> <option> <value>'
         setreward: '&6Reward has been set.'
+        teleported: 'Teleporting to {$arena}'
     words:
         noarenas: 'No arenas'
         arenas: 'Arenas'
@@ -119,6 +120,7 @@ messages:
         deletesign: 'Deletes the lobby sign you are looking at'
         setreward: 'Sets the reward for the arena'
         options: 'Sets options in an arena.'
+        goto: 'Teleports you to the arenas lobby.'
     color:
         red: 'red'
         green: 'green'

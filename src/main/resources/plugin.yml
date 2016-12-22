@@ -37,6 +37,7 @@ permissions:
             cc.arena.removespawn: true
             cc.arena.options: true
             cc.arena.vote: true
+            cc.arena.goto: true
     cc.lobby.*:
         description: Grants you the all admin lobby commands
         default: false
@@ -75,6 +76,9 @@ permissions:
         default: op
     cc.arena.vote:
         description: Gives you the arena void command
+        default: op
+    cc.arena.goto:
+        description: Gives you the arena goto command
         default: op
     cc.lobby.create:
         description: Grants you the lobby create command

@@ -23,6 +23,13 @@ import sun.security.krb5.Config;
 
 import java.util.*;
 
+/**
+ * Created by Thomas Cordua-von Specht on 12/18/2016.
+ *
+ * This class contains almost all of the logic behind each game. It contains the players, the game status and all
+ * the teams information. Using the game manager to create a new game will make a new game available to all the other
+ * systems in this plugin.
+ */
 @SuppressWarnings({"unused", "SameParameterValue", "WeakerAccess"})
 public class Game {
 
@@ -949,6 +956,10 @@ public class Game {
         }
     }
 
+    /**
+     * Retrieves the lobby spawn for the game. This lobby will be located within the lobby.
+     * @return This will return the location of the lobby, but if it is not set will return null.
+     */
     public Location getLobbySpawn(){
         if(lobby.isSpawnSet()){
             return lobby.getSpawn();
