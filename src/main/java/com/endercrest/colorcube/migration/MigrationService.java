@@ -284,75 +284,78 @@ public class MigrationService {
     private boolean migrate20161215(){
         File arenaFolder = new File(plugin.getDataFolder(), "Arena");
 
-        if(arenaFolder != null && arenaFolder.listFiles().length > 0){
-            for(File file: arenaFolder.listFiles()){
-                if(file.isFile()) {
-                    if(file.getName().equalsIgnoreCase("global.yml")){
-                        continue;
-                    }
-                    YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-                    if (config.getInt("version") == 0) {
-                        config.set("spawns_old", config.get("spawns"));
-                        config.set("spawns", null);
+        if(arenaFolder.exists() && arenaFolder.isDirectory()) {
+            if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
+                for (File file : arenaFolder.listFiles()) {
+                    if (file.isFile()) {
+                        if (file.getName().equalsIgnoreCase("global.yml")) {
+                            continue;
+                        }
+                        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                        if (config.getInt("version") == 0) {
+                            config.set("spawns_old", config.get("spawns"));
+                            config.set("spawns", null);
 
-                        ConfigurationSection spawns = config.getConfigurationSection("spawns_old");
-                        Set<String> keys = spawns.getKeys(false);
-                        if (keys != null && keys.size() > 0) {
-                            MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Upgrading %s", file.getName()));
+                            ConfigurationSection spawns = config.getConfigurationSection("spawns_old");
+                            Set<String> keys = spawns.getKeys(false);
+                            if (keys != null && keys.size() > 0) {
+                                MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Upgrading %s", file.getName()));
 
-                            int originalSpawnCount = keys.size();
-                            int teamCount = Math.min(4, originalSpawnCount);
-                            int slotsPerTeam = teamCount != 0 ? (int) (Math.ceil(originalSpawnCount / teamCount)) : 1;
+                                int originalSpawnCount = keys.size();
+                                int teamCount = Math.min(4, originalSpawnCount);
+                                int slotsPerTeam = teamCount != 0 ? (int) (Math.ceil(originalSpawnCount / teamCount)) : 1;
 
-                            config.set("options.perteam", slotsPerTeam);
+                                config.set("options.perteam", slotsPerTeam);
 
-                            String[] keyArray = keys.toArray(new String[]{});
-                            if (teamCount < originalSpawnCount) {
-                                MessageManager.getInstance().log(String.format("Migration 15/12/2016: Please note that some spawns have been removed from %s", file.getName()));
-                            }
-                            for (int i = 0; i < teamCount; i++) {
-                                String key = keyArray[i];
+                                String[] keyArray = keys.toArray(new String[]{});
+                                if (teamCount < originalSpawnCount) {
+                                    MessageManager.getInstance().log(String.format("Migration 15/12/2016: Please note that some spawns have been removed from %s", file.getName()));
+                                }
+                                for (int i = 0; i < teamCount; i++) {
+                                    String key = keyArray[i];
 
-                                String team;
-                                switch (i) {
-                                    case 0:
-                                        team = "red";
-                                        break;
-                                    case 1:
-                                        team = "blue";
-                                        break;
-                                    case 2:
-                                        team = "green";
-                                        break;
-                                    case 3:
-                                        team = "yellow";
-                                        break;
-                                    default:
-                                        team = "red";
-                                        break;
+                                    String team;
+                                    switch (i) {
+                                        case 0:
+                                            team = "red";
+                                            break;
+                                        case 1:
+                                            team = "blue";
+                                            break;
+                                        case 2:
+                                            team = "green";
+                                            break;
+                                        case 3:
+                                            team = "yellow";
+                                            break;
+                                        default:
+                                            team = "red";
+                                            break;
+                                    }
+
+                                    config.set("spawns." + team + ".x", config.getDouble("spawns_old." + key + ".x"));
+                                    config.set("spawns." + team + ".y", config.getDouble("spawns_old." + key + ".y"));
+                                    config.set("spawns." + team + ".z", config.getDouble("spawns_old." + key + ".z"));
+                                    config.set("spawns." + team + ".yaw", config.getDouble("spawns_old." + key + ".yaw"));
+                                    config.set("spawns." + team + ".pitch", config.getDouble("spawns_old." + key + ".pitch"));
+
                                 }
 
-                                config.set("spawns." + team + ".x", config.getDouble("spawns_old." + key + ".x"));
-                                config.set("spawns." + team + ".y", config.getDouble("spawns_old." + key + ".y"));
-                                config.set("spawns." + team + ".z", config.getDouble("spawns_old." + key + ".z"));
-                                config.set("spawns." + team + ".yaw", config.getDouble("spawns_old." + key + ".yaw"));
-                                config.set("spawns." + team + ".pitch", config.getDouble("spawns_old." + key + ".pitch"));
+                                config.set("spawns_old", null);
+                                config.set("version", 1);
 
-                            }
-
-                            config.set("spawns_old", null);
-                            config.set("version", 1);
-
-                            try {
-                                MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Saving %s", file.getName()));
-                                config.save(file);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                return false;
+                                try {
+                                    MessageManager.getInstance().debugConsole(String.format("Migration 15/12/2016: Saving %s", file.getName()));
+                                    config.save(file);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    return false;
+                                }
                             }
                         }
                     }
                 }
+
             }
         }
 
