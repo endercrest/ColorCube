@@ -386,6 +386,9 @@ public class MigrationService {
     }
 
     /**
+     * Run the migration of 2016 December 23rd.
+     *
+     * This migration adds two new options to the arena "border" and "border-extension".
      *
      * @return The result of the migration and whether it was Successful or Unsuccessful. True is also
      * returned if it has already been completed.

@@ -23,6 +23,8 @@ public class SettingsManager {
     private FileConfiguration messages;
 
     private static final int MESSAGE_VERSION = 0;
+    private static final int ARENA_VERSION = 2;
+    private static final int SIGN_VERSION = 0;
 
     private File messageFile;
 
@@ -104,6 +106,18 @@ public class SettingsManager {
                     arenaFiles.put(id, file);
                     arenaConfigs.put(id, config);
                 }
+            }
+        }
+
+        if(arenaGlobalConfig == null || arenaGlobalFile == null){
+            arenaGlobalFile = new File(arenaFolder, "global.yml");
+            try {
+                arenaGlobalFile.createNewFile();
+                arenaGlobalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+                arenaGlobalConfig.set("version", ARENA_VERSION);
+                arenaGlobalConfig.save(arenaGlobalFile);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         MessageManager.getInstance().debugConsole("Successfully Loaded Arena Configs");
@@ -275,6 +289,18 @@ public class SettingsManager {
                     signFiles.put(id, file);
                     signConfigs.put(id, config);
                 }
+            }
+        }
+
+        if(signGlobalConfig == null || signGlobalFile == null){
+            signGlobalFile = new File(signFolder, "global.yml");
+            try {
+                signGlobalFile.createNewFile();
+                signGlobalConfig = YamlConfiguration.loadConfiguration(signGlobalFile);
+                signGlobalConfig.set("version", SIGN_VERSION);
+                signGlobalConfig.save(signGlobalFile);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -542,7 +568,7 @@ public class SettingsManager {
     }
 
     public int getNextArenaID(){
-        return getArenaGlobalConfig().getInt("nextId", 0);
+        return getArenaGlobalConfig().getInt("nextId", 1);
     }
 
     public void incrementNextArenaId(){
@@ -550,7 +576,7 @@ public class SettingsManager {
     }
 
     public int getNextSignID(){
-        return getArenaGlobalConfig().getInt("nextId", 0);
+        return getArenaGlobalConfig().getInt("nextId", 1);
     }
 
     public void incrementNextSignId(){

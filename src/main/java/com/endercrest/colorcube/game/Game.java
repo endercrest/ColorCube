@@ -130,31 +130,33 @@ public class Game {
 
         arena = new Arena(pos1, pos2);
 
-        World lobbyWorld = Bukkit.getWorld(arenaConfig.getString("lobby.world"));
+        if(arenaConfig.isSet("lobby.world")) {
+            World lobbyWorld = Bukkit.getWorld(arenaConfig.getString("lobby.world"));
 
-        int lx = arenaConfig.getInt("lobby.pos1.x");
-        int ly = arenaConfig.getInt("lobby.pos1.y");
-        int lz = arenaConfig.getInt("lobby.pos1.z");
+            int lx = arenaConfig.getInt("lobby.pos1.x", 0);
+            int ly = arenaConfig.getInt("lobby.pos1.y", 0);
+            int lz = arenaConfig.getInt("lobby.pos1.z", 0);
 
-        int lx1 = arenaConfig.getInt("lobby.pos2.x");
-        int ly1 = arenaConfig.getInt("lobby.pos2.y");
-        int lz1 = arenaConfig.getInt("lobby.pos2.z");
+            int lx1 = arenaConfig.getInt("lobby.pos2.x", 0);
+            int ly1 = arenaConfig.getInt("lobby.pos2.y", 0);
+            int lz1 = arenaConfig.getInt("lobby.pos2.z", 0);
 
-        Location lpos1 = new Location(lobbyWorld, Math.max(lx, lx1), Math.max(ly, ly1), Math.max(lz, lz1));//max
-        Location lpos2 = new Location(lobbyWorld, Math.min(lx, lx1), Math.min(ly, ly1), Math.min(lz, lz1));//min
+            Location lpos1 = new Location(lobbyWorld, Math.max(lx, lx1), Math.max(ly, ly1), Math.max(lz, lz1));//max
+            Location lpos2 = new Location(lobbyWorld, Math.min(lx, lx1), Math.min(ly, ly1), Math.min(lz, lz1));//min
 
-        if(lx != 0 && ly != 0 && lz != 0) {
-            lobby = new Lobby(lpos1, lpos2);
-            msg.debugConsole("Loaded Lobby for Arena:" + id);
-        }else{
-            lobby = null;
-            msg.debugConsole("Could not load Arena " + id + " lobby");
-            msg.debugConsole("&cX:" + lx + " Y:" + ly + " Z:" + lz + "X1:" + lx1 + " Y1:" + ly1 + " Z1:" + lz1);
-        }
+            if (lx != 0 && ly != 0 && lz != 0) {
+                lobby = new Lobby(lpos1, lpos2);
+                msg.debugConsole("Loaded Lobby for Arena:" + id);
+            } else {
+                lobby = null;
+                msg.debugConsole("Could not load Arena " + id + " lobby");
+                msg.debugConsole("&cX:" + lx + " Y:" + ly + " Z:" + lz + "X1:" + lx1 + " Y1:" + ly1 + " Z1:" + lz1);
+            }
 
-        if(lobby != null){
-            lobby.loadSpawn(id);
-            msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
+            if (lobby != null) {
+                lobby.loadSpawn(id);
+                msg.debugConsole("Loading Lobby Spawn for Arena:" + id);
+            }
         }
 
         //Load Options
@@ -174,8 +176,10 @@ public class Game {
         teamSpawns = new HashMap<>();
 
         ConfigurationSection spawnsSection = arenaConfig.getConfigurationSection("spawns");
-        for(String team: spawnsSection.getKeys(false)){
-            addTeam(team);
+        if(spawnsSection != null) {
+            for (String team : spawnsSection.getKeys(false)) {
+                addTeam(team);
+            }
         }
 
         //Setup Spectators Teams
