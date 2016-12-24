@@ -17,14 +17,10 @@ public class PlayerPVPListener implements Listener {
             Player attacker = (Player) event.getDamager();
             if (GameManager.getInstance().isPlayerActive(attacker)) {
                 Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID((Player) event.getDamager()));
-                if(game.getStatus() == Game.Status.LOBBY){
+                if(game.isPvp()){
                     event.setDamage(0);
                 }else{
-                    if(game.isPvp()){
-                        event.setDamage(0);
-                    }else{
-                        event.setCancelled(true);
-                    }
+                    event.setCancelled(true);
                 }
             } else if (GameManager.getInstance().isPlayerSpectator(attacker)) {
                 event.setCancelled(true);
