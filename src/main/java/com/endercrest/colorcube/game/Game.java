@@ -6,6 +6,7 @@ import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.WorldBorderUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -200,7 +201,7 @@ public class Game {
             teamScores.put(ccTeam, 0);
         }
 
-        Location teamSpawn = new Location(getArena().getPos1().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
+        Location teamSpawn = new Location(getArena().getMax().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
                 spawnsSection.getDouble(team+".z"), (float) spawnsSection.getDouble(team+".yaw"),
                 (float) spawnsSection.getDouble(team+".pitch"));
         teamSpawns.put(ccTeam, teamSpawn);
@@ -290,6 +291,8 @@ public class Game {
                 PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {
+                    WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2);
+
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setFallDistance(0);
                     p.teleport(lobby.getSpawn());
@@ -444,8 +447,9 @@ public class Game {
     private void setupPlayers(){
         for(CCTeam ccTeam: teamSpawns.keySet()){
             Team team = getTeam(ccTeam);
-            for(OfflinePlayer p: team.getPlayers()){
-                Player player = p.getPlayer();
+            for(OfflinePlayer offlinePlayer: team.getPlayers()){
+                Player player = offlinePlayer.getPlayer();
+                WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2);
                 if(!player.isDead()) {
                     player.teleport(getSpawn(ccTeam));
                     clearInv(player);
@@ -545,6 +549,7 @@ public class Game {
         PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
         Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
 
+        WorldBorderUtil.resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         Collection<PotionEffect> effects = player.getActivePotionEffects();
@@ -904,10 +909,10 @@ public class Game {
                 boolean finish = true;
                 int attempt = 1;
                 while(finish) {
-                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
-                    y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
-                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
-                    Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
+                    x = random.nextInt((arena.getMax().getBlockX() - arena.getMin().getBlockX()) + 1) + arena.getMin().getBlockX() + 0.5;
+                    y = random.nextInt((arena.getMax().getBlockY() - arena.getMin().getBlockY()) + 1) + arena.getMin().getBlockY();
+                    z = random.nextInt((arena.getMax().getBlockZ() - arena.getMin().getBlockZ()) + 1) + arena.getMin().getBlockZ() + 0.5;
+                    Location loc = new Location(arena.getMax().getWorld(), x, y, z);
                     Location loc2 = loc.clone();
                     loc2.subtract(0, 1, 0);
                     if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){

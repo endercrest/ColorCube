@@ -3,10 +3,8 @@ package com.endercrest.colorcube;
 import com.endercrest.colorcube.game.Game;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sun.org.apache.regexp.internal.RE;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -14,12 +12,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class GameManager {
 
-    static GameManager instance = new GameManager();
+    private static GameManager instance = new GameManager();
 
     private ColorCube plugin;
-    private List<Game> games = new ArrayList<Game>();
+    private List<Game> games = new ArrayList<>();
     private MessageManager msg = MessageManager.getInstance();
     private SettingsManager settingsManager = SettingsManager.getInstance();
 
@@ -67,12 +66,12 @@ public class GameManager {
         return plugin;
     }
 
-    public void removePlayer(Player p, boolean b){
-        getGame(getActivePlayerGameID(p)).removePlayer(p, b);
+    public void removePlayer(Player p, boolean disconnect){
+        getGame(getActivePlayerGameID(p)).removePlayer(p, disconnect);
     }
 
-    public void removeSpectator(Player p, boolean b){
-        getGame(getSpectatePlayerId(p)).removeSpectator(p, b);
+    public void removeSpectator(Player p, boolean disconnect){
+        getGame(getSpectatePlayerId(p)).removeSpectator(p, disconnect);
     }
 
     public int getBlockGameId(Location v) {

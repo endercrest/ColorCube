@@ -5,7 +5,6 @@ import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
