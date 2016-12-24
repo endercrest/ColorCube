@@ -110,6 +110,10 @@ public class Game {
         setup();
     }
 
+    /**
+     * This is the initial setup of the game that should only be ran once. When creating a new object, run this method
+     * after, this will correctly load all the information from the arena specific configuration.
+     */
     public void setup(){
         status = Status.LOADING;
 
@@ -217,14 +221,26 @@ public class Game {
         updateGameItems();
     }
 
+    /**
+     * Set the lobby for this game.
+     * @param lobby The lobby of the game.
+     */
     public void setLobby(Lobby lobby){
         this.lobby = lobby;
     }
 
+    /**
+     * Checks whether any lobby has been set.
+     * @return True if lobby has been set.
+     */
     public boolean isLobbySet(){
         return lobby != null;
     }
 
+    /**
+     * Retrieve the lobby object.
+     * @return The lobby object which contains the spawn as well as the region of the lobby.
+     */
     public Lobby getLobby(){
         return lobby;
     }
@@ -232,6 +248,10 @@ public class Game {
     ///////////////////////////////////
     ///           Enable            ///
     ///////////////////////////////////
+
+    /**
+     * Enable the game so it updates the game status and will update signs and game menu.
+     */
     public void enable(){
         status = Status.LOBBY;
         disabled = false;
@@ -242,6 +262,12 @@ public class Game {
     ///////////////////////////////////
     ///          Disable            ///
     ///////////////////////////////////
+
+    /**
+     * Disable the game so it updates the game status and will update signs and game menu. Also removes
+     * any players that currently are inside of the arena.
+     * @param shutdown whether the disable is because of the server shutting down or some other cause.
+     */
     public void disable(Boolean shutdown){
         disabled = true;
 
@@ -255,6 +281,9 @@ public class Game {
         updateGameItems();
     }
 
+    /**
+     * Wrapper for the disable method and sets the shutdown variable to false.
+     */
     public void disable(){
         disable(false);
     }
@@ -263,6 +292,13 @@ public class Game {
     ///           Join              ///
     ///////////////////////////////////
 
+    /**
+     * Add a new player to the game. First will check that the player has permissions will then check all the other
+     * requirements of the game to see if it is ready to accept players. When adding the player, it will clear the
+     * players inventory, teleport the player to the lobby and all the other prep required.
+     * @param p The player that is being added to the game.
+     * @return Returns whether the player was successfully added to the game.
+     */
     public boolean addPlayer(Player p){
         if(!p.hasPermission("cc.arena.join."+ id) || !p.hasPermission("cc.arena.join.*")){
             msg.debugConsole("Need cc.arena.join." + id + "or cc.arena.join.*");
@@ -359,6 +395,12 @@ public class Game {
     ///////////////////////////////////
     ///         Vote Start          ///
     ///////////////////////////////////
+
+    /**
+     * Add a vote by the given player. Once at a certain percentage of votes to player ratio, the game will start the
+     * countdown to begin if it has not already begun.
+     * @param p The player that has voted.
+     */
     public void vote(Player p){
         if(status == Status.INGAME){
             msg.sendFMessage("error.alreadyingame", p);
@@ -415,6 +457,12 @@ public class Game {
     ///////////////////////////////////
     ///         Start Game          ///
     ///////////////////////////////////
+
+    /**
+     * This will start the game if it has not already started. First will check if there are enough players to started
+     * it, and if there is will start the various timers, update the status for signs and game menu and finally
+     * broadcast the start of the game.
+     */
     public void startGame(){
         if(status == Status.INGAME){
             return;
@@ -435,6 +483,10 @@ public class Game {
         updateGameItems();
     }
 
+    /**
+     * This will force start a game, so it will do everything {@link #startGame()}, but it ignores the player count
+     * requirement.
+     */
     public void forceStartGame(){
         if(status == Status.INGAME){
             return;
@@ -516,12 +568,23 @@ public class Game {
     ///////////////////////////////////
     ///         CountDown           ///
     ///////////////////////////////////
+
+    /**
+     * Get the current countdown time of the game.
+     * @return The integer value of the current time.
+     */
     public int getCountdownTime(){
         return count;
     }
 
     int count = 20;
     int tid = 0;
+
+    /**
+     * Starts a countdown of the given time to start the game. This will also sends all the messages needed to the
+     * players of the time of the countdown.
+     * @param time The initial start time in seconds.
+     */
     public void countdown(int time){
         MessageManager.getInstance().broadcastFMessage("broadcast.gamestarting", "arena-" + id, "t-" + time);
         countdownRunning = true;
@@ -555,9 +618,16 @@ public class Game {
     ///////////////////////////////////
     ///       Remove Player         ///
     ///////////////////////////////////
+
+    /**
+     * Remove a player from an arena by restoring thier inventory, teleporting them back to the global lobby spawn, and
+     * then will also check if a game needs to be stopped due to the player count.
+     * @param player The player to be removed.
+     * @param logout Whether the player is being removed due to logging off the server or due to other reasons.
+     */
     @SuppressWarnings("deprecation")
-    public void removePlayer(Player player, boolean b){
-        PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
+    public void removePlayer(Player player, boolean logout){
+        PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, logout);
         Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
 
         WorldBorderUtil.resetWorldBorder(player);
@@ -590,11 +660,15 @@ public class Game {
         player.setScoreboard(manager.getNewScoreboard());
         timeBar.removePlayer(player);
 
-        PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
+        PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, logout);
         Bukkit.getPluginManager().callEvent(pl);
         updateGameItems();
     }
 
+    /**
+     * Reassign all players to new teams. This is a balancing method, that will make sure the teams have a even of teams
+     * as possible.
+     */
     private void reassignTeams(){
         clearTeams();
         for(Player player: activePlayers){
