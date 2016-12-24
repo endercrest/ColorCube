@@ -50,6 +50,7 @@ messages:
         freeze: '&6{$player} has frozen everyone for 5 seconds!'
         playervote: '&6{$player} has voted to start the game.'
         voteamount: '&6{$percent}% of players have voted to start the game'
+        reassign: '&6You have been reassigned to team {$color}'
     lobby:
         created: '&6Lobby sign created.'
         removed: '&6Lobby sign removed.'
