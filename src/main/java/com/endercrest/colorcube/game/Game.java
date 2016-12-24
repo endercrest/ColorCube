@@ -581,6 +581,10 @@ public class Game {
                 msgFArena("game.end", "reason-Not enough players");
                 endGame();
             }
+        }else{
+            if(status == Status.LOBBY  || status == Status.STARTING){
+                reassignTeams();
+            }
         }
         player.setScoreboard(manager.getNewScoreboard());
         timeBar.removePlayer(player);
@@ -588,6 +592,14 @@ public class Game {
         PlayerLeaveArenaEvent pl = new PlayerLeaveArenaEvent(player, this, b);
         Bukkit.getPluginManager().callEvent(pl);
         updateGameItems();
+    }
+
+    private void reassignTeams(){
+        clearTeams();
+        for(Player player: activePlayers){
+            CCTeam team = addToTeam(player);
+            MessageManager.getInstance().sendFMessage("game.reassign", player, "color-"+getTeamNameLocalized(team));
+        }
     }
 
     ///////////////////////////////////
@@ -695,6 +707,7 @@ public class Game {
         for(PotionEffect pe: p.getActivePotionEffects()){
             p.removePotionEffect(pe.getType());
         }
+        WorldBorderUtil.resetWorldBorder(p);
         p.setScoreboard(manager.getNewScoreboard());
         p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(p);
@@ -798,8 +811,12 @@ public class Game {
         return teamScores.put(team, score);
     }
 
+    /**
+     * Determines which team to add the player to. This will be the smallest team at the time.
+     * @param player The player to be added.
+     */
     @SuppressWarnings("deprecation")
-    public void addToTeam(Player player){
+    public CCTeam addToTeam(Player player){
         CCTeam teamToSet = null;
 
         for(CCTeam team: teams.keySet()){
@@ -814,6 +831,7 @@ public class Game {
         }
 
         teams.get(teamToSet).addPlayer(player);
+        return teamToSet;
     }
 
     @SuppressWarnings("deprecation")
@@ -1069,6 +1087,10 @@ public class Game {
         decreaseScore(teamDecrease, amount);
     }
 
+    public HashMap<CCTeam, Location> getTeamSpawns(){
+        return teamSpawns;
+    }
+
     public List<Powerup> getPowerups() {
         return powerups;
     }
@@ -1204,7 +1226,7 @@ public class Game {
      */
     public void updateBorder(){
         if(border){
-            if(status == Status.LOBBY) {
+            if(status == Status.LOBBY || status == Status.STARTING) {
                 for (Player player : activePlayers)
                     WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
                 for (Player player : spectators)

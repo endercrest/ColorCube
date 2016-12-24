@@ -44,6 +44,16 @@ public class PlayerRespawnListener implements Listener {
                     }
                 }, 1);
                 }
+        }else if(GameManager.getInstance().isPlayerSpectator(p)){
+            final Game game = GameManager.getInstance().getGame(GameManager.getInstance().getSpectatePlayerId(p));
+            event.setRespawnLocation(game.getTeamSpawns().values().iterator().next());
+            Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    if(game.isBorder())
+                        WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
+                }
+            }, 1);
         }
     }
 }
