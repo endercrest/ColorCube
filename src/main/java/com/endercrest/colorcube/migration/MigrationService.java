@@ -25,8 +25,13 @@ public class MigrationService {
         this.plugin = plugin;
     }
 
+    /**
+     * This will run all the migration services, from start to finish.
+     * @return Returns the status of the migration, returns true if all successfully
+     * executed or have previously been executed. Returns false if one of the migration fails.
+     */
     public boolean runMigration(){
-        return migrate20161213() && migrate20161215() && migrate20161223();
+        return migrate20161213() && migrate20161215() && migrate20161223() && migrate20161224();
     }
 
     /**
@@ -439,6 +444,64 @@ public class MigrationService {
                     }
                 }else{
                     MessageManager.getInstance().debugConsole("Migration 23/12/2016: This migration has already been completed.");
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Run the migration of 2016 December 24th.
+     *
+     * This migration adds one new option to the arenas, "border-spectator-only".
+     *
+     * @return The result of the migration and whether it was Successful or Unsuccessful. True is also
+     * returned if it has already been completed.
+     */
+    private boolean migrate20161224(){
+        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+
+        if(arenaFolder.exists() && arenaFolder.isDirectory()) {
+            if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
+                File arenaGlobalFile = new File(arenaFolder, "global.yml");
+                YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+
+                if(globalConfig.getInt("version") == 2) {
+                    globalConfig.set("version", 3);
+                    try {
+                        globalConfig.save(arenaGlobalFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+
+                    MessageManager.getInstance().debugConsole("Migration 24/12/2016: Migrating options data.");
+
+                    for (File file : arenaFolder.listFiles()) {
+                        if (file.isFile()) {
+                            if (file.getName().equalsIgnoreCase("global.yml")) {
+                                continue;
+                            }
+                            MessageManager.getInstance().debugConsole("Migration 24/12/2016: Adding new option to %s.", file.getName());
+
+                            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+                            if(!config.isSet("options.border-spectator-only")){
+                                config.set("options.border-spectator-only", true);
+                            }
+
+                            config.set("version", 3);
+                            try {
+                                config.save(file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+                }else{
+                    MessageManager.getInstance().debugConsole("Migration 24/12/2016: This migration has already been completed.");
                     return true;
                 }
             }

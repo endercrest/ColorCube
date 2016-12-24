@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.*;
-import sun.security.krb5.Config;
 
 import java.util.*;
 
@@ -87,6 +86,7 @@ public class Game {
     private String name;
     private boolean border;
     private double borderExtension;
+    private boolean borderSpectatorOnly;
 
     private List<Player> voted = new ArrayList<>();
 
@@ -166,6 +166,7 @@ public class Game {
         name = arenaConfig.getString("options.name", "Arena " + id);
         border = arenaConfig.getBoolean("options.border", true);
         borderExtension = arenaConfig.getDouble("options.border-extension", 10);
+        borderSpectatorOnly = arenaConfig.getBoolean("options.border-spectator-only", true);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -299,7 +300,7 @@ public class Game {
                 PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {
-                    if(border)
+                    if(border && !borderSpectatorOnly)
                         WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2 + borderExtension);
 
                     p.setGameMode(GameMode.SURVIVAL);
@@ -458,7 +459,7 @@ public class Game {
             Team team = getTeam(ccTeam);
             for(OfflinePlayer offlinePlayer: team.getPlayers()){
                 Player player = offlinePlayer.getPlayer();
-                if(border)
+                if(border && !borderSpectatorOnly)
                     WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2+borderExtension);
                 if(!player.isDead()) {
                     player.teleport(getSpawn(ccTeam));
@@ -1224,19 +1225,40 @@ public class Game {
         updateBorder();
     }
 
+    public boolean isBorderSpectatorOnly(){
+        return borderSpectatorOnly;
+    }
+
+    public void setBorderSpectatorOnly(boolean borderSpectatorOnly){
+        this.borderSpectatorOnly = borderSpectatorOnly;
+
+        SettingsManager.getInstance().getArenaConfig(id).set("options.border-spectator-only", border);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        updateBorder();
+    }
+
+
     /**
      * Updates the border for each player in the arena.
      */
     public void updateBorder(){
         if(border){
             if(status == Status.LOBBY || status == Status.STARTING) {
-                for (Player player : activePlayers)
-                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                if(!borderSpectatorOnly)
+                    for (Player player : activePlayers)
+                        WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                else
+                    for(Player player: activePlayers)
+                        WorldBorderUtil.resetWorldBorder(player);
                 for (Player player : spectators)
                     WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
             }else{
-                for (Player player : activePlayers)
-                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                if(!borderSpectatorOnly)
+                    for (Player player : activePlayers)
+                        WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                else
+                    for(Player player: activePlayers)
+                        WorldBorderUtil.resetWorldBorder(player);
                 for (Player player : spectators)
                     WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
             }

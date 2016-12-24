@@ -30,7 +30,7 @@ public class PlayerRespawnListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        if(game.isBorder())
+                        if(game.isBorder() && !game.isBorderSpectatorOnly())
                             WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
                     }
                 }, 1);
@@ -39,7 +39,7 @@ public class PlayerRespawnListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        if(game.isBorder())
+                        if(game.isBorder() && !game.isBorderSpectatorOnly())
                             WorldBorderUtil.setWorldBorder(p, game.getLobby().getCentre(), game.getLobby().getRadius()*2+game.getBorderExtension());
                     }
                 }, 1);
