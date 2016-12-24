@@ -6,6 +6,7 @@ import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
+import com.endercrest.colorcube.utils.WorldBorderUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -84,6 +85,8 @@ public class Game {
     private double reward;
     private int perTeam;
     private String name;
+    private boolean border;
+    private double borderExtension;
 
     private List<Player> voted = new ArrayList<>();
 
@@ -159,6 +162,8 @@ public class Game {
         reward = arenaConfig.getDouble("options.reward", 0.0);
         perTeam = arenaConfig.getInt("options.perteam", 1);
         name = arenaConfig.getString("options.name", "Arena " + id);
+        border = arenaConfig.getBoolean("options.border", true);
+        borderExtension = arenaConfig.getDouble("options.border-extension", 10);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -200,7 +205,7 @@ public class Game {
             teamScores.put(ccTeam, 0);
         }
 
-        Location teamSpawn = new Location(getArena().getPos1().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
+        Location teamSpawn = new Location(getArena().getMax().getWorld(), spawnsSection.getDouble(team+".x"), spawnsSection.getDouble(team+".y"),
                 spawnsSection.getDouble(team+".z"), (float) spawnsSection.getDouble(team+".yaw"),
                 (float) spawnsSection.getDouble(team+".pitch"));
         teamSpawns.put(ccTeam, teamSpawn);
@@ -290,6 +295,9 @@ public class Game {
                 PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {
+                    if(border)
+                        WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2 + borderExtension);
+
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setFallDistance(0);
                     p.teleport(lobby.getSpawn());
@@ -444,8 +452,10 @@ public class Game {
     private void setupPlayers(){
         for(CCTeam ccTeam: teamSpawns.keySet()){
             Team team = getTeam(ccTeam);
-            for(OfflinePlayer p: team.getPlayers()){
-                Player player = p.getPlayer();
+            for(OfflinePlayer offlinePlayer: team.getPlayers()){
+                Player player = offlinePlayer.getPlayer();
+                if(border)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2+borderExtension);
                 if(!player.isDead()) {
                     player.teleport(getSpawn(ccTeam));
                     clearInv(player);
@@ -545,6 +555,7 @@ public class Game {
         PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, b);
         Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
 
+        WorldBorderUtil.resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         Collection<PotionEffect> effects = player.getActivePotionEffects();
@@ -728,6 +739,8 @@ public class Game {
 
         if(status == Status.INGAME){
             msg.sendFMessage("game.join", p, "arena-" + id);
+            if(border)
+                WorldBorderUtil.setWorldBorder(p, arena.getCentre(), arena.getRadius()*2+borderExtension);
             //TODO Spectate API
             p.setGameMode(GameMode.CREATIVE);
             p.teleport(teamSpawns.values().iterator().next());
@@ -760,6 +773,7 @@ public class Game {
     ///////////////////////////////////
     @SuppressWarnings("deprecation")
     public boolean removeSpectator(Player player, boolean logout){
+        WorldBorderUtil.resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());
@@ -904,10 +918,10 @@ public class Game {
                 boolean finish = true;
                 int attempt = 1;
                 while(finish) {
-                    x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
-                    y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
-                    z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
-                    Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
+                    x = random.nextInt((arena.getMax().getBlockX() - arena.getMin().getBlockX()) + 1) + arena.getMin().getBlockX() + 0.5;
+                    y = random.nextInt((arena.getMax().getBlockY() - arena.getMin().getBlockY()) + 1) + arena.getMin().getBlockY();
+                    z = random.nextInt((arena.getMax().getBlockZ() - arena.getMin().getBlockZ()) + 1) + arena.getMin().getBlockZ() + 0.5;
+                    Location loc = new Location(arena.getMax().getWorld(), x, y, z);
                     Location loc2 = loc.clone();
                     loc2.subtract(0, 1, 0);
                     if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
@@ -1120,7 +1134,7 @@ public class Game {
         return pvp;
     }
 
-    public void setPvp(Boolean pvp){
+    public void setPvp(boolean pvp){
         this.pvp = pvp;
         SettingsManager.getInstance().getArenaConfig(id).set("options.pvp", pvp);
         SettingsManager.getInstance().saveArenaConfig(id);
@@ -1130,7 +1144,7 @@ public class Game {
         return reward;
     }
 
-    public void setReward(Double reward) {
+    public void setReward(double reward) {
         this.reward = reward;
         SettingsManager.getInstance().getArenaConfig(id).set("options.reward", reward);
         SettingsManager.getInstance().saveArenaConfig(id);
@@ -1140,7 +1154,7 @@ public class Game {
         return perTeam;
     }
 
-    public void setPerTeam(Integer perTeam){
+    public void setPerTeam(int perTeam){
         this.perTeam = perTeam;
         updateGameItems();
         SettingsManager.getInstance().getArenaConfig(id).set("options.perteam", perTeam);
@@ -1156,6 +1170,53 @@ public class Game {
         updateGameItems();
         SettingsManager.getInstance().getArenaConfig(id).set("options.name", name);
         SettingsManager.getInstance().saveArenaConfig(id);
+    }
+
+    public boolean isBorder(){
+        return border;
+    }
+
+    public void setBorder(boolean border){
+        this.border = border;
+        SettingsManager.getInstance().getArenaConfig(id).set("options.border", border);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        updateBorder();
+    }
+
+    public double getBorderExtension(){
+        return borderExtension;
+    }
+
+    public void setBorderExtension(double borderExtension){
+        this.borderExtension = borderExtension;
+
+        SettingsManager.getInstance().getArenaConfig(id).set("options.border-extension", border);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        updateBorder();
+    }
+
+    /**
+     * Updates the border for each player in the arena.
+     */
+    public void updateBorder(){
+        if(border){
+            if(status == Status.LOBBY) {
+                for (Player player : activePlayers)
+                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                for (Player player : spectators)
+                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+            }else{
+                for (Player player : activePlayers)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                for (Player player : spectators)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+            }
+        }else{
+            for(Player player: activePlayers)
+                WorldBorderUtil.resetWorldBorder(player);
+            for(Player player: spectators)
+                WorldBorderUtil.resetWorldBorder(player);
+        }
     }
 
     public ArrayList <Player> getAllPlayers() {

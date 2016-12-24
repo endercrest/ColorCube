@@ -94,7 +94,7 @@ public class ColorCube extends JavaPlugin {
             MenuManager.getInstance().setup();
 
             pm.registerEvents(new PlayerMoveListener(p), p);
-            pm.registerEvents(new PlayerRespawnListener(), p);
+            pm.registerEvents(new PlayerRespawnListener(p), p);
             pm.registerEvents(new PlayerBreakListener(), p);
             pm.registerEvents(new ExplosionListener(), p);
             pm.registerEvents(new PlayerPlaceListener(), p);

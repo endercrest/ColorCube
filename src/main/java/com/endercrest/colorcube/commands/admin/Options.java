@@ -5,7 +5,6 @@ import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.commands.SubCommand;
 import com.endercrest.colorcube.game.Game;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -68,11 +67,11 @@ public class Options implements SubCommand {
                         Type type = method.getParameterTypes()[0];
                         if (type == String.class) {
                             method.invoke(game, s);
-                        } else if (type == Integer.class) {
+                        } else if (type == int.class) {
                             method.invoke(game, Integer.parseInt(s));
-                        } else if (type == Double.class) {
+                        } else if (type == double.class) {
                             method.invoke(game, Double.parseDouble(s));
-                        }else if(type == Boolean.class){
+                        }else if(type == boolean.class){
                             method.invoke(game, Boolean.parseBoolean(s));
                         }else{
                             method.invoke(game, s);
@@ -94,10 +93,12 @@ public class Options implements SubCommand {
     private HashMap<String, Method> setupMethods(Game game){
         HashMap<String, Method> methods = new HashMap<>();
         try {
-            methods.put("perteam", game.getClass().getMethod("setPerTeam", Integer.class));
-            methods.put("reward", game.getClass().getMethod("setReward", Double.class));
-            methods.put("pvp", game.getClass().getMethod("setPvp", Boolean.class));
+            methods.put("perteam", game.getClass().getMethod("setPerTeam", int.class));
+            methods.put("reward", game.getClass().getMethod("setReward", double.class));
+            methods.put("pvp", game.getClass().getMethod("setPvp", boolean.class));
             methods.put("name", game.getClass().getMethod("setName", String.class));
+            methods.put("border", game.getClass().getMethod("setBorder", boolean.class));
+            methods.put("border-extension", game.getClass().getMethod("setBorderExtension", double.class));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
