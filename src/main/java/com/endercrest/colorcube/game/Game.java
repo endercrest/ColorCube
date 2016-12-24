@@ -743,11 +743,14 @@ public class Game {
             MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
             return false;
         }
-        if (GameManager.getInstance().getSpectatePlayerId(p) != -1) {
-            if (GameManager.getInstance().isPlayerActive(p)) {
-                MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
-                return false;
-            }
+        if (GameManager.getInstance().isPlayerSpectator(p) || GameManager.getInstance().isPlayerActive(p)) {
+            MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
+            return false;
+        }
+
+        if(spectators.contains(p)){
+            MessageManager.getInstance().sendFMessage("error.alreadyhave", p, "input-joined");
+            return false;
         }
 
         if(p.isInsideVehicle()){
