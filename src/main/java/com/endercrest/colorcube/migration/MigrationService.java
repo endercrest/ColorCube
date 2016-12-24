@@ -2,6 +2,7 @@ package com.endercrest.colorcube.migration;
 
 import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.MessageManager;
+import com.sk89q.worldedit.util.YAMLConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,6 +13,9 @@ import java.util.Set;
 
 /**
  * Created by Thomas Cordua-von Specht on 12/12/2016.
+ *
+ * This is the migration service that will update all the configuration files with each designated update.
+ * Each migration will typically increase a version number of a set of configurations.
  */
 public class MigrationService {
 
@@ -22,7 +26,7 @@ public class MigrationService {
     }
 
     public boolean runMigration(){
-        return migrate20161213() && migrate20161215();
+        return migrate20161213() && migrate20161215() && migrate20161223();
     }
 
     /**
@@ -286,6 +290,19 @@ public class MigrationService {
 
         if(arenaFolder.exists() && arenaFolder.isDirectory()) {
             if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
+            YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+
+            if(globalConfig.getInt("version") == 0) {
+                globalConfig.set("version", 1);
+                try {
+                    globalConfig.save(arenaGlobalFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+
+                MessageManager.getInstance().debugConsole("Migration 15/12/2016: Migrating spawn data.");
+
                 for (File file : arenaFolder.listFiles()) {
                     if (file.isFile()) {
                         if (file.getName().equalsIgnoreCase("global.yml")) {
@@ -356,9 +373,71 @@ public class MigrationService {
                     }
                 }
 
+                }
+            }else{
+                MessageManager.getInstance().debugConsole("Migration 15/12/2016: This migration has already been completed.");
+                return true;
             }
         }
 
+        return true;
+    }
+
+    /**
+     *
+     * @return The result of the migration and whether it was Successful or Unsuccessful. True is also
+     * returned if it has already been completed.
+     */
+    private boolean migrate20161223(){
+        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+
+        if(arenaFolder.exists() && arenaFolder.isDirectory()) {
+            if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
+                File arenaGlobalFile = new File(arenaFolder, "global.yml");
+                YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+
+                if(globalConfig.getInt("version") == 1) {
+                    globalConfig.set("version", 2);
+                    try {
+                        globalConfig.save(arenaGlobalFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+
+                    MessageManager.getInstance().debugConsole("Migration 23/12/2016: Migrating options data.");
+
+                    for (File file : arenaFolder.listFiles()) {
+                        if (file.isFile()) {
+                            if (file.getName().equalsIgnoreCase("global.yml")) {
+                                continue;
+                            }
+                            MessageManager.getInstance().debugConsole("Migration 23/12/2016: Adding new options to %s.", file.getName());
+
+                            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+                            if(!config.isSet("options.border")){
+                                config.set("options.border", true);
+                            }
+                            if(!config.isSet("options.border-extension")){
+                                config.set("options.border-extension", 10);
+                            }
+
+                            config.set("version", 2);
+                            try {
+                                config.save(file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+                }else{
+                    MessageManager.getInstance().debugConsole("Migration 23/12/2016: This migration has already been completed.");
+                    return true;
+                }
+            }
+        }
         return true;
     }
 }

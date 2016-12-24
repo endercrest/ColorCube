@@ -59,7 +59,7 @@ public class WorldBorderUtil {
             worldBorder.getClass().getMethod("setSize", double.class).invoke(worldBorder, radius);
             worldBorder.getClass().getMethod("setDamageBuffer", double.class).invoke(worldBorder, 0);
             worldBorder.getClass().getMethod("setDamageAmount", double.class).invoke(worldBorder, 0);
-            worldBorder.getClass().getMethod("setWarningDistance", int.class).invoke(worldBorder, 5);
+            worldBorder.getClass().getMethod("setWarningDistance", int.class).invoke(worldBorder, 0);
             worldBorder.getClass().getMethod("setWarningTime", int.class).invoke(worldBorder, 0);
 
             Object[] enums = NMSUtil.getNmsClass("PacketPlayOutWorldBorder$EnumWorldBorderAction").getEnumConstants();

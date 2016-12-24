@@ -85,6 +85,8 @@ public class Game {
     private double reward;
     private int perTeam;
     private String name;
+    private boolean border;
+    private double borderExtension;
 
     private List<Player> voted = new ArrayList<>();
 
@@ -160,6 +162,8 @@ public class Game {
         reward = arenaConfig.getDouble("options.reward", 0.0);
         perTeam = arenaConfig.getInt("options.perteam", 1);
         name = arenaConfig.getString("options.name", "Arena " + id);
+        border = arenaConfig.getBoolean("options.border", true);
+        borderExtension = arenaConfig.getDouble("options.border-extension", 10);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
@@ -291,7 +295,8 @@ public class Game {
                 PlayerJoinArenaEvent joinArena = new PlayerJoinArenaEvent(p, this);
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {
-                    WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2);
+                    if(border)
+                        WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2 + borderExtension);
 
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setFallDistance(0);
@@ -449,7 +454,8 @@ public class Game {
             Team team = getTeam(ccTeam);
             for(OfflinePlayer offlinePlayer: team.getPlayers()){
                 Player player = offlinePlayer.getPlayer();
-                WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2);
+                if(border)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2+borderExtension);
                 if(!player.isDead()) {
                     player.teleport(getSpawn(ccTeam));
                     clearInv(player);
@@ -733,6 +739,8 @@ public class Game {
 
         if(status == Status.INGAME){
             msg.sendFMessage("game.join", p, "arena-" + id);
+            if(border)
+                WorldBorderUtil.setWorldBorder(p, arena.getCentre(), arena.getRadius()*2+borderExtension);
             //TODO Spectate API
             p.setGameMode(GameMode.CREATIVE);
             p.teleport(teamSpawns.values().iterator().next());
@@ -765,6 +773,7 @@ public class Game {
     ///////////////////////////////////
     @SuppressWarnings("deprecation")
     public boolean removeSpectator(Player player, boolean logout){
+        WorldBorderUtil.resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());
@@ -1125,7 +1134,7 @@ public class Game {
         return pvp;
     }
 
-    public void setPvp(Boolean pvp){
+    public void setPvp(boolean pvp){
         this.pvp = pvp;
         SettingsManager.getInstance().getArenaConfig(id).set("options.pvp", pvp);
         SettingsManager.getInstance().saveArenaConfig(id);
@@ -1135,7 +1144,7 @@ public class Game {
         return reward;
     }
 
-    public void setReward(Double reward) {
+    public void setReward(double reward) {
         this.reward = reward;
         SettingsManager.getInstance().getArenaConfig(id).set("options.reward", reward);
         SettingsManager.getInstance().saveArenaConfig(id);
@@ -1145,7 +1154,7 @@ public class Game {
         return perTeam;
     }
 
-    public void setPerTeam(Integer perTeam){
+    public void setPerTeam(int perTeam){
         this.perTeam = perTeam;
         updateGameItems();
         SettingsManager.getInstance().getArenaConfig(id).set("options.perteam", perTeam);
@@ -1161,6 +1170,53 @@ public class Game {
         updateGameItems();
         SettingsManager.getInstance().getArenaConfig(id).set("options.name", name);
         SettingsManager.getInstance().saveArenaConfig(id);
+    }
+
+    public boolean isBorder(){
+        return border;
+    }
+
+    public void setBorder(boolean border){
+        this.border = border;
+        SettingsManager.getInstance().getArenaConfig(id).set("options.border", border);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        updateBorder();
+    }
+
+    public double getBorderExtension(){
+        return borderExtension;
+    }
+
+    public void setBorderExtension(double borderExtension){
+        this.borderExtension = borderExtension;
+
+        SettingsManager.getInstance().getArenaConfig(id).set("options.border-extension", border);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        updateBorder();
+    }
+
+    /**
+     * Updates the border for each player in the arena.
+     */
+    public void updateBorder(){
+        if(border){
+            if(status == Status.LOBBY) {
+                for (Player player : activePlayers)
+                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                for (Player player : spectators)
+                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+            }else{
+                for (Player player : activePlayers)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                for (Player player : spectators)
+                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+            }
+        }else{
+            for(Player player: activePlayers)
+                WorldBorderUtil.resetWorldBorder(player);
+            for(Player player: spectators)
+                WorldBorderUtil.resetWorldBorder(player);
+        }
     }
 
     public ArrayList <Player> getAllPlayers() {

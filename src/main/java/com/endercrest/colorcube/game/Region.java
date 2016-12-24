@@ -56,7 +56,7 @@ public class Region {
         double yRadius = (max.getBlockY() - min.getBlockY())/2;
         double zRadius = (max.getBlockZ() - min.getBlockZ())/2;
 
-        return new Location(min.getWorld(), min.getBlockX() + xRadius, min.getBlockY() + yRadius, min.getBlockZ() + zRadius);
+        return new Location(min.getWorld(), min.getBlockX() + xRadius + 0.5, min.getBlockY() + yRadius, min.getBlockZ() + zRadius + 0.5);
     }
 
     /**

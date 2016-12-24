@@ -30,13 +30,20 @@ public class PlayerRespawnListener implements Listener {
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
-                        WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2);
+                        if(game.isBorder())
+                            WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
                     }
                 }, 1);
             }else if(game.getStatus() == Game.Status.LOBBY || game.getStatus() == Game.Status.STARTING){
                 event.setRespawnLocation(game.getLobbySpawn());
-                WorldBorderUtil.setWorldBorder(p, game.getLobby().getCentre(), game.getLobby().getRadius()*2);
-            }
+                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                    @Override
+                    public void run() {
+                        if(game.isBorder())
+                            WorldBorderUtil.setWorldBorder(p, game.getLobby().getCentre(), game.getLobby().getRadius()*2+game.getBorderExtension());
+                    }
+                }, 1);
+                }
         }
     }
 }
