@@ -6,7 +6,7 @@
 
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
-    <version>0.6.1</version>
+    <version>0.7.0</version>
     <developers>
         <developer>
             <id>endercrest</id>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.11-R0.1-SNAPSHOT</version>
+            <version>1.11.2-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
@@ -70,11 +70,4 @@
             </resource>
         </resources>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Temporary Staging Repository</name>
-            <url>file://${project.build.directory}/mvn-repo</url>
-        </repository>
-    </distributionManagement>
 </project>

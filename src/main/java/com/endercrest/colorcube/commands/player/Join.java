@@ -9,12 +9,28 @@ import org.bukkit.entity.Player;
 public class Join implements SubCommand {
     @Override
     public boolean onCommand(Player p, String[] args) {
-        if (args.length == 1) {
+        if (args.length >= 1) {
             try {
                  int id = Integer.parseInt(args[0]);
-                 GameManager.getInstance().addPlayer(p, id);
+                 if(GameManager.getInstance().getGame(id) != null)
+                    GameManager.getInstance().addPlayer(p, id);
+                 else{
+                     String name = "";
+                     for(int i = 0; i < args.length; i++){
+                         if(i != 0)
+                             name += " ";
+                         name += args[i];
+                     }
+                     GameManager.getInstance().addPlayer(p, name);
+                 }
             }catch(NumberFormatException e){
-                MessageManager.getInstance().sendFMessage("error.notanumber", p, "input-" + args[0]);
+                String name = "";
+                for(int i = 0; i < args.length; i++){
+                    if(i != 0)
+                        name += " ";
+                    name += args[i];
+                }
+                GameManager.getInstance().addPlayer(p, name);
             }
         } else {
             MessageManager.getInstance().sendFMessage("error.notspecified", p, "input-Arena");
@@ -24,7 +40,7 @@ public class Join implements SubCommand {
 
     @Override
     public String helpInfo() {
-        return "/cc join <id> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.join");
+        return "/cc join <id/name> - " + SettingsManager.getInstance().getMessagesConfig().getString("messages.help.join");
     }
 
     @Override

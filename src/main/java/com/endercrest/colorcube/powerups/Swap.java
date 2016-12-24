@@ -25,16 +25,17 @@ public class Swap implements SubPowerup {
             boolean finish = false;
             int attempt = 0;
             while(!finish) {
-                x = random.nextInt((arena.getPos1().getBlockX() - arena.getPos2().getBlockX()) + 1) + arena.getPos2().getBlockX() + 0.5;
-                y = random.nextInt((arena.getPos1().getBlockY() - arena.getPos2().getBlockY()) + 1) + arena.getPos2().getBlockY();
-                z = random.nextInt((arena.getPos1().getBlockZ() - arena.getPos2().getBlockZ()) + 1) + arena.getPos2().getBlockZ() + 0.5;
-                Location loc = new Location(arena.getPos1().getWorld(), x, y, z);
-                Location loc2 = new Location(arena.getPos1().getWorld(), x, y, z).subtract(0,1,0);
+                x = random.nextInt((arena.getMax().getBlockX() - arena.getMin().getBlockX()) + 1) + arena.getMin().getBlockX() + 0.5;
+                y = random.nextInt((arena.getMax().getBlockY() - arena.getMin().getBlockY()) + 1) + arena.getMin().getBlockY();
+                z = random.nextInt((arena.getMax().getBlockZ() - arena.getMin().getBlockZ()) + 1) + arena.getMin().getBlockZ() + 0.5;
+                Location loc = new Location(arena.getMax().getWorld(), x, y, z);
+                Location loc2 = new Location(arena.getMax().getWorld(), x, y, z).subtract(0,1,0);
                 if(SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks").contains(loc2.getBlock().getType().toString())){
                     if(loc.getBlock().getType() == Material.AIR) {
                         if (loc2.getBlock().getData() != (byte) 15) {
-                            if (loc2.getBlock().getData() != g.getTeamBlockByte(g.getTeamID(p))) {
-                                g.changeBlock(loc2, g.getTeamID(p));
+                            Game.CCTeam team = g.getCCTeam(p);
+                            if (loc2.getBlock().getData() != team.getBlockData()) {
+                                g.changeBlock(loc2, team);
                                 finish = true;
                             }
                         }

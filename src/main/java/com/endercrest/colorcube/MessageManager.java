@@ -24,6 +24,14 @@ public class MessageManager {
     }
 
     /**
+     * Sets the prefix after the loading of everything.
+     * @param prefix The prefix that will be attached to all messages.
+     */
+    protected void setPrefix(String prefix){
+        this.prefix = prefix;
+    }
+
+    /**
      * Colorize the string using MineCraft coloring.
      * @param str The string to have codes changed
      * @return Colorized string
@@ -134,5 +142,9 @@ public class MessageManager {
         if(plugin.getConfig().getBoolean("debug", false)) {
             log("[Debug]"+msg);
         }
+    }
+
+    public void debugConsole(String msg, Object... args){
+        debugConsole(String.format(msg, args));
     }
 }

@@ -34,8 +34,10 @@ permissions:
             cc.arena.delete: true
             cc.arena.disable: true
             cc.arena.setspawn: true
-            cc.arena.resetspawns: true
+            cc.arena.removespawn: true
+            cc.arena.options: true
             cc.arena.vote: true
+            cc.arena.goto: true
     cc.lobby.*:
         description: Grants you the all admin lobby commands
         default: false
@@ -60,17 +62,23 @@ permissions:
     cc.arena.setspawn:
         description: Grants you the arena setspawn command
         default: op
+    cc.arena.removespawn:
+        description: Grants you the arena removespawn command
+        default: op
+    cc.arena.options:
+        description: Grants you the arena options command
+        default: op
     cc.arena.join:
         description: Grants you the arena join command
         default: op
     cc.arena.spectate:
         description: Grants you the specate command
         default: op
-    cc.arena.resetspawns:
-        description: Gives you the arena reset spawn command
-        default: op
     cc.arena.vote:
         description: Gives you the arena void command
+        default: op
+    cc.arena.goto:
+        description: Gives you the arena goto command
         default: op
     cc.lobby.create:
         description: Grants you the lobby create command

@@ -40,14 +40,14 @@ public class GameItem extends PageItem {
     @Override
     public ItemStack getItemStack() {
         ItemStack itemStack = new ItemStack(Material.EMPTY_MAP);
-        itemStack.setAmount(game.getSpawnCount()-game.getActivePlayers().size());
+        itemStack.setAmount(game.getOpenSlots());
         if(itemStack.getAmount() == 0){
             itemStack.setType(Material.MAP);
         }
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.game.title", "arena-"+game.getId()));
+        itemMeta.setDisplayName(MessageManager.getInstance().getFValue("menu.item.game.title", "arena-"+game.getId(), "name-"+game.getName()));
         List<String> lore = new ArrayList<>();
-        lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.players", "activeplayers-"+game.getActivePlayers().size(), "maxplayers-"+game.getSpawnCount()));
+        lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.players", "activeplayers-"+game.getActivePlayers().size(), "maxplayers-"+game.getTotalSlots()));
         lore.add("");
         lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.status", "status-"+game.getStatus().toString()));
         switch (game.getStatus()){

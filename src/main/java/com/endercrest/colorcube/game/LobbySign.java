@@ -68,12 +68,13 @@ public class LobbySign {
     }
 
     public String[] getVars(){
-        String[] vars = new String[5];
+        String[] vars = new String[6];
         vars[0] = "players-" + game.getActivePlayers().size();
-        vars[1] = "maxplayers-" + game.getSpawnCount();
-        vars[2] = "arenaname-Arena " + game.getId();
+        vars[1] = "maxplayers-" + game.getTotalSlots();
+        vars[2] = "arenaname-" + game.getName().substring(0, Math.min(game.getName().length(), 10));
         vars[3] = "status-" + game.getStatus().toString();
         vars[4] = "spectators-" + game.getSpectators().size();
+        vars[5] = "id-"+game.getId();
         return vars;
     }
 

@@ -1,67 +1,42 @@
 package com.endercrest.colorcube.game;
 
-import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.SettingsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-public class Lobby {
-
-    private Location pos1; //Max
-    private Location pos2; //Min
+public class Lobby extends Region {
 
     private Location spawn;
 
-    public Lobby(Location pos1, Location pos2){
-        this.pos1 = pos1;
-        this.pos2 = pos2;
+    public Lobby(Location max, Location min){
+        super(max, min);
     }
 
     /**
-     * Get Pos1(Max)
-     * @return pos1
+     * Load the spawn
+     * @param id
      */
-    public Location getPos1() {
-        return pos1;
-    }
-
-    /**
-     * Get Pos2(Min)
-     * @return pos2
-     */
-    public Location getPos2() {
-        return pos2;
-    }
-
-    public boolean containsBlock(Location pos){
-        if(pos.getWorld() != pos2.getWorld())
-            return false;
-        double x = pos.getX();
-        double y = pos.getY();
-        double z = pos.getZ();
-        return x >= pos2.getBlockX() && x < pos1.getBlockX() + 1 && y >= pos2.getBlockY() && y < pos1.getBlockY() + 1 && z >= pos2.getBlockZ() && z < pos1.getBlockZ() + 1;
-    }
-
     public void loadSpawn(int id){
-        FileConfiguration system = SettingsManager.getInstance().getSystemConfig();
-        spawn = new Location(Bukkit.getWorld(system.getString("lobby." + id + ".world")),
-                system.getInt("lobby." + id + ".x"),
-                system.getInt("lobby." + id + ".y"),
-                system.getInt("lobby." + id + ".z"),
-                system.getInt("lobby." + id + ".yaw"),
-                system.getInt("lobby." + id + ".pitch")).add(0.5, 0, 0.5);
+        YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(id);
+        spawn = new Location(Bukkit.getWorld(config.getString("lobby.spawn.world")),
+                config.getDouble("lobby.spawn.x"),
+                config.getDouble("lobby.spawn.y"),
+                config.getDouble("lobby.spawn.z"),
+                (float) config.getDouble("lobby.spawn.yaw"),
+                (float) config.getDouble("lobby.spawn.pitch"));
     }
 
     public void setSpawn(int id, Location location){
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".world", location.getWorld().getName());
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".x", location.getBlockX());
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".y", location.getBlockY());
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".z", location.getBlockZ());
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".yaw", location.getYaw());
-        SettingsManager.getInstance().getSystemConfig().set("lobby." + id + ".pitch", location.getPitch());
-        SettingsManager.getInstance().saveSystemConfig();
-        spawn = location.add(0.5, 0, 0.5);
+        YamlConfiguration config = SettingsManager.getInstance().getArenaConfig(id);
+        config.set("lobby.spawn.world", location.getWorld().getName());
+        config.set("lobby.spawn.x", location.getX());
+        config.set("lobby.spawn.y", location.getY());
+        config.set("lobby.spawn.z", location.getZ());
+        config.set("lobby.spawn.yaw", location.getYaw());
+        config.set("lobby.spawn.pitch", location.getPitch());
+        SettingsManager.getInstance().saveArenaConfig(id);
+        spawn = location;
     }
 
     public Location getSpawn(){
