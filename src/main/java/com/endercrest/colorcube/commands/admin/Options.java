@@ -100,6 +100,7 @@ public class Options implements SubCommand {
             methods.put("border", game.getClass().getMethod("setBorder", boolean.class));
             methods.put("border-extension", game.getClass().getMethod("setBorderExtension", double.class));
             methods.put("border-spectator-only", game.getClass().getMethod("setBorderSpectatorOnly", boolean.class));
+            methods.put("display-scores", game.getClass().getMethod("setDisplayScores", boolean.class));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

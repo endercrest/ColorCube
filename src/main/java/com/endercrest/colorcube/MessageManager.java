@@ -45,7 +45,7 @@ public class MessageManager {
      * @param obj The obj to be printed.
      */
     public void log(Object obj){
-        if(plugin.getConfig().getBoolean("color-logs", true)){
+        if(plugin != null && plugin.getConfig().getBoolean("color-logs", true)){
             plugin.getServer().getConsoleSender().sendMessage(colorize("&f[&6" + plugin.getName() + "&f] &r" + obj));
         }else{
             Bukkit.getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + (colorize((String) obj)).replaceAll("(?)\u00a7([a-f0-9k-or])", ""));
@@ -133,13 +133,13 @@ public class MessageManager {
     }
 
     public void debug(String msg, Player p){
-        if(plugin.getConfig().getBoolean("debug", false)) {
+        if(plugin != null && plugin.getConfig().getBoolean("debug", false)) {
             sendMessage("[Debug]" +msg, p);
         }
     }
 
     public void debugConsole(String msg){
-        if(plugin.getConfig().getBoolean("debug", false)) {
+        if(plugin != null && plugin.getConfig().getBoolean("debug", false)) {
             log("[Debug]"+msg);
         }
     }
