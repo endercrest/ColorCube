@@ -60,6 +60,10 @@ public class Game {
             return blockData;
         }
 
+        public String getDisplayName(){
+            return color + "" + name().toUpperCase();
+        }
+
     }
 
     private Status status = Status.DISABLED;
@@ -87,6 +91,7 @@ public class Game {
     private boolean border;
     private double borderExtension;
     private boolean borderSpectatorOnly;
+    private boolean displayScores;
 
     private List<Player> voted = new ArrayList<>();
 
@@ -99,6 +104,7 @@ public class Game {
 
     private ScoreboardManager manager;
     private Scoreboard board;
+    private Objective scoreObjective;
 
     private BossBar timeBar;
 
@@ -171,9 +177,16 @@ public class Game {
         border = arenaConfig.getBoolean("options.border", true);
         borderExtension = arenaConfig.getDouble("options.border-extension", 10);
         borderSpectatorOnly = arenaConfig.getBoolean("options.border-spectator-only", true);
+        displayScores = arenaConfig.getBoolean("options.display-scores", true);
 
         manager = Bukkit.getScoreboardManager();
         board = manager.getNewScoreboard();
+        scoreObjective = board.registerNewObjective("scores", "dummy");
+        String objectName = MessageManager.getInstance().getFValue("words.scores");
+        scoreObjective.setDisplayName(objectName.substring(0, Math.min(31, objectName.length())));
+        if(displayScores) {
+            scoreObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        }
 
         //Setup Spawns & Team Information
         teams = new HashMap<>();
@@ -474,6 +487,7 @@ public class Game {
         }else{
             setupPlayers();
         }
+
         status = Status.INGAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
         particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
@@ -695,8 +709,6 @@ public class Game {
         clearSpectatorTeam();
         resetScores();
 
-        board.resetScores("Time");
-
         status = Status.RESETING;
         updateGameItems();
         endgameRunning = false;
@@ -733,6 +745,7 @@ public class Game {
     public void resetScores(){
         for(CCTeam team: teamScores.keySet()){
             teamScores.put(team, 0);
+            board.resetScores(team.getDisplayName());
         }
     }
 
@@ -958,7 +971,11 @@ public class Game {
     public void increaseScore(CCTeam team, int amount){
         for(CCTeam ccTeam: teamScores.keySet()){
             if(ccTeam.equals(team)){
-                setTeamScore(team, getTeamScore(team)+amount);
+                int teamScore = getTeamScore(team)+amount;
+                setTeamScore(team, teamScore);
+                Score score = scoreObjective.getScore(team.getDisplayName());
+                if(teamScore >= 0)
+                    score.setScore(teamScore);
             }
         }
     }
@@ -966,7 +983,12 @@ public class Game {
     public void decreaseScore(CCTeam team, int amount){
         for(CCTeam ccTeam: teamScores.keySet()){
             if(ccTeam.equals(team)){
-                setTeamScore(team, getTeamScore(team)-amount);
+                int teamScore = getTeamScore(team)-amount;
+                if(teamScore >= 0) {
+                    setTeamScore(team, teamScore);
+                    Score score = scoreObjective.getScore(team.getDisplayName());
+                    score.setScore(teamScore);
+                }
             }
         }
     }
@@ -1006,7 +1028,7 @@ public class Game {
             }
 
             if(counter <= 10){
-                msgFArena("game.time", "time-" + counter);
+                msgFArena("game.time", "time-" + (int)counter);
             }
             Random random = new Random();
             //int randomNum = random.nextInt((50 - 1) + 1) + 1;
@@ -1309,6 +1331,21 @@ public class Game {
         SettingsManager.getInstance().getArenaConfig(id).set("options.border-spectator-only", border);
         SettingsManager.getInstance().saveArenaConfig(id);
         updateBorder();
+    }
+
+    public boolean displayScores(){
+        return displayScores;
+    }
+
+    public void setDisplayScores(boolean displayScores){
+        this.displayScores = displayScores;
+
+        SettingsManager.getInstance().getArenaConfig(id).set("options.display-scores", displayScores);
+        SettingsManager.getInstance().saveArenaConfig(id);
+        if(displayScores)
+            scoreObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        else
+            scoreObjective.setDisplaySlot(null);
     }
 
 

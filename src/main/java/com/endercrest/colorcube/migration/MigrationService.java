@@ -31,7 +31,7 @@ public class MigrationService {
      * executed or have previously been executed. Returns false if one of the migration fails.
      */
     public boolean runMigration(){
-        return migrate20161213() && migrate20161215() && migrate20161223() && migrate20161224();
+        return migrate20161213() && migrate20161215() && migrate20161223() && migrate20161224() && migrate20161231();
     }
 
     /**
@@ -502,6 +502,64 @@ public class MigrationService {
                     }
                 }else{
                     MessageManager.getInstance().debugConsole("Migration 24/12/2016: This migration has already been completed.");
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Run the migration of 2016 December 31th.
+     *
+     * This migration adds one new option to the arenas, "display-scores".
+     *
+     * @return The result of the migration and whether it was Successful or Unsuccessful. True is also
+     * returned if it has already been completed.
+     */
+    private boolean migrate20161231(){
+        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+
+        if(arenaFolder.exists() && arenaFolder.isDirectory()) {
+            if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
+                File arenaGlobalFile = new File(arenaFolder, "global.yml");
+                YamlConfiguration globalConfig = YamlConfiguration.loadConfiguration(arenaGlobalFile);
+
+                if(globalConfig.getInt("version") == 3) {
+                    globalConfig.set("version", 4);
+                    try {
+                        globalConfig.save(arenaGlobalFile);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+
+                    MessageManager.getInstance().debugConsole("Migration 31/12/2016: Migrating options data.");
+
+                    for (File file : arenaFolder.listFiles()) {
+                        if (file.isFile()) {
+                            if (file.getName().equalsIgnoreCase("global.yml")) {
+                                continue;
+                            }
+                            MessageManager.getInstance().debugConsole("Migration 31/12/2016: Adding new option to %s.", file.getName());
+
+                            YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+                            if(!config.isSet("options.display-scores")){
+                                config.set("options.display-scores", true);
+                            }
+
+                            config.set("version", 4);
+                            try {
+                                config.save(file);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return false;
+                            }
+                        }
+                    }
+                }else{
+                    MessageManager.getInstance().debugConsole("Migration 31/12/2016: This migration has already been completed.");
                     return true;
                 }
             }
