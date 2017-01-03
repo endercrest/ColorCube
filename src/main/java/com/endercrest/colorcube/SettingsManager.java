@@ -23,7 +23,7 @@ public class SettingsManager {
     private FileConfiguration messages;
 
     private static final int MESSAGE_VERSION = 1;
-    private static final int ARENA_VERSION = 2;
+    private static final int ARENA_VERSION = 4;
     private static final int SIGN_VERSION = 0;
 
     private File messageFile;
@@ -102,9 +102,13 @@ public class SettingsManager {
                         continue;
                     }
                     YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-                    int id = config.getInt("id");
-                    arenaFiles.put(id, file);
-                    arenaConfigs.put(id, config);
+                    if(config.isSet("id")) {
+                        int id = config.getInt("id");
+                        arenaFiles.put(id, file);
+                        arenaConfigs.put(id, config);
+                    }else{
+                        MessageManager.getInstance().log("&cMissing Arena Id. Skipping " + file.getName());
+                    }
                 }
             }
         }
@@ -233,6 +237,7 @@ public class SettingsManager {
         arenaFiles.put(id, file);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 
+        config.set("id", id);
         config.set("spawns", null);
         config.set("lobby", null);
         config.set("loc.world", pos1.getWorld().getName());
@@ -242,10 +247,16 @@ public class SettingsManager {
         config.set("loc.pos2.x", pos2.getX());
         config.set("loc.pos2.y", pos2.getY());
         config.set("loc.pos2.z", pos2.getZ());
-        config.set("options.pvp", false);
         config.set("enabled", true);
+        config.set("options.name", "Arena " + id);
+        config.set("options.pvp", false);
         config.set("options.reward", 0.0);
-
+        config.set("options.perteam", 2);
+        config.set("options.border", true);
+        config.set("options.border-extension", 10);
+        config.set("options.display-scores", true);
+        config.set("version", ARENA_VERSION);
+        //TODO All new options need to be added here and update config version!.
 
         arenaConfigs.put(id, config);
 
@@ -573,6 +584,7 @@ public class SettingsManager {
 
     public void incrementNextArenaId(){
         getArenaGlobalConfig().set("nextId", getNextArenaID() + 1);
+        saveArenaGlobalConfig();
     }
 
     public int getNextSignID(){
@@ -581,6 +593,7 @@ public class SettingsManager {
 
     public void incrementNextSignId(){
         getSignGlobalConfig().set("nextId", getNextSignID() + 1);
+        saveSignGlobalConfig();
     }
 
     public FileConfiguration getPluginConfig(){

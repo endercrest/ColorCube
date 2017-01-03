@@ -481,7 +481,7 @@ public class Game {
             return;
         }
         if(activePlayers.size() <= 0){
-            msgArena("error.noenoughplayers");
+            msgFArena("error.noenoughplayers");
             status = Status.LOBBY;
             return;
         }else{
@@ -612,11 +612,11 @@ public class Game {
                     if (count > 0) {
                         if (count % 10 == 0) {
                             msgFArena("game.countdown", "t-"+count);
-                            subTitleFArena("game.countdown", "t-"+count);
+                            subTitleFArena("game.countdown", 0, 160, 0, "t-"+count);
                         }
                         if (count < 6) {
                             msgFArena("game.countdown", "t-"+count);
-                            titleArena("&6" + count);
+                            titleArena("&6" + count, 0, 20, 0);
                         }
                         count--;
                     } else {
@@ -1423,39 +1423,84 @@ public class Game {
         p.updateInventory();
     }
 
-    public void msgFArena(String string, String...args){
+    /**
+     * Send messages to all players of the arena.
+     * @param path The path in the messages.yml file.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     */
+    public void msgFArena(String path, String...args){
         for(Player p: getAllPlayers()){
-            msg.sendFMessage(string, p, args);
+            msg.sendFMessage(path, p, args);
         }
     }
 
-    public void msgArena(String string){
+    /**
+     * Send a message to all players in the arena.
+     * @param msg The message to be sent.
+     */
+    public void msgArena(String msg){
         for(Player p: getAllPlayers()){
-            msg.sendMessage(string, p);
+            this.msg.sendMessage(msg, p);
         }
     }
 
-    public void titleFArena(String string, String...args){
+    /**
+     * Send a title message to all players from a message in messages.yml.
+     * @param path The path in messages.yml.
+     * @param fadeIn The time to fade in.
+     * @param stay The time to stay.
+     * @param fadeOut The time to fade out.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     */
+    public void titleFArena(String path, int fadeIn, int stay, int fadeOut, String...args){
         for(Player p: getAllPlayers()){
-            msg.sendFTitle(string, p, args);
+            this.msg.sendFTitle(path, p, fadeIn, stay, fadeOut, args);
         }
     }
 
-    public void titleArena(String string){
+    /**
+     * Send a title message to all players in the arena.
+     * @param msg The message to be sent to the players.
+     * @param fadeIn The time to fade in.
+     * @param stay The time to stay.
+     * @param fadeOut The time to fade out.
+     */
+    public void titleArena(String msg, int fadeIn, int stay, int fadeOut){
         for(Player p: getAllPlayers()){
-            msg.sendTitle(string, p);
+            this.msg.sendTitle(msg, p, fadeIn, stay, fadeOut);
         }
     }
 
-    public void subTitleFArena(String string, String...args){
+    /**
+     * Send a subtitle to all players in the arena. This retrieves the path from messages.yml.
+     * @param path The path in messages.yml.
+     * @param fadeIn The time to fade in.
+     * @param stay The time to stay.
+     * @param fadeOut The time to fade out.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     */
+    public void subTitleFArena(String path, int fadeIn, int stay, int fadeOut, String...args){
         for(Player p: getAllPlayers()){
-            msg.sendFSubTitle(string, p, args);
+            msg.sendFSubTitle(path, p, fadeIn, stay, fadeOut, args);
         }
     }
 
-    public void subTitleArena(String string){
+    /**
+     * Send a subtitle to all players in the arena.
+     * @param msg The message to be send.
+     * @param fadeIn The time to fade in.
+     * @param stay The time to stay.
+     * @param fadeOut The time to fade out.
+     */
+    public void subTitleArena(String msg, int fadeIn, int stay, int fadeOut){
         for(Player p: getAllPlayers()){
-            msg.sendSubTitle(string, p);
+            this.msg.sendSubTitle(msg, p, fadeIn, stay, fadeOut);
         }
     }
 
