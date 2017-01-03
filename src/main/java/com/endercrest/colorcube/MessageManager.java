@@ -6,6 +6,12 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
+/**
+ * Created by Thomas Cordua-von Specht on 12/18/2016.
+ *
+ * This class is the handler for sending any messages that might be needed to be sent to players. This includes chat messages,
+ * titles, and subtitles as well as debugging. This class also handles retrieving messages from the messages.yml file.
+ */
 public class MessageManager {
 
     public static MessageManager instance = new MessageManager();
@@ -61,16 +67,52 @@ public class MessageManager {
         p.sendMessage(colorize(prefix + " " + msg));
     }
 
+    /**
+     * Send a title message to the player.
+     * @param msg The message to be sent.
+     * @param player The player that is receiving the message.
+     */
     public void sendTitle(String msg, Player player){
-        msg = MessageManager.getInstance().colorize(msg);
-
-        player.sendTitle(msg, "");
+        sendTitle(msg, player, 10, 70, 20);
     }
 
-    public void sendSubTitle(String msg, Player player){
+    /**
+     * Send a title message to the player.
+     * @param msg The message to be sent
+     * @param player The player that is receiving the message.
+     * @param fadeIn The fade in time.
+     * @param stay The display time.
+     * @param fadeOut The fade out time.
+     */
+    public void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut){
         msg = MessageManager.getInstance().colorize(msg);
 
-        player.sendTitle("", msg);
+
+        player.sendTitle(msg, "", fadeIn, stay, fadeOut);
+    }
+
+    /**
+     * Send a subtitle message to the player.
+     * @param msg The message to be sent.
+     * @param player The player that is receiving the message.
+     */
+    public void sendSubTitle(String msg, Player player){
+        sendSubTitle(msg, player, 10, 70, 20);
+    }
+
+    /**
+     * Send a subtitle message to the player.
+     * @param msg The message to be sent.
+     * @param player The player that is receiving the message.
+     * @param fadeIn The fade in time.
+     * @param stay The display time.
+     * @param fadeOut The fade out time.
+     */
+    public void sendSubTitle(String msg, Player player, int fadeIn, int stay, int fadeOut){
+        msg = MessageManager.getInstance().colorize(msg);
+
+
+        player.sendTitle("", msg, fadeIn, stay, fadeOut);
     }
 
     /**
@@ -82,8 +124,11 @@ public class MessageManager {
     }
 
     /**
-     * Broadcast a server wide message with a pre-loaded message
-     * @param path
+     * Broadcast a server wide message with a pre-loaded message.
+     * @param path The path of the message in messages.yml.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
      */
     public void broadcastFMessage(String path, String ...args){
         String msg = prefix + " " + SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error] Could not load message! Please contact a Administrator");
@@ -96,9 +141,12 @@ public class MessageManager {
     }
 
     /**
-     * Send a message to a player
-     * @param path The path of the message
-     * @param p The player
+     * Send a message to a player from the messages.yml, if missing error message is sent..
+     * @param path The path of the message in messages.yml.
+     * @param p The player to recieve the message.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
      */
     public void sendFMessage(String path, Player p, String ...args){
         String msg = prefix + " " + SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error] Could not load message! Please contact a Administrator");
@@ -107,24 +155,75 @@ public class MessageManager {
         p.sendMessage(colorize(msg));
     }
 
+    /**
+     * Send a title message to a player by retrieving the message from the message config.
+     * @param path The path to the message in the messages.yml.
+     * @param player The player to be receiving the message.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     */
     public void sendFTitle(String path, Player player, String ...args){
+        sendFTitle(path, player, 10, 70, 20, args);
+    }
+
+    /**
+     * Send a title message to a player by retrieving the message from the message config.
+     * @param path The path to the message in the messages.yml.
+     * @param player The player to be receiving the message.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     * @param fadeIn The fade in time.
+     * @param stay The display time.
+     * @param fadeOut The fade out time.
+     */
+    public void sendFTitle(String path, Player player, int fadeIn, int stay, int fadeOut, String ...args){
         String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
         if(args != null && args.length != 0)
             msg = MessageUtil.replaceVars(msg, args);
-        msg = MessageManager.getInstance().colorize(msg);
-
-        player.sendTitle(msg, "");
+        sendTitle(msg, player, 10, 70, 20);
     }
 
+    /**
+     * Send a subtitle message to a player by retrieving the message from the message config.
+     * @param path The path to the message in the messages.yml.
+     * @param player The player to be receiving the message.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     */
     public void sendFSubTitle(String path, Player player, String ...args){
+        sendFSubTitle(path, player, 10, 70, 20, args);
+    }
+
+    /**
+     * Send a subtitle message to a player by retrieving the message from the message config.
+     * @param path The path to the message in the messages.yml.
+     * @param player The player to be receiving the message.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     * @param fadeIn The fade in time.
+     * @param stay The display time.
+     * @param fadeOut The fade out time.
+     */
+    public void sendFSubTitle(String path, Player player, int fadeIn, int stay, int fadeOut, String ...args){
         String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
         if(args != null && args.length != 0)
             msg = MessageUtil.replaceVars(msg, args);
-        msg = MessageManager.getInstance().colorize(msg);
 
-        player.sendTitle("", msg);
+        sendSubTitle(msg, player, fadeIn, stay, fadeOut);
     }
 
+    /**
+     * Get the message value from messages.yml.
+     * @param path The path to the message in the messages.yml.
+     * @param args The arguments to be replaced in the message from the messages.yml. Each argument must follow the format of
+     *             [id]-[value] where the id is the id of the variable in the message and the value is the new value to replace
+     *             id.
+     * @return The message with all arguments replaced in it.
+     */
     public String getFValue(String path, String ...args){
         String msg = SettingsManager.getInstance().getMessagesConfig().getString("messages." + path, "&c[Error]");
         if(args != null && args.length != 0)
@@ -132,18 +231,32 @@ public class MessageManager {
         return MessageManager.getInstance().colorize(msg);
     }
 
+    /**
+     * Send a debug message to the player if debug is set to true in the configuration file.
+     * @param msg The message to be sent to the player.
+     * @param p The player to be receiving the message.
+     */
     public void debug(String msg, Player p){
         if(plugin != null && plugin.getConfig().getBoolean("debug", false)) {
             sendMessage("[Debug]" +msg, p);
         }
     }
 
+    /**
+     * Send a debug message to the console if debug is set to true in the configuration file.
+     * @param msg The message to be sent to the player.
+     */
     public void debugConsole(String msg){
         if(plugin != null && plugin.getConfig().getBoolean("debug", false)) {
             log("[Debug]"+msg);
         }
     }
 
+    /**
+     * Send a debug message to the console if debug is set to true in the configuration file.
+     * @param msg The message with '%s' in them to be replaced by the args.
+     * @param args The arguments to replace any %s in them.
+     */
     public void debugConsole(String msg, Object... args){
         debugConsole(String.format(msg, args));
     }
