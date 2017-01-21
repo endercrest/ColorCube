@@ -1,6 +1,6 @@
 ![VoidSpawn](https://www.spigotmc.org/attachments/colorcube-png.192932/)
 
-ColorCube [![Build Status](https://drone.io/github.com/endercrest/ColorCube/status.png)](https://drone.io/github.com/endercrest/ColorCube/latest)
+ColorCube [![CircleCI](https://circleci.com/gh/endercrest/ColorCube.svg?style=svg)](https://circleci.com/gh/endercrest/ColorCube)
 =========
 ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](http://www.minecraftforum.net/forums/mapping-and-modding/maps/2112617-14w25b-color-cube-a-painting-minigame-by). The plugin was built to create a fully automated mini-game experience.
 
