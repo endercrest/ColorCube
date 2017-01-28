@@ -330,6 +330,10 @@ public class Game {
             MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
             return false;
         }
+        if(teams.size() <= 1){
+            MessageManager.getInstance().sendFMessage("error.notenoughteams", p);
+            return false;
+        }
         if (GameManager.getInstance().getActivePlayerGameID(p) != -1) {
             if (GameManager.getInstance().isPlayerActive(p)) {
                 MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
