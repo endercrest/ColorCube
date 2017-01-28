@@ -19,10 +19,10 @@ import java.util.Set;
  */
 public class MigrationService {
 
-    private ColorCube plugin;
+    private File pluginFolder;
 
-    public MigrationService(ColorCube plugin){
-        this.plugin = plugin;
+    public MigrationService(File folder){
+        this.pluginFolder = folder;
     }
 
     /**
@@ -46,7 +46,7 @@ public class MigrationService {
      * if it has already been completed.
      */
     private boolean migrate20161213(){
-        File file = new File(plugin.getDataFolder(), "system.yml");
+        File file = new File(pluginFolder, "system.yml");
         if(!file.exists()){
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: This migration has already been completed.");
             return true;
@@ -55,7 +55,7 @@ public class MigrationService {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         MessageManager.getInstance().debugConsole("Migration 13/12/2016: Migrating arena data.");
 
-        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        File arenaFolder = new File(pluginFolder, "Arena");
         if(arenaFolder.mkdirs())
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Creating arena folder.");
 
@@ -186,7 +186,7 @@ public class MigrationService {
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Skipping global arena file, it already exists.");
         }
 
-        File signFolder = new File(plugin.getDataFolder(), "Sign");
+        File signFolder = new File(pluginFolder, "Sign");
         if(signFolder.mkdirs())
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Creating sign folder.");
 
@@ -272,7 +272,7 @@ public class MigrationService {
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Skipping global arena file, it already exists.");
         }
 
-        if(file.renameTo(new File(plugin.getDataFolder(), "system_archive.yml")))
+        if(file.renameTo(new File(pluginFolder, "system_archive.yml")))
             MessageManager.getInstance().debugConsole("Migration 13/12/2016: Renamed system.yml to system_archive.yml.");
 
         MessageManager.getInstance().log("Migration 13/12/2016: Migration Completed.");
@@ -291,7 +291,7 @@ public class MigrationService {
      * returned if it has already been completed.
      */
     private boolean migrate20161215(){
-        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        File arenaFolder = new File(pluginFolder, "Arena");
 
         if(arenaFolder.exists() && arenaFolder.isDirectory()) {
             if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
@@ -399,7 +399,7 @@ public class MigrationService {
      * returned if it has already been completed.
      */
     private boolean migrate20161223(){
-        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        File arenaFolder = new File(pluginFolder, "Arena");
 
         if(arenaFolder.exists() && arenaFolder.isDirectory()) {
             if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
@@ -460,7 +460,7 @@ public class MigrationService {
      * returned if it has already been completed.
      */
     private boolean migrate20161224(){
-        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        File arenaFolder = new File(pluginFolder, "Arena");
 
         if(arenaFolder.exists() && arenaFolder.isDirectory()) {
             if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {
@@ -518,7 +518,7 @@ public class MigrationService {
      * returned if it has already been completed.
      */
     private boolean migrate20161231(){
-        File arenaFolder = new File(plugin.getDataFolder(), "Arena");
+        File arenaFolder = new File(pluginFolder, "Arena");
 
         if(arenaFolder.exists() && arenaFolder.isDirectory()) {
             if (arenaFolder.listFiles() != null && arenaFolder.listFiles().length > 0) {

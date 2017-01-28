@@ -22,9 +22,9 @@ public class SettingsManager {
     private ColorCube plugin = null;
     private FileConfiguration messages;
 
-    private static final int MESSAGE_VERSION = 1;
-    private static final int ARENA_VERSION = 4;
-    private static final int SIGN_VERSION = 0;
+    public static final int MESSAGE_VERSION = 1;
+    public static final int ARENA_VERSION = 4;
+    public static final int SIGN_VERSION = 0;
 
     private File messageFile;
 

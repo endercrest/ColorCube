@@ -1,6 +1,5 @@
-package com.endercrest.colorcube;
+package com.endercrest.colorcube.utils;
 
-import com.endercrest.colorcube.utils.MessageUtil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Before;
@@ -9,18 +8,20 @@ import org.junit.Test;
 import java.io.File;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
-public class MessageTest {
+/**
+ * Created by Thomas Cordua-von Specht on 1/27/2017.
+ */
+public class MessageUtilTest {
 
-    File file;
-    FileConfiguration messageConfig;
+    private FileConfiguration messageConfig;
 
     @Before
     public void setupFile() throws Exception {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        file = new File(classLoader.getResource("messages.yml").toURI());
+        File file = new File(classLoader.getResource("messages.yml").toURI());
         messageConfig = YamlConfiguration.loadConfiguration(file);
     }
 
@@ -30,6 +31,4 @@ public class MessageTest {
         String test = MessageUtil.replaceVars(messageConfig.getString("messages.game.countdown", ""), "t-10");
         assertThat(test, is(expected));
     }
-
-
 }

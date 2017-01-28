@@ -77,7 +77,7 @@ public class ColorCube extends JavaPlugin {
             PluginManager pm = Bukkit.getPluginManager();
             MessageManager.getInstance().setup(p);
 
-            boolean migrationResult = new MigrationService(p).runMigration();
+            boolean migrationResult = new MigrationService(p.getDataFolder()).runMigration();
 
             if(!migrationResult){
                 SettingsManager.getInstance().setup(p);

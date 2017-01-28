@@ -54,7 +54,8 @@ public class MessageManager {
         if(plugin != null && plugin.getConfig().getBoolean("color-logs", true)){
             plugin.getServer().getConsoleSender().sendMessage(colorize("&f[&6" + plugin.getName() + "&f] &r" + obj));
         }else{
-            Bukkit.getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + (colorize((String) obj)).replaceAll("(?)\u00a7([a-f0-9k-or])", ""));
+            if(Bukkit.getServer() != null)
+                Bukkit.getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + (colorize((String) obj)).replaceAll("(?)\u00a7([a-f0-9k-or])", ""));
         }
     }
 
