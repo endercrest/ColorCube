@@ -36,6 +36,7 @@ messages:
         joinmutliple: '&6You cant join multiple games!'
         nospawns: '&6No spawns set for Arena {$arena}'
         join: '&6Joining {$arena}'
+        votejoin: '&6You may vote to start the game using &f"&6/cc vote&f"'
         status: 'Arena {$state}'
         playerjoingame: '&6{$player} joined the game! {$activeplayers}/{$maxplayers}'
         countdown: '&6Game starting in {$t}'

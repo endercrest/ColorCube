@@ -372,6 +372,7 @@ public class Game {
                     addToTeam(p);
                     timeBar.addPlayer(p);
                     msgFArena("game.team", "team-" + getTeamNameLocalized(p), "player-" + p.getDisplayName());
+                    msg.sendFMessage("game.votejoin", p);
                     if (getTotalSlots() == activePlayers.size()) {
                         countdown(5);
                     }
