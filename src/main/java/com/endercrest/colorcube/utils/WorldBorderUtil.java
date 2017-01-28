@@ -41,7 +41,6 @@ public class WorldBorderUtil {
         } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
