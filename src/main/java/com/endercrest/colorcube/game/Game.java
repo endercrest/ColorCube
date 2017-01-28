@@ -39,15 +39,15 @@ public class Game {
     }
 
     public enum CCTeam{
-        RED(ChatColor.RED, 14),
-        BLUE(ChatColor.BLUE, 11),
-        GREEN(ChatColor.GREEN, 5),
-        YELLOW(ChatColor.YELLOW, 4);
+        RED(ChatColor.RED, (byte)14),
+        BLUE(ChatColor.BLUE, (byte)11),
+        GREEN(ChatColor.GREEN, (byte)5),
+        YELLOW(ChatColor.YELLOW, (byte)4);
 
-        private ChatColor color;
-        private int blockData;
+        private final ChatColor color;
+        private final byte blockData;
 
-        CCTeam(ChatColor color, int blockData){
+        CCTeam(ChatColor color, byte blockData){
             this.color = color;
             this.blockData = blockData;
         }
@@ -56,7 +56,7 @@ public class Game {
             return color;
         }
 
-        public int getBlockData(){
+        public byte getBlockData(){
             return blockData;
         }
 
@@ -330,6 +330,10 @@ public class Game {
             MessageManager.getInstance().sendFMessage("error.nomainlobby", p);
             return false;
         }
+        if(teams.size() <= 1){
+            MessageManager.getInstance().sendFMessage("error.notenoughteams", p);
+            return false;
+        }
         if (GameManager.getInstance().getActivePlayerGameID(p) != -1) {
             if (GameManager.getInstance().isPlayerActive(p)) {
                 MessageManager.getInstance().sendFMessage("game.joinmutliple", p);
@@ -372,6 +376,7 @@ public class Game {
                     addToTeam(p);
                     timeBar.addPlayer(p);
                     msgFArena("game.team", "team-" + getTeamNameLocalized(p), "player-" + p.getDisplayName());
+                    msg.sendFMessage("game.votejoin", p);
                     if (getTotalSlots() == activePlayers.size()) {
                         countdown(5);
                     }
@@ -1151,7 +1156,7 @@ public class Game {
                     case 14:
                         scoreManagement(team, CCTeam.RED, 1);
                         break;
-                    case 3:
+                    case 11:
                         scoreManagement(team, CCTeam.BLUE, 1);
                         break;
                     case 5:
@@ -1165,6 +1170,8 @@ public class Game {
                         break;
                 }
             }
+        }else{
+            scoreManagement(team, null, 1);
         }
         LoggingManager.getInstance().logBlockDestroyed(loc.getBlock());
         loc.getBlock().setType(Material.STAINED_CLAY);
