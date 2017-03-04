@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.junit.Assert.*;
@@ -32,7 +33,8 @@ public class MigrationServiceTest {
 
         pluginFolder.mkdirs();
         try {
-            File oldConfig = new File(classLoader.getResource("system.yml").toURI());
+            URI uri = classLoader.getResource("system.yml").toURI();
+            File oldConfig = new File(uri);
             File newConfig = new File(pluginFolder, "system.yml");
             oldConfig.renameTo(newConfig);
         } catch (URISyntaxException e) {
