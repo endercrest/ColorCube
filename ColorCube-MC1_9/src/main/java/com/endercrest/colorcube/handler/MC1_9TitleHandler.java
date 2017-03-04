@@ -1,4 +1,4 @@
-package com.endercrest.colorcube.utils.versions.v1_10_R1;
+package com.endercrest.colorcube.handler;
 
 import com.endercrest.colorcube.utils.NMSUtil;
 import org.bukkit.ChatColor;
@@ -7,25 +7,10 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * Created by Thomas Cordua-von Specht on 1/27/2017.
- *
- * Utility to use the title protocol.
- */
-public class TitleUtil {
-
-    /**
-     * Sends a title to the player.
-     * @param msg The message to be displayed. (Supports ColorCodes)
-     * @param player The player it is being sent to.
-     * @param fadeIn The fadeIn time in ticks (20 ticks per second)
-     * @param stay The stay time in ticks (20 ticks per second)
-     * @param fadeOut The fadeOut time in ticks (20 ticks per second)
-     */
-    public static void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut, boolean reset){
+public class MC1_9TitleHandler implements TitleHandler {
+    @Override
+    public void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut) {
         try {
-            if(reset)
-                resetTitle(player);
             sendTiming(player, fadeIn, stay, fadeOut);
 
             Class<?> chatBaseComponent = NMSUtil.getNmsClass("IChatBaseComponent");
@@ -44,30 +29,13 @@ public class TitleUtil {
         }
     }
 
-    /**
-     * Send the timing to the client. This should be called before sending the display text so that it can
-     * be rendered correctly.
-     * @param player The player to have the timing set.
-     * @param fadeIn The fadeIn time in ticks (20 ticks per second)
-     * @param stay The stay time in ticks (20 ticks per second)
-     * @param fadeOut The fadeOut time in ticks (20 ticks per second)
-     */
-    private static void sendTiming(Player player, int fadeIn, int stay, int fadeOut){
-        try {
-            Constructor packetTitleConstructor = NMSUtil.getNmsClass("PacketPlayOutTitle").getConstructor(int.class, int.class, int.class);
-
-            Object packet = packetTitleConstructor.newInstance(fadeIn, stay, fadeOut);
-            NMSUtil.sendPacket(player, packet);
-        }catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchFieldException e){
-            e.printStackTrace();
-        }
+    @Override
+    public void sendTitle(String msg, Player player) {
+        sendTitle(msg, player, 10, 70, 20);
     }
 
-    /**
-     * Reset the timing which should clear the message and any preset timings.
-     * @param player The player the title should be reset for.
-     */
-    public static void resetTitle(Player player){
+    @Override
+    public void resetTitle(Player player) {
         try {
             Class<?> chatBaseComponent = NMSUtil.getNmsClass("IChatBaseComponent");
             Object[] enums = NMSUtil.getNmsClass("PacketPlayOutTitle$EnumTitleAction").getEnumConstants();
@@ -81,11 +49,8 @@ public class TitleUtil {
         }
     }
 
-    /**
-     * Clears the title from the player.
-     * @param player The player.
-     */
-    public static void clearTitle(Player player){
+    @Override
+    public void clearTitle(Player player) {
         try {
             Class<?> chatBaseComponenet = NMSUtil.getNmsClass("IChatBaseComponent");
             Object[] enums = NMSUtil.getNmsClass("PacketPlayOutTitle$EnumTitleAction").getEnumConstants();
@@ -99,18 +64,9 @@ public class TitleUtil {
         }
     }
 
-    /**
-     * Sends a subtitle to the player.
-     * @param msg The message to be displayed. (Supports ColorCodes)
-     * @param player The player it is being sent to.
-     * @param fadeIn The fadeIn time in ticks (20 ticks per second)
-     * @param stay The stay time in ticks (20 ticks per second)
-     * @param fadeOut The fadeOut time in ticks (20 ticks per second)
-     */
-    public static void sendSubtitle(String msg, Player player, int fadeIn, int stay, int fadeOut, boolean reset){
+    @Override
+    public void sendSubtitle(String msg, Player player, int fadeIn, int stay, int fadeOut) {
         try {
-            if(reset)
-                resetTitle(player);
             sendTiming(player, fadeIn, stay, fadeOut);
 
             Class<?> chatBaseComponent = NMSUtil.getNmsClass("IChatBaseComponent");
@@ -129,18 +85,14 @@ public class TitleUtil {
         }
     }
 
-    /**
-     * Sends a action bar to the player.
-     * @param msg The message to be displayed. (Supports ColorCodes)
-     * @param player The player it is being sent to.
-     * @param fadeIn The fadeIn time in ticks (20 ticks per second)
-     * @param stay The stay time in ticks (20 ticks per second)
-     * @param fadeOut The fadeOut time in ticks (20 ticks per second)
-     */
-    public static void sendActionbar(String msg, Player player, int fadeIn, int stay, int fadeOut, boolean reset){
+    @Override
+    public void sendSubtitle(String msg, Player player) {
+        sendSubtitle(msg, player, 10, 70, 20);
+    }
+
+    @Override
+    public void sendActionbar(String msg, Player player, int fadeIn, int stay, int fadeOut) {
         try {
-            if(reset)
-                resetTitle(player);
             sendTiming(player, fadeIn, stay, fadeOut);
 
             Class<?> chatBaseComponent = NMSUtil.getNmsClass("IChatBaseComponent");
@@ -155,6 +107,22 @@ public class TitleUtil {
             Object packet = packetTitleConstructor.newInstance(enums[2], serializedTitle);
             NMSUtil.sendPacket(player, packet);
         } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendActionbar(String msg, Player player) {
+        sendActionbar(msg, player, 10, 70, 20);
+    }
+
+    private static void sendTiming(Player player, int fadeIn, int stay, int fadeOut){
+        try {
+            Constructor packetTitleConstructor = NMSUtil.getNmsClass("PacketPlayOutTitle").getConstructor(int.class, int.class, int.class);
+
+            Object packet = packetTitleConstructor.newInstance(fadeIn, stay, fadeOut);
+            NMSUtil.sendPacket(player, packet);
+        }catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchFieldException e){
             e.printStackTrace();
         }
     }

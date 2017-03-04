@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.handler;
 
+import com.endercrest.colorcube.MessageManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -22,5 +23,18 @@ public interface WorldBorderHandler {
      * @param origin The new origin in which the world border will take.
      * @param radius The new radius of the world border.
      */
-    void setWorldBorder(Player player, Location origin, int radius);
+    void setWorldBorder(Player player, Location origin, double radius);
+
+    class NullWorldBorderHandler implements WorldBorderHandler{
+
+        @Override
+        public void resetWorldBorder(Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void setWorldBorder(Player player, Location origin, double radius) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+    }
 }

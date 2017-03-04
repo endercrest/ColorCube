@@ -11,6 +11,8 @@
             <includes>
                 <include>com.endercrest.colorcube:ColorCube-Core</include>
                 <include>com.endercrest.colorcube:ColorCube-MC1_11</include>
+                <include>com.endercrest.colorcube:ColorCube-MC1_10</include>
+                <include>com.endercrest.colorcube:ColorCube-MC1_9</include>
             </includes>
             <unpack>true</unpack>
         </dependencySet>

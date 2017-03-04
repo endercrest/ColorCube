@@ -35,7 +35,7 @@ public class MC1_11WorldBorderHandler implements WorldBorderHandler {
         }
     }
 
-    public void setWorldBorder(Player player, Location origin, int radius) {
+    public void setWorldBorder(Player player, Location origin, double radius) {
         try {
             Constructor packetWorldBorderConstructor = NMSUtil.getNmsClass("PacketPlayOutWorldBorder").getConstructor(NMSUtil.getNmsClass("WorldBorder"), NMSUtil.getNmsClass("PacketPlayOutWorldBorder$EnumWorldBorderAction"));
 

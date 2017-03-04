@@ -1,7 +1,7 @@
 package com.endercrest.colorcube;
 
+import com.endercrest.colorcube.handler.HandlerManager;
 import com.endercrest.colorcube.utils.MessageUtil;
-import com.endercrest.colorcube.utils.TitleUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -89,7 +89,7 @@ public class MessageManager {
     public void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut){
         msg = MessageManager.getInstance().colorize(msg);
 
-        TitleUtil.sendTitle(msg, player, fadeIn, stay, fadeOut);
+        HandlerManager.getInstance().getTitleHandler().sendTitle(msg, player, fadeIn, stay, fadeOut);
     }
 
     /**
@@ -113,7 +113,7 @@ public class MessageManager {
         msg = MessageManager.getInstance().colorize(msg);
 
 
-        TitleUtil.sendSubtitle(msg, player, fadeIn, stay, fadeOut);
+        HandlerManager.getInstance().getTitleHandler().sendSubtitle(msg, player, fadeIn, stay, fadeOut);
     }
 
     /**

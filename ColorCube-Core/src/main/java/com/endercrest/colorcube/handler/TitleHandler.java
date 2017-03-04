@@ -1,5 +1,6 @@
 package com.endercrest.colorcube.handler;
 
+import com.endercrest.colorcube.MessageManager;
 import org.bukkit.entity.Player;
 
 /**
@@ -73,4 +74,48 @@ public interface TitleHandler {
      */
     void sendActionbar(String msg, Player player);
 
+
+    class NullTitleHandler implements TitleHandler{
+
+        @Override
+        public void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+
+        }
+
+        @Override
+        public void sendTitle(String msg, Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void resetTitle(Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void clearTitle(Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void sendSubtitle(String msg, Player player, int fadeIn, int stay, int fadeOut) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void sendSubtitle(String msg, Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void sendActionbar(String msg, Player player, int fadeIn, int stay, int fadeOut) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+
+        @Override
+        public void sendActionbar(String msg, Player player) {
+            MessageManager.getInstance().debugConsole("&cWarning: &rHandler not correctly initiated.");
+        }
+    }
 }

@@ -4,9 +4,9 @@ import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
+import com.endercrest.colorcube.handler.HandlerManager;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
-import com.endercrest.colorcube.utils.WorldBorderUtil;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -354,7 +354,7 @@ public class Game {
                 Bukkit.getServer().getPluginManager().callEvent(joinArena);
                 if(!joinArena.isCancelled()) {
                     if(border && !borderSpectatorOnly)
-                        WorldBorderUtil.setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2 + borderExtension);
+                        HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, lobby.getCentre(), lobby.getRadius()*2 + borderExtension);
 
                     p.setGameMode(GameMode.SURVIVAL);
                     p.setFallDistance(0);
@@ -531,7 +531,7 @@ public class Game {
             for(OfflinePlayer offlinePlayer: team.getPlayers()){
                 Player player = offlinePlayer.getPlayer();
                 if(border && !borderSpectatorOnly)
-                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius()*2+borderExtension);
+                    HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(player, arena.getCentre(), arena.getRadius()*2+borderExtension);
                 if(!player.isDead()) {
                     player.teleport(getSpawn(ccTeam));
                     clearInv(player);
@@ -649,7 +649,7 @@ public class Game {
         PlayerLeaveArenaEvent playerLeaveArenaEvent = new PlayerLeaveArenaEvent(player, this, logout);
         Bukkit.getPluginManager().callEvent(playerLeaveArenaEvent);
 
-        WorldBorderUtil.resetWorldBorder(player);
+        HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         Collection<PotionEffect> effects = player.getActivePotionEffects();
@@ -800,7 +800,7 @@ public class Game {
         for(PotionEffect pe: p.getActivePotionEffects()){
             p.removePotionEffect(pe.getType());
         }
-        WorldBorderUtil.resetWorldBorder(p);
+        HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(p);
         p.setScoreboard(manager.getNewScoreboard());
         p.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(p);
@@ -853,7 +853,7 @@ public class Game {
         if(status == Status.INGAME){
             msg.sendFMessage("game.join", p, "arena-" + id);
             if(border)
-                WorldBorderUtil.setWorldBorder(p, arena.getCentre(), arena.getRadius()*2+borderExtension);
+                HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, arena.getCentre(), arena.getRadius()*2+borderExtension);
             //TODO Spectate API
             p.setGameMode(GameMode.CREATIVE);
             p.teleport(teamSpawns.values().iterator().next());
@@ -886,7 +886,7 @@ public class Game {
     ///////////////////////////////////
     @SuppressWarnings("deprecation")
     public boolean removeSpectator(Player player, boolean logout){
-        WorldBorderUtil.resetWorldBorder(player);
+        HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
         player.teleport(SettingsManager.getInstance().getGlobalLobbySpawn());
         restoreInv(player);
         player.setScoreboard(manager.getNewScoreboard());
@@ -1364,27 +1364,27 @@ public class Game {
             if(status == Status.LOBBY || status == Status.STARTING) {
                 if(!borderSpectatorOnly)
                     for (Player player : activePlayers)
-                        WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                        HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
                 else
                     for(Player player: activePlayers)
-                        WorldBorderUtil.resetWorldBorder(player);
+                        HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
                 for (Player player : spectators)
-                    WorldBorderUtil.setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
+                    HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(player, lobby.getCentre(), lobby.getRadius() * 2 + borderExtension);
             }else{
                 if(!borderSpectatorOnly)
                     for (Player player : activePlayers)
-                        WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                        HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
                 else
                     for(Player player: activePlayers)
-                        WorldBorderUtil.resetWorldBorder(player);
+                        HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
                 for (Player player : spectators)
-                    WorldBorderUtil.setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
+                    HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(player, arena.getCentre(), arena.getRadius() * 2 + borderExtension);
             }
         }else{
             for(Player player: activePlayers)
-                WorldBorderUtil.resetWorldBorder(player);
+                HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
             for(Player player: spectators)
-                WorldBorderUtil.resetWorldBorder(player);
+                HandlerManager.getInstance().getWorldBorderHandler().resetWorldBorder(player);
         }
     }
 

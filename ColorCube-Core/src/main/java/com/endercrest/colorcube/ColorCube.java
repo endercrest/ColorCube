@@ -2,6 +2,7 @@ package com.endercrest.colorcube;
 
 import com.endercrest.colorcube.events.*;
 import com.endercrest.colorcube.game.Game;
+import com.endercrest.colorcube.handler.HandlerManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import com.endercrest.colorcube.migration.MigrationService;
 import com.endercrest.colorcube.utils.ColorCubeTabCompleter;
@@ -92,6 +93,7 @@ public class ColorCube extends JavaPlugin {
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
             MenuManager.getInstance().setup();
+            HandlerManager.getInstance().setup();
 
             pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(p), p);

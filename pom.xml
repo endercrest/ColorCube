@@ -7,7 +7,7 @@
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
     <packaging>pom</packaging>
-    <version>0.7.4</version>
+    <version>0.8.0</version>
     <developers>
         <developer>
             <id>endercrest</id>
@@ -19,5 +19,7 @@
         <module>ColorCube-Plugin</module>
         <module>ColorCube-Core</module>
         <module>ColorCube-MC1_11</module>
+        <module>ColorCube-MC1_10</module>
+        <module>ColorCube-MC1_9</module>
     </modules>
 </project>

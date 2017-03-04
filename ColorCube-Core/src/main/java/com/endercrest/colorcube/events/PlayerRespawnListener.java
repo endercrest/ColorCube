@@ -2,9 +2,8 @@ package com.endercrest.colorcube.events;
 
 import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.GameManager;
-import com.endercrest.colorcube.SettingsManager;
 import com.endercrest.colorcube.game.Game;
-import com.endercrest.colorcube.utils.WorldBorderUtil;
+import com.endercrest.colorcube.handler.HandlerManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +30,7 @@ public class PlayerRespawnListener implements Listener {
                     @Override
                     public void run() {
                         if(game.isBorder() && !game.isBorderSpectatorOnly())
-                            WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
+                            HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
                     }
                 }, 1);
             }else if(game.getStatus() == Game.Status.LOBBY || game.getStatus() == Game.Status.STARTING){
@@ -40,7 +39,7 @@ public class PlayerRespawnListener implements Listener {
                     @Override
                     public void run() {
                         if(game.isBorder() && !game.isBorderSpectatorOnly())
-                            WorldBorderUtil.setWorldBorder(p, game.getLobby().getCentre(), game.getLobby().getRadius()*2+game.getBorderExtension());
+                            HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, game.getLobby().getCentre(), game.getLobby().getRadius()*2+game.getBorderExtension());
                     }
                 }, 1);
                 }
@@ -51,7 +50,7 @@ public class PlayerRespawnListener implements Listener {
                 @Override
                 public void run() {
                     if(game.isBorder())
-                        WorldBorderUtil.setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
+                        HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, game.getArena().getCentre(), game.getArena().getRadius()*2+game.getBorderExtension());
                 }
             }, 1);
         }
