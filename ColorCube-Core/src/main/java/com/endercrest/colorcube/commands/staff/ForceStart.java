@@ -35,7 +35,7 @@ public class ForceStart implements SubCommand {
         }
 
         Game g = GameManager.getInstance().getGame(id);
-        if(g.getStatus() == Game.Status.INGAME){
+        if(g.getStatus() == Game.Status.IN_GAME){
             MessageManager.getInstance().sendFMessage("error.alreadyingame", p);
             return true;
         }

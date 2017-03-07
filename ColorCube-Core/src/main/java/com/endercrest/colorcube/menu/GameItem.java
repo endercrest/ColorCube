@@ -2,7 +2,6 @@ package com.endercrest.colorcube.menu;
 
 import com.endercrest.colorcube.MessageManager;
 import com.endercrest.colorcube.game.Game;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +27,7 @@ public class GameItem extends PageItem {
     public void onClick(Player player) {
         player.closeInventory();
         switch (game.getStatus()){
-            case INGAME:
+            case IN_GAME:
                 game.addSpectator(player);
                 break;
             default:
@@ -66,13 +65,13 @@ public class GameItem extends PageItem {
             case STARTING:
                 lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.starting"));
                 break;
-            case INGAME:
+            case IN_GAME:
                 lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.ingame"));
                 break;
             case FINISHING:
                 lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.finishing"));
                 break;
-            case RESETING:
+            case RESETTING:
                 lore.add(MessageManager.getInstance().getFValue("menu.item.game.description.message.resetting"));
                 break;
             case ERROR:

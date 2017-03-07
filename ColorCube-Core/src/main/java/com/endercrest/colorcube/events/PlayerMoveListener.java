@@ -32,7 +32,7 @@ public class PlayerMoveListener implements Listener {
         int id = GameManager.getInstance().getActivePlayerGameID(player);
         if(GameManager.getInstance().getGame(id) != null){
             Game game = GameManager.getInstance().getGame(id);
-            if(game.getStatus() == Game.Status.INGAME) {
+            if(game.getStatus() == Game.Status.IN_GAME) {
                 Game.CCTeam team = game.getCCTeam(player);
                 Location loc = player.getLocation().subtract(0, 1, 0);
                 List<String> paintable = SettingsManager.getInstance().getPluginConfig().getStringList("paintable-blocks");

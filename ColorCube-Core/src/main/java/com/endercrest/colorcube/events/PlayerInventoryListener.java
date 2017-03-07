@@ -2,7 +2,6 @@ package com.endercrest.colorcube.events;
 
 import com.endercrest.colorcube.GameManager;
 import com.endercrest.colorcube.game.Game;
-import com.endercrest.colorcube.menu.GameItem;
 import com.endercrest.colorcube.menu.Page;
 import com.endercrest.colorcube.menu.PageItem;
 import org.bukkit.GameMode;
@@ -20,7 +19,7 @@ public class PlayerInventoryListener implements Listener {
             Player p = (Player)event.getWhoClicked();
             if(GameManager.getInstance().isPlayerActive(p)) {
                 int id = GameManager.getInstance().getActivePlayerGameID(p);
-                if (GameManager.getInstance().getGame(id).getStatus() == Game.Status.INGAME) {
+                if (GameManager.getInstance().getGame(id).getStatus() == Game.Status.IN_GAME) {
                     if (p.getGameMode() != GameMode.CREATIVE) {
                         event.setCancelled(true);
                     }

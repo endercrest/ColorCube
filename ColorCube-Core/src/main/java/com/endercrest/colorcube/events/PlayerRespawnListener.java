@@ -24,7 +24,7 @@ public class PlayerRespawnListener implements Listener {
         final Player p = event.getPlayer();
         if(GameManager.getInstance().isPlayerActive(p)){
             final Game game = GameManager.getInstance().getGame(GameManager.getInstance().getActivePlayerGameID(p));
-            if(game.getStatus() == Game.Status.INGAME){
+            if(game.getStatus() == Game.Status.IN_GAME){
                 event.setRespawnLocation(game.getSpawn(p));
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override

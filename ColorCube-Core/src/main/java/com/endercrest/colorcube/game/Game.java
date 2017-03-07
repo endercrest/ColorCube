@@ -4,14 +4,11 @@ import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
+import com.endercrest.colorcube.handler.BossBar;
 import com.endercrest.colorcube.handler.HandlerManager;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +32,7 @@ public class Game {
 
     public enum Status{
         DISABLED, LOADING, IDLE, LOBBY,
-        STARTING, INGAME, FINISHING, RESETING, ERROR
+        STARTING, IN_GAME, FINISHING, RESETTING, ERROR
     }
 
     public enum CCTeam{
@@ -77,8 +74,7 @@ public class Game {
     private HashMap<Player, ItemStack[][]> inventory_store = new HashMap<>();
     private boolean disabled = false;
     private int endgameTaskID = 0;
-    private boolean endgameRunning = false;
-    private boolean countdownRunning;
+    private boolean countdownRunning = false;
     private int timerTaskID = 0;
     private int particleTaskID = 0;
     private MessageManager msg = MessageManager.getInstance();
@@ -203,7 +199,7 @@ public class Game {
         //Setup Spectators Teams
         spectatorsTeam = board.registerNewTeam("spectatorArena"+id);
 
-        timeBar = Bukkit.createBossBar(ChatColor.GOLD + "Arena " + id, BarColor.WHITE, BarStyle.SOLID);
+        timeBar = HandlerManager.getInstance().createBossBar(ChatColor.GOLD + "Arena " + id, BossBar.BarColor.WHITE, BossBar.BarStyle.SOLID);
 
         status = Status.LOBBY;
 
@@ -365,7 +361,8 @@ public class Game {
                     }
                     saveInv(p);
                     clearInv(p);
-                    p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                    p.setHealth(20);
+                    //p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                     p.setFoodLevel(20);
                     p.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, 1));
                     clearInv(p);
@@ -399,11 +396,11 @@ public class Game {
             updateGameItems();
             return true;
         }
-        if(status == Status.INGAME)
+        if(status == Status.IN_GAME)
             msg.sendFMessage("error.alreadyingame", p);
         else if(status == Status.DISABLED)
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
-        else if(status == Status.RESETING)
+        else if(status == Status.RESETTING)
             msg.sendFMessage("error.gameresetting", p);
         else
             msg.sendFMessage("error.joinfail", p);
@@ -420,7 +417,7 @@ public class Game {
      * @param p The player that has voted.
      */
     public void vote(Player p){
-        if(status == Status.INGAME){
+        if(status == Status.IN_GAME){
             msg.sendFMessage("error.alreadyingame", p);
             return;
         }else if(status != Status.LOBBY){
@@ -482,7 +479,7 @@ public class Game {
      * broadcast the start of the game.
      */
     public void startGame(){
-        if(status == Status.INGAME){
+        if(status == Status.IN_GAME){
             return;
         }
         if(activePlayers.size() <= 0){
@@ -493,7 +490,7 @@ public class Game {
             setupPlayers();
         }
 
-        status = Status.INGAME;
+        status = Status.IN_GAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
         particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
@@ -507,12 +504,12 @@ public class Game {
      * requirement.
      */
     public void forceStartGame(){
-        if(status == Status.INGAME){
+        if(status == Status.IN_GAME){
             return;
         }
 
         setupPlayers();
-        status = Status.INGAME;
+        status = Status.IN_GAME;
         timerTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new GameTimer(), 0, 20);
         particleTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new ParticleTimer(), 0, 5);
         tasks.add(timerTaskID);
@@ -537,7 +534,8 @@ public class Game {
                     clearInv(player);
                 }
                 player.setGameMode(GameMode.SURVIVAL);
-                player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                player.setHealth(20);
+                //player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 msg.sendFMessage("game.goodluck", player);
             }
         }
@@ -714,9 +712,8 @@ public class Game {
         clearSpectatorTeam();
         resetScores();
 
-        status = Status.RESETING;
+        status = Status.RESETTING;
         updateGameItems();
-        endgameRunning = false;
 
         Bukkit.getScheduler().cancelTask(timerTaskID);
         Bukkit.getScheduler().cancelTask(endgameTaskID);
@@ -759,7 +756,7 @@ public class Game {
     ///////////////////////////////////
     @SuppressWarnings("deprecation")
     public void winGame(){
-        if(status == Status.INGAME) {
+        if(status == Status.IN_GAME) {
             Set<OfflinePlayer> players;
             CCTeam winningTeam = getWinningTeam();
             if(winningTeam != null) {
@@ -850,7 +847,7 @@ public class Game {
             p.leaveVehicle();
         }
 
-        if(status == Status.INGAME){
+        if(status == Status.IN_GAME){
             msg.sendFMessage("game.join", p, "arena-" + id);
             if(border)
                 HandlerManager.getInstance().getWorldBorderHandler().setWorldBorder(p, arena.getCentre(), arena.getRadius()*2+borderExtension);
@@ -859,7 +856,8 @@ public class Game {
             p.teleport(teamSpawns.values().iterator().next());
             saveInv(p);
             clearInv(p);
-            p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+            //p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+            p.setHealth(20);
             p.setFoodLevel(20);
             clearInv(p);
             p.setScoreboard(board);
@@ -871,7 +869,7 @@ public class Game {
             return true;
         }else if(status == Status.DISABLED){
             msg.sendFMessage("error.gamedisabled", p, "arena-" + id);
-        }else if(status == Status.RESETING){
+        }else if(status == Status.RESETTING){
             msg.sendFMessage("error.gameresetting", p);
         }else if(status == Status.LOBBY || status == Status.STARTING){
             msg.sendFMessage("error.notingame", p);
@@ -1090,7 +1088,8 @@ public class Game {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
                     for(Player player: getAllPlayers()){
-                        player.spawnParticle(Particle.NOTE, pu.getLocation(), 10, 0.2F, 0.5F, 0.2F, 1);
+                        //TODO Add spawnParticle handler
+                        //player.spawnParticle(Particle.NOTE, pu.getLocation(), 10, 0.2F, 0.5F, 0.2F, 1);
                     }
                 }
             }
@@ -1253,10 +1252,6 @@ public class Game {
 
     public int getEndgameTaskID() {
         return endgameTaskID;
-    }
-
-    public boolean isEndgameRunning() {
-        return endgameRunning;
     }
 
     public boolean isCountdownRunning() {

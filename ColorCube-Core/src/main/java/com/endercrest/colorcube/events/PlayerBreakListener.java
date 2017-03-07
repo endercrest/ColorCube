@@ -21,7 +21,7 @@ public class PlayerBreakListener implements Listener {
         }
 
         if(GameManager.getInstance().getBlockGameId(event.getBlock().getLocation()) != -1){
-            if(GameManager.getInstance().getGame(GameManager.getInstance().getBlockGameId(event.getBlock().getLocation())).getStatus() == Game.Status.INGAME){
+            if(GameManager.getInstance().getGame(GameManager.getInstance().getBlockGameId(event.getBlock().getLocation())).getStatus() == Game.Status.IN_GAME){
                 event.setCancelled(true);
                 MessageManager.getInstance().sendMessage("&cCan't break blocks when the game is in-game", player);
                 return;

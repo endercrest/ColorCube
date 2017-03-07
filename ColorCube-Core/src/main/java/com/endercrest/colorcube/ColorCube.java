@@ -88,12 +88,12 @@ public class ColorCube extends JavaPlugin {
             }
 
             SettingsManager.getInstance().setup(p);
+            HandlerManager.getInstance().setup();
             GameManager.getInstance().setup(p);
             LobbyManager.getInstance().setup(p);
             QueueManager.getInstance().setup(p);
             PowerupManager.getInstance().setup(p);
             MenuManager.getInstance().setup();
-            HandlerManager.getInstance().setup();
 
             pm.registerEvents(new PlayerMoveListener(p), p);
             pm.registerEvents(new PlayerRespawnListener(p), p);
