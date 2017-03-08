@@ -1,3 +1,9 @@
+dependencies:
+  override:
+    - mvn --fail-never dependency:go-offline || true
+compile:
+  override:
+    - mvn install
 test:
   override:
     - mvn -pl ColorCube-Core test
