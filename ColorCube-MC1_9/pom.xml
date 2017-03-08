@@ -36,4 +36,10 @@
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+        </repository>
+    </repositories>
 </project>
