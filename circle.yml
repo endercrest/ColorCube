@@ -10,4 +10,4 @@ test:
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/ColorCube-Core/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-    - mv /ColorCube-Plugin/target/*.jar $CIRCLE_ARTIFACTS/
+    - mv ColorCube-Plugin/target/*.jar $CIRCLE_ARTIFACTS/
