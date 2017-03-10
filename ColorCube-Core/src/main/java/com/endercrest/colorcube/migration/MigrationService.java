@@ -1,8 +1,6 @@
 package com.endercrest.colorcube.migration;
 
-import com.endercrest.colorcube.ColorCube;
 import com.endercrest.colorcube.MessageManager;
-import com.sk89q.worldedit.util.YAMLConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,6 +19,10 @@ public class MigrationService {
 
     private File pluginFolder;
 
+    /**
+     * Inistiate Migration Service to be focused around the plugin folder.
+     * @param folder The plugin folder where all data related to the plugin is stored.
+     */
     public MigrationService(File folder){
         this.pluginFolder = folder;
     }

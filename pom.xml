@@ -22,4 +22,8 @@
         <module>ColorCube-MC1_10</module>
         <module>ColorCube-MC1_9</module>
     </modules>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+    </build>
 </project>

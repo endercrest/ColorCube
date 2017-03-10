@@ -13,34 +13,37 @@ public class HandlerManager {
 
     private TitleHandler titleHandler;
     private WorldBorderHandler worldBorderHandler;
+    private ParticleHandler particleHandler;
 
     private Class<? extends BossBar> bossBarClass;
 
     public void setup(){
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        String titleClass;
-        String worldBorderClass;
-        String bossBarClassPath;
+        String titleClass, worldBorderClass, bossBarClassPath, particleClass;
         if(version.equals("v1_11_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.11 Handlers");
             titleClass = "com.endercrest.colorcube.handler.MC1_11TitleHandler";
             worldBorderClass = "com.endercrest.colorcube.handler.MC1_11WorldBorderHandler";
             bossBarClassPath = "com.endercrest.colorcube.handler.MC1_11BossBar";
+            particleClass = "com.endercrest.colorcube.handler.MC1_11ParticleHandler";
         }else if(version.equals("v1_10_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.10 Handlers");
             titleClass = "com.endercrest.colorcube.handler.MC1_10TitleHandler";
             worldBorderClass = "com.endercrest.colorcube.handler.MC1_10WorldBorderHandler";
             bossBarClassPath = "com.endercrest.colorcube.handler.MC1_10BossBar";
+            particleClass = "com.endercrest.colorcube.handler.MC1_10ParticleHandler";
         }else if(version.equals("v1_9_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.9 Handlers");
             titleClass = "com.endercrest.colorcube.handler.MC1_9TitleHandler";
             worldBorderClass = "com.endercrest.colorcube.handler.MC1_9WorldBorderHandler";
             bossBarClassPath = "com.endercrest.colorcube.handler.MC1_9BossBar";
+            particleClass = "com.endercrest.colorcube.handler.MC1_9ParticleHandler";
         }else{
             MessageManager.getInstance().debugConsole("Defaulting to 1.11 Handlers");
             titleClass = "com.endercrest.colorcube.handler.MC1_11TitleHandler";
             worldBorderClass = "com.endercrest.colorcube.handler.MC1_11WorldBorderHandler";
             bossBarClassPath = "com.endercrest.colorcube.handler.MC1_11BossBar";
+            particleClass = "com.endercrest.colorcube.handler.MC1_11ParticleHandler";
         }
 
         try {
@@ -53,22 +56,30 @@ public class HandlerManager {
         try {
             worldBorderHandler = (WorldBorderHandler)Class.forName(worldBorderClass).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            MessageManager.getInstance().log("&cWarning: &rFailed to load title handler. Setting null handler.");
+            MessageManager.getInstance().log("&cWarning: &rFailed to load worldborder handler. Setting null handler.");
             worldBorderHandler = new WorldBorderHandler.NullWorldBorderHandler();
         }
 
         try{
             bossBarClass = (Class<? extends BossBar>) Class.forName(bossBarClassPath);
         } catch (ClassNotFoundException e){
-            MessageManager.getInstance().log("&cWarning: &rFailed to load title handler. Setting null handler.");
+            MessageManager.getInstance().log("&cWarning: &rFailed to load bossbar handler. Setting null handler.");
             bossBarClass = BossBar.NullBossBar.class;
         }
-        MessageManager.getInstance().debugConsole("&eHandler Manager Set up");
+
+        try {
+            particleHandler = (ParticleHandler) Class.forName(particleClass).newInstance();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            MessageManager.getInstance().log("&cWarning: &rFailed to load particle handler. Setting null handler.");
+            particleHandler = new ParticleHandler.NullParticleHandler();
+        }
+        MessageManager.getInstance().debugConsole("&eHandler Manager Setup Complete.");
     }
 
     /**
      * Creates a boss bar instance to display to players. The progress
-     * defaults to 1.0
+     * defaults to 1.0. This is also a wrapper for the
+     * Bukkit.createBossBar(...) that is available in 1.9 and above
      *
      * @param title the title of the boss bar
      * @param color the color of the boss bar
@@ -106,5 +117,13 @@ public class HandlerManager {
      */
     public TitleHandler getTitleHandler(){
         return titleHandler;
+    }
+
+    /**
+     * Get the particle handler in charge of sending particles to clients.
+     * @return The particle handler associated with the server version (or defaults to 1.11)
+     */
+    public ParticleHandler getParticleHandler(){
+        return particleHandler;
     }
 }

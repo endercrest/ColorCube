@@ -6,6 +6,7 @@ import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
 import com.endercrest.colorcube.handler.BossBar;
 import com.endercrest.colorcube.handler.HandlerManager;
+import com.endercrest.colorcube.handler.ParticleHandler;
 import com.endercrest.colorcube.logging.LoggingManager;
 import com.endercrest.colorcube.logging.QueueManager;
 import org.bukkit.*;
@@ -1088,8 +1089,9 @@ public class Game {
             if (powerups.size() > 0) {
                 for (Powerup pu : powerups) {
                     for(Player player: getAllPlayers()){
-                        //TODO Add spawnParticle handler
-                        //player.spawnParticle(Particle.NOTE, pu.getLocation(), 10, 0.2F, 0.5F, 0.2F, 1);
+                        HandlerManager.getInstance().getParticleHandler()
+                                .spawnParticle(player, ParticleHandler.Particle.NOTE, pu.getLocation(), 10,
+                                        0.2F, 0.5F, 0.2F, 1);
                     }
                 }
             }
