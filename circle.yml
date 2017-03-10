@@ -1,5 +1,13 @@
+dependencies:
+  override:
+    - mvn --fail-never dependency:go-offline -pl ColorCube-Core || true
+compile:
+  override:
+    - mvn install
 test:
+  override:
+    - mvn -pl ColorCube-Core test
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-    - mv target/*.jar $CIRCLE_ARTIFACTS/
+    - find . -type f -regex ".*/ColorCube-Core/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - mv ColorCube-Plugin/target/*.jar $CIRCLE_ARTIFACTS/

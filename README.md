@@ -27,7 +27,7 @@ ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](htt
 Requirements
 ------
 * Java 7+
-* Spigot MC 1.9+ (1.9-R0.1-SNAPSHOT or Higher)
+* Spigot MC 1.8+ (1.8-R0.1-SNAPSHOT or Higher)
 * WorldEdit
 
 Compiling
@@ -42,9 +42,11 @@ Navigate to created directory
 
 ```cd ColorCube```
 
-Next Compile the project.
+Next to compile the entire project, run the following command:
 
-```mvn install```
+```mvn clean install```
+
+The plugin will compile into `<project-dir>/ColorCube-Plugin/target/ColorCube.jar`
 
 Installation/Setup
 ------
