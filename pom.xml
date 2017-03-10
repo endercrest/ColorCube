@@ -18,9 +18,9 @@
     <modules>
         <module>ColorCube-Plugin</module>
         <module>ColorCube-Core</module>
-        <module>ColorCube-MC1_11</module>
-        <module>ColorCube-MC1_10</module>
-        <module>ColorCube-MC1_9</module>
+        <module>ColorCube-v1_11_R1</module>
+        <module>ColorCube-v1_10_R1</module>
+        <module>ColorCube-v1_9_R1</module>
     </modules>
 
     <build>

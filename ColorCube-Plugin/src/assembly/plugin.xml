@@ -10,9 +10,9 @@
         <dependencySet>
             <includes>
                 <include>com.endercrest.colorcube:ColorCube-Core</include>
-                <include>com.endercrest.colorcube:ColorCube-MC1_11</include>
-                <include>com.endercrest.colorcube:ColorCube-MC1_10</include>
-                <include>com.endercrest.colorcube:ColorCube-MC1_9</include>
+                <include>com.endercrest.colorcube:ColorCube-v1_11_R1</include>
+                <include>com.endercrest.colorcube:ColorCube-v1_10_R1</include>
+                <include>com.endercrest.colorcube:ColorCube-v1_9_R1</include>
             </includes>
             <unpack>true</unpack>
         </dependencySet>

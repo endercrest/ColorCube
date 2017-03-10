@@ -22,28 +22,28 @@ public class HandlerManager {
         String titleClass, worldBorderClass, bossBarClassPath, particleClass;
         if(version.equals("v1_11_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.11 Handlers");
-            titleClass = "com.endercrest.colorcube.handler.MC1_11TitleHandler";
-            worldBorderClass = "com.endercrest.colorcube.handler.MC1_11WorldBorderHandler";
-            bossBarClassPath = "com.endercrest.colorcube.handler.MC1_11BossBar";
-            particleClass = "com.endercrest.colorcube.handler.MC1_11ParticleHandler";
+            titleClass = "com.endercrest.colorcube.handler.V1_11_R1TitleHandler";
+            worldBorderClass = "com.endercrest.colorcube.handler.V1_11_R1WorldBorderHandler";
+            bossBarClassPath = "com.endercrest.colorcube.handler.V1_11_R1BossBar";
+            particleClass = "com.endercrest.colorcube.handler.V1_11_R1ParticleHandler";
         }else if(version.equals("v1_10_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.10 Handlers");
-            titleClass = "com.endercrest.colorcube.handler.MC1_10TitleHandler";
-            worldBorderClass = "com.endercrest.colorcube.handler.MC1_10WorldBorderHandler";
-            bossBarClassPath = "com.endercrest.colorcube.handler.MC1_10BossBar";
-            particleClass = "com.endercrest.colorcube.handler.MC1_10ParticleHandler";
+            titleClass = "com.endercrest.colorcube.handler.V1_10_R1TitleHandler";
+            worldBorderClass = "com.endercrest.colorcube.handler.V1_10_R1WorldBorderHandler";
+            bossBarClassPath = "com.endercrest.colorcube.handler.V1_10_R1BossBar";
+            particleClass = "com.endercrest.colorcube.handler.V1_10_R1ParticleHandler";
         }else if(version.equals("v1_9_R1")){
             MessageManager.getInstance().debugConsole("Loading 1.9 Handlers");
-            titleClass = "com.endercrest.colorcube.handler.MC1_9TitleHandler";
-            worldBorderClass = "com.endercrest.colorcube.handler.MC1_9WorldBorderHandler";
-            bossBarClassPath = "com.endercrest.colorcube.handler.MC1_9BossBar";
-            particleClass = "com.endercrest.colorcube.handler.MC1_9ParticleHandler";
+            titleClass = "com.endercrest.colorcube.handler.V1_9_R1TitleHandler";
+            worldBorderClass = "com.endercrest.colorcube.handler.V1_9_R1WorldBorderHandler";
+            bossBarClassPath = "com.endercrest.colorcube.handler.V1_9_R1BossBar";
+            particleClass = "com.endercrest.colorcube.handler.V1_9_R1ParticleHandler";
         }else{
             MessageManager.getInstance().debugConsole("Defaulting to 1.11 Handlers");
-            titleClass = "com.endercrest.colorcube.handler.MC1_11TitleHandler";
-            worldBorderClass = "com.endercrest.colorcube.handler.MC1_11WorldBorderHandler";
-            bossBarClassPath = "com.endercrest.colorcube.handler.MC1_11BossBar";
-            particleClass = "com.endercrest.colorcube.handler.MC1_11ParticleHandler";
+            titleClass = "com.endercrest.colorcube.handler.V1_11_R1TitleHandler";
+            worldBorderClass = "com.endercrest.colorcube.handler.V1_11_R1WorldBorderHandler";
+            bossBarClassPath = "com.endercrest.colorcube.handler.V1_11_R1BossBar";
+            particleClass = "com.endercrest.colorcube.handler.V1_11_R1ParticleHandler";
         }
 
         try {
