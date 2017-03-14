@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class V1_9_R1TitleHandler implements TitleHandler {
+public class V1_9_R2TitleHandler implements TitleHandler {
     @Override
     public void sendTitle(String msg, Player player, int fadeIn, int stay, int fadeOut) {
         try {

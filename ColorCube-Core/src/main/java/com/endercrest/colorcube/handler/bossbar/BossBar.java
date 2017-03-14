@@ -1,4 +1,4 @@
-package com.endercrest.colorcube.handler;
+package com.endercrest.colorcube.handler.bossbar;
 
 import com.endercrest.colorcube.MessageManager;
 import org.bukkit.entity.Player;

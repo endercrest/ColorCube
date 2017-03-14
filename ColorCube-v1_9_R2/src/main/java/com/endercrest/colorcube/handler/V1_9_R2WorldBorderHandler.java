@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class V1_9_R1WorldBorderHandler implements WorldBorderHandler {
+public class V1_9_R2WorldBorderHandler implements WorldBorderHandler {
 
     @Override
     public void resetWorldBorder(Player player) {

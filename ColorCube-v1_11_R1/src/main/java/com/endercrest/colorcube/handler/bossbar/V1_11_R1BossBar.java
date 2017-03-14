@@ -1,15 +1,15 @@
-package com.endercrest.colorcube.handler;
+package com.endercrest.colorcube.handler.bossbar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class V1_9_R1BossBar implements BossBar{
+public class V1_11_R1BossBar implements BossBar {
 
     private org.bukkit.boss.BossBar bossBar;
 
-    public V1_9_R1BossBar(){
+    public V1_11_R1BossBar(){
         bossBar = Bukkit.createBossBar("", org.bukkit.boss.BarColor.WHITE, org.bukkit.boss.BarStyle.SOLID);
     }
 

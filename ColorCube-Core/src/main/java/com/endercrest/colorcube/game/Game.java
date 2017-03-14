@@ -4,7 +4,7 @@ import com.endercrest.colorcube.*;
 import com.endercrest.colorcube.api.PlayerJoinArenaEvent;
 import com.endercrest.colorcube.api.PlayerLeaveArenaEvent;
 import com.endercrest.colorcube.api.TeamWinEvent;
-import com.endercrest.colorcube.handler.BossBar;
+import com.endercrest.colorcube.handler.bossbar.BossBar;
 import com.endercrest.colorcube.handler.HandlerManager;
 import com.endercrest.colorcube.handler.ParticleHandler;
 import com.endercrest.colorcube.logging.LoggingManager;
@@ -200,7 +200,8 @@ public class Game {
         //Setup Spectators Teams
         spectatorsTeam = board.registerNewTeam("spectatorArena"+id);
 
-        timeBar = HandlerManager.getInstance().createBossBar(ChatColor.GOLD + "Arena " + id, BossBar.BarColor.WHITE, BossBar.BarStyle.SOLID);
+        timeBar = HandlerManager.getInstance().getBossBarHandler()
+                .createBossBar(ChatColor.GOLD + "Arena " + id, BossBar.BarColor.WHITE, BossBar.BarStyle.SOLID);
 
         status = Status.LOBBY;
 

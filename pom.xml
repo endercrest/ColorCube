@@ -20,7 +20,8 @@
         <module>ColorCube-Core</module>
         <module>ColorCube-v1_11_R1</module>
         <module>ColorCube-v1_10_R1</module>
-        <module>ColorCube-v1_9_R1</module>
+        <module>ColorCube-v1_9_R2</module>
+        <module>ColorCube-v1_8_R3</module>
     </modules>
 
     <build>

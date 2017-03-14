@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
  *
  * This is just a wrapper class for the system that already exists in the 1.9 and above spigot version.
  */
-public class V1_9_R1ParticleHandler implements ParticleHandler {
+public class V1_9_R2ParticleHandler implements ParticleHandler {
 
     private final String warning = "&cAttempting to use a particle that is not supported on this server version";
 

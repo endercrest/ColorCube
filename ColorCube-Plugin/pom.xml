@@ -60,7 +60,12 @@
         </dependency>
         <dependency>
             <groupId>com.endercrest.colorcube</groupId>
-            <artifactId>ColorCube-v1_9_R1</artifactId>
+            <artifactId>ColorCube-v1_9_R2</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.endercrest.colorcube</groupId>
+            <artifactId>ColorCube-v1_8_R3</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
     </dependencies>

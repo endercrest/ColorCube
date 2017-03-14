@@ -4,7 +4,7 @@ version: ${parent.version}
 description: ColorCube is a minigame.
 authors: [tcvs]
 depend: [WorldEdit]
-softdepend: [Vault]
+softdepend: [Vault, BossBarAPI]
 commands:
     colorcube:
         description: All commands for ColorCube
