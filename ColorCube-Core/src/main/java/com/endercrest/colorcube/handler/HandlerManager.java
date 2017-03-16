@@ -42,7 +42,7 @@ public class HandlerManager {
             titleClass = "com.endercrest.colorcube.handler.V1_8_R3TitleHandler";
             worldBorderClass = "com.endercrest.colorcube.handler.V1_8_R3WorldBorderHandler";
             bossBarClassPath = "com.endercrest.colorcube.handler.V1_8_R3BossBarHandler";
-            particleClass = "";
+            particleClass = "com.endercrest.colorcube.handler.V1_8_R3ParticleHandler";
         }else{
             MessageManager.getInstance().debugConsole("Defaulting to 1.11 Handlers");
             titleClass = "com.endercrest.colorcube.handler.V1_11_R1TitleHandler";
