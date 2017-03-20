@@ -1,0 +1,104 @@
+name: ${parent.name}
+main: com.endercrest.colorcube.ColorCube
+version: ${parent.version}
+description: ColorCube is a minigame.
+authors: [tcvs]
+depend: [WorldEdit]
+softdepend: [Vault, BossBarAPI]
+commands:
+    colorcube:
+        description: All commands for ColorCube
+        aliases: [cc, colorcube, colourcube]
+permissions:
+    cc.admin.*:
+        description: Grants you the /cc admin commands
+        default: op
+        children:
+            cc.admin.reload: true
+            cc.admin.setgloballobbyspawn: true
+            cc.admin.forcestart: true
+    cc.admin.reload:
+        description: Grants /cc reload
+        default: op
+    cc.admin.setgloballobbyspawn:
+        description: Grants /cc setgloballobbyspawn
+        default: op
+    cc.admin.forcestart:
+        description: Grants /cc forcestart
+        default: op
+    cc.arena.*:
+        description: Grants you the all admin arena commands
+        default: false
+        children:
+            cc.arena.create: true
+            cc.arena.delete: true
+            cc.arena.disable: true
+            cc.arena.setspawn: true
+            cc.arena.removespawn: true
+            cc.arena.options: true
+            cc.arena.vote: true
+            cc.arena.goto: true
+    cc.lobby.*:
+        description: Grants you the all admin lobby commands
+        default: false
+        children:
+            cc.lobby.create: true
+            cc.lobby.setlobbyspawn: true
+            cc.lobby.sign.create: true
+            cc.lobby.sign.delete: true
+            cc.lobby.menu: true
+    cc.arena.create:
+        description: Grants you the arena create command
+        default: op
+    cc.arena.delete:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.disable:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.enable:
+        description: Grants you the arena delete command
+        default: op
+    cc.arena.setspawn:
+        description: Grants you the arena setspawn command
+        default: op
+    cc.arena.removespawn:
+        description: Grants you the arena removespawn command
+        default: op
+    cc.arena.options:
+        description: Grants you the arena options command
+        default: op
+    cc.arena.join:
+        description: Grants you the arena join command
+        default: op
+    cc.arena.spectate:
+        description: Grants you the specate command
+        default: op
+    cc.arena.vote:
+        description: Gives you the arena void command
+        default: op
+    cc.arena.goto:
+        description: Gives you the arena goto command
+        default: op
+    cc.lobby.create:
+        description: Grants you the lobby create command
+        default: op
+    cc.lobby.setlobbyspawn:
+        description: Grants you the setlobbyspawn create command
+        default: op
+    cc.lobby.sign.delete:
+        description: Grants you the deletesign command
+        default: op
+    cc.lobby.sign.create:
+        description: Grants you the createsign command
+        default: op
+    cc.lobby.menu:
+        description: Grants you the ability to open menu, and get the menu item via commnad
+        default: op
+    cc.*:
+        description: Gives all permissions
+        default: false
+        children:
+            cc.admin.*: true
+            cc.arena.*: true
+            cc.lobby.*: true

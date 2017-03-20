@@ -1,7 +1,10 @@
 ![VoidSpawn](https://www.spigotmc.org/attachments/colorcube-png.192932/)
 
-ColorCube [![CircleCI](https://circleci.com/gh/endercrest/ColorCube.svg?style=svg)](https://circleci.com/gh/endercrest/ColorCube)
+ColorCube
 =========
+Master: [![CircleCI](https://circleci.com/gh/endercrest/ColorCube/tree/master.svg?style=svg)](https://circleci.com/gh/endercrest/ColorCube/tree/master) 
+Develop: [![CircleCI](https://circleci.com/gh/endercrest/ColorCube/tree/develop.svg?style=svg)](https://circleci.com/gh/endercrest/ColorCube/tree/develop)
+<p>
 ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](http://www.minecraftforum.net/forums/mapping-and-modding/maps/2112617-14w25b-color-cube-a-painting-minigame-by). The plugin was built to create a fully automated mini-game experience.
 
 * Completely automated
@@ -23,11 +26,12 @@ ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](htt
 * Arena Restoration
 * Arena Protection and much more!
 
+Supports MC 1.8, 1.9, 1.10, and 1.11
 
 Requirements
 ------
 * Java 7+
-* Spigot MC 1.9+ (1.9-R0.1-SNAPSHOT or Higher)
+* Spigot MC 1.8+ (1.8-R0.1-SNAPSHOT or Higher)
 * WorldEdit
 
 Compiling
@@ -42,9 +46,11 @@ Navigate to created directory
 
 ```cd ColorCube```
 
-Next Compile the project.
+Next to compile the entire project, run the following command:
 
-```mvn install```
+```mvn clean install```
+
+The plugin will compile into `<project-dir>/ColorCube-Plugin/target/ColorCube.jar`
 
 Installation/Setup
 ------
