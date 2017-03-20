@@ -7,7 +7,7 @@
     <groupId>com.endercrest.colorcube</groupId>
     <artifactId>ColorCube</artifactId>
     <packaging>pom</packaging>
-    <version>0.8.0-R1-SNAPSHOT</version>
+    <version>0.8.0</version>
     <developers>
         <developer>
             <id>endercrest</id>
