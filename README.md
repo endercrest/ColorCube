@@ -7,24 +7,25 @@ Develop: [![CircleCI](https://circleci.com/gh/endercrest/ColorCube/tree/develop.
 <p>
 ColorCube is a custom mini-game inspired by [MuscleCraft ColorCube gamemode](http://www.minecraftforum.net/forums/mapping-and-modding/maps/2112617-14w25b-color-cube-a-painting-minigame-by). The plugin was built to create a fully automated mini-game experience.
 
-* Completely automated
+Features include:
+* Complete automation
 * Powerups (Freeze, Swap, Splash)
-* Custom Lobby Signs
-* Configure Paintable Blocks
+* Custom lobby signs
+* Ability to configure paintable blocks
 * Spectating
-* Vote to start games
+* Starting games by vote
 * Whitelisted Commands
-* Auto-Start with percentage.
-* Explosive Black Blocks(Black Stained Clay). Place them in your arenas and will start launching players.
-* Unlimited amount of arenas (That your system can handle)
-* Games running at the same time.
-* Easy Game setup
-* Per Arena Permissions
-* Auto-Start when arena is full.
-* Multiworld Support
-* Scoring Management
-* Arena Restoration
-* Arena Protection and much more!
+* Auto-Start with percentage
+* Explosive Black Blocks(Black Stained Clay) will start launching players when placed in your arenas
+* Unlimited amount of arenas (limited by your system)
+* Ability to run ultiple games simultaneously.
+* Easy game setup
+* Specific permissions per arena
+* Auto-start games when arena is full
+* Multiworld support
+* Scoring management
+* Arena restoration
+* Arena protection and much more!
 
 Supports MC 1.8, 1.9, 1.10, and 1.11
 
@@ -46,7 +47,7 @@ Navigate to created directory
 
 ```cd ColorCube```
 
-Next to compile the entire project, run the following command:
+Next complie the project by running the following command:
 
 ```mvn clean install```
 
